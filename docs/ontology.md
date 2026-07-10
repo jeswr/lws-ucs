@@ -3,8 +3,13 @@
 # The `lws-ucr` ontology — a formal model for LWS use cases & requirements
 
 **Status:** an AI-authored experiment in the `jeswr/lws-ucs` fork. It is **not** a W3C
-deliverable and does not speak for the LWS Working Group; it exists so the fork can
-re-describe the UC&R document as machine-readable Linked Data and generate the prose from it.
+deliverable and does not speak for the LWS Working Group. Since Stage 2, the fork's UC&R
+document IS generated from this model: the whole corpus (every current story and
+requirement, the open-issue triage write-ups, and the app-derived submissions) lives as
+Turtle instances in `ucr/`, and `spec/user-stories.md`, `spec/requirements.md` and
+`spec/requirements-matrix.md` are build artifacts produced by
+`scripts/generate-spec-md.py`. The open-issue triage itself is documented in
+`docs/issue-triage.md`.
 
 ## What it models
 
@@ -88,13 +93,23 @@ ODRL (subject matter of LWS use cases, not the meta-model).
 
 - `vocab/lws-ucr.ttl` — the ontology (classes, properties, closed enum schemes).
 - `vocab/schemes/{roles,categories,features}.ttl` — seed concepts for the open schemes
-  (roles seeded from the glossary cast of w3c/lws-ucs#158; categories from the ten
-  sub-category headings of `spec/user-stories.md`, per w3c/lws-ucs#91; features to be
-  aligned with a protocol capability registry).
+  (roles seeded from the glossary cast of w3c/lws-ucs#158, extended in Stage 2 with the
+  recurring corpus cast — collaborator, administrator, service provider, compliance
+  officer, autonomous agent; categories from the ten sub-category headings of the
+  document, per w3c/lws-ucs#91; features grown to cover the full requirement corpus,
+  to be aligned with a protocol capability registry).
 - `shapes/lws-ucr-shapes.ttl` — SHACL Core shapes for well-formed instances.
-- `examples/*.ttl` — three stories from the current document re-described as instances
-  (Large File Uploads #18, Administrative Assistant #10, Portable Storage #30 + the
-  #164/#165 refinements), each with its derived requirement(s).
+- `ucr/*.ttl` — the UC&R corpus (the document's source of truth):
+  `current-use-cases.ttl` + `current-requirements.ttl` (the full port of the previously
+  hand-written document, incl. two RECONSTRUCTED use cases the requirements referenced by
+  name but the stories list lacked), `uc-{storage-portability,large-file-uploads,administrative-assistant}.ttl`
+  (the graduated Stage-1 examples), `triage.ttl` (write-ups of the open GitHub issues the
+  document didn't yet reflect — see `docs/issue-triage.md`), and
+  `app-derived-{use-cases,requirements}.ttl` (use cases derived from real deployed
+  applications, each grounded via `lws-ucr:sourceIssue` links to the implementing repo).
+- `scripts/generate-spec-md.py` — generates `spec/{user-stories,requirements,requirements-matrix}.md`
+  from the corpus (rdflib); `--check` verifies the committed markdown matches (the
+  anti-drift gate).
 - `examples/positive/*.ttl` — synthetic shape-proving positives that MUST conform (e.g. a
   use case that names only its `primaryActor`, since `primaryActor rdfs:subPropertyOf actor`
   makes it also an actor — so a separate `actor` value is not required).
@@ -116,8 +131,15 @@ pip install pyshacl
 sh scripts/validate-ucr.sh
 ```
 
-Each example is validated over a data graph merged with the vocabulary and scheme seeds (so
+Each graph is validated merged with the vocabulary and scheme seeds (so
 `sh:class`/`sh:node` constraints see the referenced concepts' types and scheme memberships).
-Violation-severity results fail the gate; advisory warnings are reported but non-blocking
-(the script passes `--allow-warnings`). The positive examples conform (with no warnings) and
-every negative fixture is reported non-conforming.
+The `ucr/*.ttl` corpus is validated as ONE merged graph, because `motivatedBy`/`motivates`
+edges cross files. Violation-severity results fail the gate; advisory warnings are reported
+but non-blocking (the script passes `--allow-warnings`). The corpus and positive examples
+conform (the corpus with zero advisory warnings) and every negative fixture is reported
+non-conforming. After editing the corpus, regenerate the document:
+
+```sh
+python3 scripts/generate-spec-md.py          # writes spec/*.md
+python3 scripts/generate-spec-md.py --check  # CI-style drift check
+```

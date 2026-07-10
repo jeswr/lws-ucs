@@ -23,3 +23,43 @@ feat:Portability a skos:Concept ; skos:inScheme lws-ucr:FeatureScheme ;
 feat:Audit a skos:Concept ; skos:inScheme lws-ucr:FeatureScheme ;
     skos:prefLabel "Audit and accountability"@en ;
     skos:definition "Recording and exposing who did what, under which grant, so that actions remain attributable and reviewable."@en .
+
+feat:Authentication a skos:Concept ; skos:inScheme lws-ucr:FeatureScheme ;
+    skos:prefLabel "Authentication"@en ;
+    skos:definition "Establishing who a requesting entity is: interactive login, silent re-authentication, passkeys, and service-to-service credentials."@en .
+
+feat:Identity a skos:Concept ; skos:inScheme lws-ucr:FeatureScheme ;
+    skos:prefLabel "Identity"@en ;
+    skos:definition "Identifiers for entities, storages and applications: global uniqueness, aliasing, profiles, pseudonymity, and application identity."@en .
+
+feat:Notifications a skos:Concept ; skos:inScheme lws-ucr:FeatureScheme ;
+    skos:prefLabel "Notifications"@en ;
+    skos:definition "Subscribing to and delivering events about resources and permissions, including inbox-style message delivery."@en .
+
+feat:Query a skos:Concept ; skos:inScheme lws-ucr:FeatureScheme ;
+    skos:prefLabel "Query and search"@en ;
+    skos:definition "Searching, filtering, paginating and querying data in and across storages, respecting access control."@en .
+
+feat:Discovery a skos:Concept ; skos:inScheme lws-ucr:FeatureScheme ;
+    skos:prefLabel "Discovery"@en ;
+    skos:definition "Finding storages, capabilities, data locations and conventions: storage description, data registries and indexes."@en .
+
+feat:Concurrency a skos:Concept ; skos:inScheme lws-ucr:FeatureScheme ;
+    skos:prefLabel "Concurrency and consistency"@en ;
+    skos:definition "Coordinating concurrent reads and writes: conditional requests, optimistic concurrency, atomicity, and collaborative merge semantics."@en .
+
+feat:Synchronization a skos:Concept ; skos:inScheme lws-ucr:FeatureScheme ;
+    skos:prefLabel "Offline and synchronization"@en ;
+    skos:definition "Working disconnected and reconciling on reconnect: local replicas, change detection, tombstones, and conflict resolution."@en .
+
+feat:Encryption a skos:Concept ; skos:inScheme lws-ucr:FeatureScheme ;
+    skos:prefLabel "Encryption"@en ;
+    skos:definition "Protecting data confidentiality and integrity cryptographically, at rest and in transit, including end-to-end schemes."@en .
+
+feat:Extensibility a skos:Concept ; skos:inScheme lws-ucr:FeatureScheme ;
+    skos:prefLabel "Extensibility"@en ;
+    skos:definition "Extending the protocol surface without breaking interoperability: custom endpoints, alternative transports, content negotiation and evolution."@en .
+
+feat:Operations a skos:Concept ; skos:inScheme lws-ucr:FeatureScheme ;
+    skos:prefLabel "Operations"@en ;
+    skos:definition "Operating the storage as a system a client can reason about: quotas and usage, structured errors, rate limiting, and provisioning."@en .

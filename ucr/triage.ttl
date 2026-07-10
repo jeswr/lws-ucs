@@ -1,0 +1,430 @@
+# AUTHORED-BY Claude Fable
+# Use cases & requirements written up from the OPEN w3c/lws-ucs issues that the
+# current document does not yet reflect (Stage-2 triage, 2026-07-10; full triage
+# table incl. the out-of-scope/process dispositions in docs/issue-triage.md).
+# Issues folded into EXISTING use cases rather than minted here: #205 (into
+# UC-permission-change-notifications), #210 (into UC-legal-grounds-support),
+# #213 (onto REQ-control-of-storages), #192 (into UC-profile-sharing),
+# #164/#165 (already alternative flows of UC-storage-portability).
+# All items here are lws-ucr:Proposed — submitted, not yet WG-accepted.
+# Validate: sh scripts/validate-ucr.sh   Generate: python3 scripts/generate-spec-md.py
+
+@prefix :        <https://jeswr.org/lws/ucr#> .
+@prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
+@prefix role:    <https://jeswr.org/ns/lws-ucr/roles#> .
+@prefix cat:     <https://jeswr.org/ns/lws-ucr/categories#> .
+@prefix feat:    <https://jeswr.org/ns/lws-ucr/features#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+#################################################################
+# #59 + #66 — usage control beyond access control
+#################################################################
+
+:UC-usage-control a lws-ucr:UseCase ;
+    dcterms:identifier "UC-usage-control" ;
+    dcterms:title "Usage Control"@en ;
+    lws-ucr:primaryActor role:DataOwner ;
+    lws-ucr:actor role:DataOwner , role:Collaborator , role:Auditor ;
+    lws-ucr:goal "to express usage control conditions in my policies, which go further than mere access control — including the purpose for which a resource may be used"@en ;
+    lws-ucr:benefit "I can limit what a recipient is allowed to do with my resource after access has taken place, and prevent uses I do not want"@en ;
+    dcterms:description "Access control decides who gets in; usage control constrains what happens afterwards. The resource controller must be able to evaluate additional claims about the proposed usage (notably its purpose, #66) and give the recipient a clear, verifiable attestation of the allowed usage; a data protection agency may later audit compliance. Access and usage control are tightly interwoven and need a single policy interface."@en ;
+    lws-ucr:precondition "The resource controller can manage policies over resources on an LWS-compatible storage."@en ;
+    lws-ucr:precondition "Requesting parties can make claims about the purpose of their request."@en ;
+    lws-ucr:scenario :UC-usage-control-main ;
+    lws-ucr:postcondition "Policies are enforced consistently across all resources, interfaces and derived views."@en ;
+    lws-ucr:category cat:SecurityPrivacy , cat:AccessControlSharing ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/59> , <https://github.com/w3c/lws-ucs/issues/66> ;
+    lws-ucr:motivates :REQ-usage-control .
+
+:UC-usage-control-main a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:MainFlow ;
+    lws-ucr:steps (
+        "The resource controller creates policies specifying for which purposes their resources may be accessed and used."
+        "A requesting party declares the purpose for which the resource will be used when requesting access."
+        "The authorization service compares the requested purpose with the allowed ones and grants or denies access."
+        "The recipient receives a verifiable attestation of the allowed usage, which an auditor can later check." ) .
+
+:REQ-usage-control a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-usage-control" ;
+    dcterms:title "Usage Control Policies"@en ;
+    dcterms:description "The protocol SHOULD support policies expressing usage conditions beyond access — notably the purpose of use — such that a requesting party can declare its intended usage, the policy decision can evaluate that declaration, and the recipient receives a verifiable attestation of the usage that was authorized."@en ;
+    lws-ucr:requirementType lws-ucr:Privacy , lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Could ;
+    lws-ucr:rationale "Purpose limitation is a core data-protection principle (and the heart of the #59–#86 usage-control issue cluster); technically it composes with, rather than replaces, access control."@en ;
+    lws-ucr:motivatedBy :UC-usage-control , :UC-consent-based-sharing ;
+    lws-ucr:relatedFeature feat:Authorization ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/59> , <https://github.com/w3c/lws-ucs/issues/66> ,
+        <https://github.com/w3c/lws-ucs/issues/82> .
+
+#################################################################
+# #93 — server-side validation of mutating requests
+#################################################################
+
+:UC-mutation-validation a lws-ucr:UseCase ;
+    dcterms:identifier "UC-mutation-validation" ;
+    dcterms:title "Custom Validation of Mutating Requests"@en ;
+    lws-ucr:primaryActor role:DataOwner ;
+    lws-ucr:actor role:DataOwner , role:AppDeveloper ;
+    lws-ucr:goal "to specify validation rules for requests that mutate a resource"@en ;
+    lws-ucr:benefit "the storage enforces those rules, securing the resource against invalid data and spam"@en ;
+    dcterms:description "Append/write permission alone is too blunt for social resources: a group members list should accept only well-shaped membership triples about the authenticated agent themself; an inbox should accept only valid notifications whose actor matches the sender. Without server-side validation, any agent with append access can dump arbitrary data."@en ;
+    lws-ucr:scenario :UC-mutation-validation-main , :UC-mutation-validation-err ;
+    lws-ucr:category cat:SecurityPrivacy , cat:StorageResourceManagement ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/93> ;
+    lws-ucr:motivates :REQ-write-validation .
+
+:UC-mutation-validation-main a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:MainFlow ;
+    lws-ucr:steps (
+        "The owner attaches a validation rule to a group resource: only membership triples whose subject is the group and whose object is the authenticated agent's identifier may be added or removed."
+        "A member appends themself to the group; the mutation validates and is applied."
+        "An application posts a notification to the owner's inbox; the notification validates against the inbox's accepted shape and is stored." ) .
+
+:UC-mutation-validation-err a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:ErrorFlow ;
+    dcterms:description "A malicious agent attempts to append somebody else to the group, or to spoof a notification naming another actor; the storage rejects the mutation with a structured validation error."@en .
+
+:REQ-write-validation a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-write-validation" ;
+    dcterms:title "Server-Side Write Validation"@en ;
+    dcterms:description "The protocol SHOULD allow a resource controller to associate validation rules (e.g., shapes or conditions over the mutation and the authenticated agent) with a resource, such that mutating requests not satisfying the rules are rejected with a structured error before any change is applied."@en ;
+    lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Security ;
+    lws-ucr:priority lws-ucr:Could ;
+    lws-ucr:rationale "Append-capable shared resources (groups, inboxes) are otherwise spam- and spoof-prone; client-side discipline cannot secure a multi-writer resource."@en ;
+    lws-ucr:motivatedBy :UC-mutation-validation ;
+    lws-ucr:relatedFeature feat:ResourceManagement ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/93> .
+
+#################################################################
+# #171 — rename / move without re-upload
+#################################################################
+
+:UC-resource-rename-move a lws-ucr:UseCase ;
+    dcterms:identifier "UC-resource-rename-move" ;
+    dcterms:title "Renaming / Moving a Resource or Container"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "to rename or move a resource or container to a different name or location"@en ;
+    lws-ucr:benefit "I can organize my storage my preferred way (and apps can migrate old layouts to new conventions)"@en ;
+    dcterms:description "Moving changes the resource's identifier and may break inbound links (including registrations in type indexes); it thus differs from create/modify/delete. Unlike whole-storage portability, relative-URL tricks do not help within a storage. A server-side move must not require re-uploading content — decisive for large resources and containers."@en ;
+    lws-ucr:scenario :UC-resource-rename-move-main ;
+    lws-ucr:postcondition "The resource is accessible at the new identifier without re-upload; the fate of the old identifier (tombstone, redirect, or nothing) is explicit."@en ;
+    lws-ucr:category cat:DataManagement ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/171> ;
+    lws-ucr:motivates :REQ-rename-move , :REQ-deletion-signaling .
+
+:UC-resource-rename-move-main a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:MainFlow ;
+    lws-ucr:steps (
+        "The user renames /journal/movies.ttl to /journal/movie.ttl; the server performs the rename without the content being re-transferred."
+        "The user moves container /journal/images/ to /images/journal/; the container and all contained resources move in one operation."
+        "Clients holding the old identifiers discover the move (e.g. via a move marker or redirect) instead of hitting a silent 404." ) .
+
+:REQ-rename-move a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-rename-move" ;
+    dcterms:title "Server-Side Rename and Move"@en ;
+    dcterms:description "The protocol SHOULD support renaming or moving a resource or container (including its contents) as a server-side operation that does not require re-transferring content, and SHOULD define how inbound references to the old identifier behave afterwards."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Could ;
+    lws-ucr:rationale "Reorganisation is routine data management; client-side copy-then-delete is quadratically expensive and loses metadata and grants."@en ;
+    lws-ucr:motivatedBy :UC-resource-rename-move ;
+    lws-ucr:relatedFeature feat:ResourceManagement ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/171> .
+
+#################################################################
+# #195 — (a) pseudonymous access, (b) move/delete markers
+#################################################################
+
+:UC-pseudonymous-access a lws-ucr:UseCase ;
+    dcterms:identifier "UC-pseudonymous-access" ;
+    dcterms:title "Pseudonymous Access for Vendors"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User , role:ServiceProvider ;
+    lws-ucr:goal "vendors to access my data without being able to uniquely identify me across services"@en ;
+    lws-ucr:benefit "vendors cannot track me across domains or correlate their records with other vendors'"@en ;
+    dcterms:description "Fixed identifier or storage URLs (https://ID.provider.example, /ID/ paths) let vendors track a user across vendor domains or collude by exchanging the stable identifier. The storage/identity layer needs rotating per-vendor aliases (pseudo-identifiers) — per vendor, and rotatable over time for a single vendor."@en ;
+    lws-ucr:category cat:SecurityPrivacy , cat:IdentityAuthenticationTrust ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/195> ;
+    lws-ucr:motivates :REQ-pseudonymity .
+
+:REQ-pseudonymity a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-pseudonymity" ;
+    dcterms:title "Pseudonymous Identifiers"@en ;
+    dcterms:description "The protocol SHOULD allow an entity to present distinct, unlinkable pseudonymous identifiers to distinct relying parties (and to rotate them over time), such that access still authorizes correctly but relying parties cannot correlate the entity across contexts via the identifier or storage location."@en ;
+    lws-ucr:requirementType lws-ucr:Privacy ;
+    lws-ucr:priority lws-ucr:Could ;
+    lws-ucr:rationale "Stable global identifiers are a tracking vector by construction; pseudonymity is the standing mitigation and interacts with the profile-management requirement (one persona per context) without replacing it."@en ;
+    lws-ucr:motivatedBy :UC-pseudonymous-access ;
+    lws-ucr:relatedFeature feat:Identity ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/195> .
+
+:UC-link-preservation a lws-ucr:UseCase ;
+    dcterms:identifier "UC-link-preservation" ;
+    dcterms:title "Markers for Moved or Deleted Resources"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User , role:AppDeveloper ;
+    lws-ucr:goal "moved or deleted resources to leave a discoverable marker"@en ;
+    lws-ucr:benefit "existing links do not silently break when data moves within a provider or migrates to another one"@en ;
+    dcterms:description "Linked data is built on links; a move or delete without a marker severs every inbound reference indistinguishably from a network error. A marker (tombstone for deletions, forwarding marker for moves) lets clients distinguish gone from moved from never-existed. Cf. pdsinterop's solid-link-metadata as prior art."@en ;
+    lws-ucr:category cat:DataManagement ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/195> ;
+    lws-ucr:motivates :REQ-deletion-signaling .
+
+#################################################################
+# #207 — user-defined custom API endpoints
+#################################################################
+
+:UC-custom-api-endpoints a lws-ucr:UseCase ;
+    dcterms:identifier "UC-custom-api-endpoints" ;
+    dcterms:title "User-Defined Custom API Endpoints"@en ;
+    lws-ucr:primaryActor role:DataOwner ;
+    lws-ucr:actor role:DataOwner , role:ServiceProvider , role:AppDeveloper ;
+    lws-ucr:goal "to attach custom API endpoints to my storage that are served by third-party services of my choosing"@en ;
+    lws-ucr:benefit "my storage supports additional functionality (virtual resources, extra policy engines, delegated computation, protocol bridges) without requiring the storage provider to implement it"@en ;
+    dcterms:description "A generic extension point covering several submitted needs at once: virtual resources computed elsewhere, additional authorization mechanisms, delegated computation near the data, and interoperation bridges (WebDAV, CalDAV, ActivityPub). The hard parts are (a) how a visiting client authenticates through to the delegated endpoint and (b) how it verifies the endpoint is genuinely trusted by the storage owner; providers must be swappable without breaking clients (default endpoint discovery)."@en ;
+    lws-ucr:category cat:ApiProtocolFlexibility ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/207> ;
+    lws-ucr:motivates :REQ-extension-endpoints .
+
+:REQ-extension-endpoints a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-extension-endpoints" ;
+    dcterms:title "Discoverable Extension Endpoints"@en ;
+    dcterms:description "The protocol MAY define a mechanism by which a storage controller registers additional, discoverable API endpoints (possibly served by third parties) under their storage, such that clients can discover, authenticate to, and verify the owner's endorsement of these endpoints; the mechanism MUST NOT weaken the access control of ordinary resources."@en ;
+    lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Interop ;
+    lws-ucr:priority lws-ucr:Could ;
+    lws-ucr:rationale "One sanctioned extension point absorbs a family of 'add feature X to the server' requests without bloating the core protocol."@en ;
+    lws-ucr:motivatedBy :UC-custom-api-endpoints ;
+    lws-ucr:relatedFeature feat:Extensibility ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/207> .
+
+#################################################################
+# #208 — indexed vs non-indexed data
+#################################################################
+
+:UC-selective-indexing a lws-ucr:UseCase ;
+    dcterms:identifier "UC-selective-indexing" ;
+    dcterms:title "Indexed and Non-Indexed Data"@en ;
+    lws-ucr:primaryActor role:AppDeveloper ;
+    lws-ucr:goal "to mark part of my app's data as indexable (e.g. through a type index or search index) and other parts as not indexable"@en ;
+    lws-ucr:benefit "indexers surface the meaningful data and are not spoofed with internal representations (e.g. CRDT history) that are useless outside their specific structure"@en ;
+    dcterms:description "Not all stored data is meaningful to other consumers: sync logs, CRDT update histories and caches are only useful in their specific form. An indexer (server- or client-side) must be able to distinguish data worth surfacing from internal structure — whether the marking lives on the data, the container, storage configuration, or type hierarchy is a design choice for the protocol."@en ;
+    lws-ucr:category cat:ApplicationIntegration , cat:AdvancedFeatures ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/208> ;
+    lws-ucr:motivates :REQ-indexing-control .
+
+:REQ-indexing-control a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-indexing-control" ;
+    dcterms:title "Indexing Control"@en ;
+    dcterms:description "The protocol SHOULD provide a way to declare, at resource or container granularity, whether data is intended for indexing and discovery by other consumers, and indexing services SHOULD honour the declaration."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Could ;
+    lws-ucr:rationale "Discovery quality degrades fast when internal representations pollute indexes; the CRDT-log pattern in real local-first apps makes this concrete."@en ;
+    lws-ucr:motivatedBy :UC-selective-indexing ;
+    lws-ucr:relatedFeature feat:Discovery ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/208> .
+
+#################################################################
+# #211 — ID alias
+#################################################################
+
+:UC-id-alias a lws-ucr:UseCase ;
+    dcterms:identifier "UC-id-alias" ;
+    dcterms:title "ID Alias"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "to link multiple identifiers as aliases of the same entity"@en ;
+    lws-ucr:benefit "any of my identifiers represents me — access keeps working when one identity service is down, and unlinking one alias never breaks social links held under the others"@en ;
+    dcterms:description "Alias semantics beyond migration: grants made to one identifier honour requests presented under its aliases; aliases are individually revocable (removing one revokes only that identifier's access); and contacts can address the entity under any active alias. Error handling matters: the home server of one alias being unreachable must not lock out access under another."@en ;
+    lws-ucr:scenario :UC-id-alias-main ;
+    lws-ucr:category cat:IdentityAuthenticationTrust ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/211> ;
+    lws-ucr:motivates :REQ-globally-unique-identifiers .
+
+:UC-id-alias-main a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:MainFlow ;
+    lws-ucr:steps (
+        "Alice declares identifiers ID-B and ID-C as aliases of her identifier ID-A."
+        "A resource granted to ID-A accepts requests authenticated as ID-B or ID-C."
+        "Alice retires ID-B; resources stop accepting ID-B while ID-A and ID-C continue to work."
+        "Alice's contacts can reach her under any active alias; retiring one alias breaks no social link held under the others." ) .
+
+#################################################################
+# #212 — who has access to what (grounded also in a real
+# access-management app: jeswr/solid-access-manager)
+#################################################################
+
+:UC-access-overview a lws-ucr:UseCase ;
+    dcterms:identifier "UC-access-overview" ;
+    dcterms:title "Discovering Who Has Access"@en ;
+    lws-ucr:primaryActor role:DataOwner ;
+    lws-ucr:goal "to see which users and applications hold read/write/append access to resources in my storage — for a whole container in a single request"@en ;
+    lws-ucr:benefit "I can prevent accidental over-permissioning in a storage with many resources"@en ;
+    dcterms:description "Today a client must traverse the whole resource hierarchy and read every access-control resource to answer 'who can see what?' — the submitting issue names this a standing gap, and a real access-management dashboard (jeswr/solid-access-manager) confirms it: building the by-resource and by-agent grant views requires a full ACL crawl, and distinguishing direct from inherited grants re-implements server-side inheritance logic client-side. The effective-permission summary should be queryable from the server that already computes it."@en ;
+    lws-ucr:scenario :UC-access-overview-main ;
+    lws-ucr:category cat:AccessControlSharing ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/212> ,
+        <https://github.com/jeswr/solid-access-manager> ;
+    lws-ucr:motivates :REQ-authorization-enumeration .
+
+:UC-access-overview-main a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:MainFlow ;
+    lws-ucr:steps (
+        "The owner opens their access-management application."
+        "The application asks the storage, in one request, for the effective grants over a container."
+        "The storage returns each (agent or application, mode, resource-set) grant, marking whether it is direct or inherited."
+        "The owner spots an over-broad inherited grant and revokes it at its source." ) .
+
+:REQ-authorization-enumeration a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-authorization-enumeration" ;
+    dcterms:title "Authorization Enumeration"@en ;
+    dcterms:description "The protocol SHOULD allow an authorized entity (at minimum the controller) to enumerate, in a bounded number of requests, the effective access grants over a resource or container subtree — who holds which modes over which resources, and whether each grant is direct or inherited."@en ;
+    lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Security ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Access review is a security control; if the answer requires a full client-side crawl and re-implementation of inheritance, owners will not audit and over-permissioning persists."@en ;
+    lws-ucr:motivatedBy :UC-access-overview ;
+    lws-ucr:relatedFeature feat:Authorization , feat:Audit ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/212> .
+
+#################################################################
+# #215 — data about identifiers whose home is another storage
+#################################################################
+
+:UC-foreign-identifier-data a lws-ucr:UseCase ;
+    dcterms:identifier "UC-foreign-identifier-data" ;
+    dcterms:title "Local Data About Foreign Identifiers"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "to store and retrieve data in my storage about an identifier whose canonical location is a different storage (a friend's WebID, a remote ontology)"@en ;
+    lws-ucr:benefit "I can keep information I own about external entities under their own identifier — no invented duplicate identifiers — and still reach the canonical source"@en ;
+    dcterms:description "Bob keeps notes about Alice under Alice's own identifier; a service caches ontologies whose original hosting lapsed under their original IRIs. The storage must support retrieving what a storage says about an identifier it does not host (distinct from dereferencing the identifier itself), preserving interoperability of the original IRI."@en ;
+    lws-ucr:category cat:DataManagement , cat:ApplicationIntegration ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/215> ;
+    lws-ucr:motivates :REQ-external-identifier-access .
+
+:REQ-external-identifier-access a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-external-identifier-access" ;
+    dcterms:title "Access to Data About External Identifiers"@en ;
+    dcterms:description "The protocol SHOULD provide a mechanism to store, and to request from a given storage, the data that storage holds about an identifier whose canonical location is elsewhere, without requiring a new identifier to be minted for the local description."@en ;
+    lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Interop ;
+    lws-ucr:priority lws-ucr:Could ;
+    lws-ucr:rationale "Annotation of the web under original identifiers is core linked-data practice; forcing local re-identification breaks the graph."@en ;
+    lws-ucr:motivatedBy :UC-foreign-identifier-data ;
+    lws-ucr:relatedFeature feat:Query ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/215> .
+
+#################################################################
+# #222 — privacy in data discovery
+#################################################################
+
+:UC-private-data-discovery a lws-ucr:UseCase ;
+    dcterms:identifier "UC-private-data-discovery" ;
+    dcterms:title "Privacy in Data Discovery"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User , role:AppDeveloper ;
+    lws-ucr:goal "data discovery to respect my privacy"@en ;
+    lws-ucr:benefit "unauthorized parties can't profile me because my storage discloses too much through the discovery layer itself"@en ;
+    dcterms:description "Discovery is itself a disclosure channel: when a tax app asks where tax-relevant data lives, the storage must not reveal to it that health-related data classes exist (their mere existence can suggest, e.g., a pregnancy). Authorized discovery must return exactly the authorized data locations and nothing about the existence of anything else."@en ;
+    lws-ucr:scenario :UC-private-data-discovery-err ;
+    lws-ucr:category cat:SecurityPrivacy ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/222> ;
+    lws-ucr:motivates :REQ-non-leaky-discovery .
+
+:UC-private-data-discovery-err a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:ErrorFlow ;
+    dcterms:description "Jane authorizes the tax app to discover tax-relevant data only; during discovery one of her storages nonetheless discloses the existence of health-related data types to the tax app. This is the failure the requirement forbids."@en .
+
+:REQ-non-leaky-discovery a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-non-leaky-discovery" ;
+    dcterms:title "Non-Leaky Discovery"@en ;
+    dcterms:description "Discovery mechanisms (data registries, type indexes, capability descriptions, search) MUST NOT disclose the existence, type, or location of data an agent is not authorized to know about; a discovery response MUST be indistinguishable between 'does not exist' and 'exists but not authorized for you'."@en ;
+    lws-ucr:requirementType lws-ucr:Privacy , lws-ucr:Security ;
+    lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "Existence metadata is data: a leaky index defeats resource-level access control wholesale. This constrains every discovery requirement (self-descriptive APIs, search, indexes) rather than adding a parallel surface."@en ;
+    lws-ucr:motivatedBy :UC-private-data-discovery , :UC-app-data-discovery ;
+    lws-ucr:relatedFeature feat:Discovery ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/222> .
+
+#################################################################
+# #226 — consented third-party indexing of a profile
+#################################################################
+
+:UC-profile-indexing a lws-ucr:UseCase ;
+    dcterms:identifier "UC-profile-indexing" ;
+    dcterms:title "Indexing a Volunteer Profile"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User , role:ServiceProvider ;
+    lws-ucr:goal "platforms and organisations that offer volunteering opportunities to index my profile, with my consent"@en ;
+    lws-ucr:benefit "they can reach out to me when opportunities relevant to my profile need volunteers"@en ;
+    dcterms:description "Consented third-party indexing of user-controlled data, end to end: the volunteer submits their profile URL and grants read access for the purpose of indexing; indexers are notified of (or poll for) profile updates; suggestions flow back; and the volunteer can both revoke the indexer's access and require removal from the index. Purpose-bound, revocable, notification-driven — a composition of access request, consent, notification and usage-control requirements."@en ;
+    lws-ucr:scenario :UC-profile-indexing-main ;
+    lws-ucr:category cat:ApplicationIntegration , cat:AccessControlSharing ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/226> ;
+    lws-ucr:motivates :REQ-consent-based-sharing , :REQ-change-notifications , :REQ-usage-control .
+
+:UC-profile-indexing-main a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:MainFlow ;
+    lws-ucr:steps (
+        "The volunteer edits their profile and chooses which opportunity providers may access it."
+        "The chosen providers are notified and index the profile for the consented purpose."
+        "The volunteer receives suggestions for matching opportunities, and is notified when new matching opportunities are created."
+        "The volunteer later withdraws one provider's access; that provider must stop indexing and remove the profile from its index." ) .
+
+#################################################################
+# #228 — institutional records provability (RecordWeb)
+#################################################################
+
+:UC-institutional-records a lws-ucr:UseCase ;
+    dcterms:identifier "UC-institutional-records" ;
+    dcterms:title "Institutional Records Provability"@en ;
+    lws-ucr:primaryActor role:DataOwner ;
+    lws-ucr:actor role:DataOwner , role:User , role:Auditor ;
+    lws-ucr:goal "institutional records (permits, medical records, legal decisions) to be stored as verifiably attributable, version-frozen, cryptographically sealed snapshots — and citizens to hold verified references to them in their own storages"@en ;
+    lws-ucr:benefit "a decision is provable in a legal dispute years later, and a citizen can maintain a self-controlled, verifiable view of their own affairs across institutional boundaries without central registries"@en ;
+    dcterms:description "Two complementary halves. Institution-side: a finalized record is sealed as an immutable snapshot (superseded, never overwritten), attributable to the responsible party, with payload deletion possible for the right to erasure while the record's existence and lineage survive as a tombstone. Citizen-side: the citizen's storage holds typed references (identifier + content hash) to institution-held records — not copies — verifiable at link time and re-verifiable on demand, shareable selectively, and aggregable into a named case whose completeness is itself provable."@en ;
+    lws-ucr:scenario :UC-institutional-records-main ;
+    lws-ucr:postcondition "Any relying party can verify a referenced record is byte-identical to the sealed snapshot the institution finalized."@en ;
+    lws-ucr:postcondition "Erasure of a record's payload preserves the record's existence, metadata and lineage."@en ;
+    lws-ucr:category cat:DataManagement , cat:SecurityPrivacy ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/228> ;
+    lws-ucr:motivates :REQ-immutable-snapshots , :REQ-verified-references ,
+        :REQ-data-integrity-verification , :REQ-deletion-signaling .
+
+:UC-institutional-records-main a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:MainFlow ;
+    lws-ucr:steps (
+        "A civil servant finalizes a building-permit decision; the institution's storage seals it as an immutable, attributable snapshot."
+        "The affected citizen links a verified reference (identifier plus content hash) to the snapshot into their own storage."
+        "Three years later the citizen presents the reference in a dispute; the relying party resolves it and verifies the hash matches the sealed snapshot."
+        "The citizen exercises their right to erasure over the personal payload; the record's existence, metadata and lineage remain as a tombstone." ) .
+
+:REQ-immutable-snapshots a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-immutable-snapshots" ;
+    dcterms:title "Immutable Resource Snapshots"@en ;
+    dcterms:description "The protocol SHOULD allow a storage to designate a resource as an immutable snapshot: once written it MUST NOT be overwritten or edited, only superseded by a new resource carrying a reference to its predecessor; supersession chains MUST be traversable by authorized entities."@en ;
+    lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Security ;
+    lws-ucr:priority lws-ucr:Could ;
+    lws-ucr:rationale "Provable records need write-once semantics the generic update model cannot express; versioning alone does not forbid in-place mutation."@en ;
+    lws-ucr:motivatedBy :UC-institutional-records ;
+    lws-ucr:relatedFeature feat:ResourceManagement ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/228> .
+
+:REQ-verified-references a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-verified-references" ;
+    dcterms:title "Verified References to External Resources"@en ;
+    dcterms:description "The protocol SHOULD support storing a typed reference to an external resource consisting of its identifier and a content hash, without copying the payload, such that a client can verify at link time — and re-verify on demand — that the referenced content still matches the hash."@en ;
+    lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Security ;
+    lws-ucr:priority lws-ucr:Could ;
+    lws-ucr:rationale "Reference-not-copy with cryptographic pinning is what lets a personal storage aggregate institution-held records without becoming a second source of truth."@en ;
+    lws-ucr:motivatedBy :UC-institutional-records ;
+    lws-ucr:relatedFeature feat:ResourceManagement , feat:Encryption ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/228> .

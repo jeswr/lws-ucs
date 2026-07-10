@@ -1,0 +1,369 @@
+# AUTHORED-BY Claude Fable
+# Novel use cases derived from REAL applications built against Solid-protocol
+# storage in the @jeswr suite (Stage 2 of the UC&R rewrite): local-first apps
+# (solid-offline, the Actual/Excalidraw/Elk/linkding OSS forks, y-solid,
+# rxdb-solid, unstorage-solid), management UIs (Pod Manager,
+# solid-access-manager), cross-app interop (solid-chat-interop,
+# solid-task-model, solid-issues), automation and agents (n8n-nodes-solid,
+# solid-mcp, solid-memory), and shared auth infrastructure
+# (solid-session-restore, client identifier documents). Each use case is
+# grounded in what those applications ACTUALLY needed from storage — the
+# lws-ucr:sourceIssue links point at the implementing repository (an imported
+# document in the sense of the shape's provenance check).
+# All items are lws-ucr:Proposed — submitted for WG consideration.
+# Validate: sh scripts/validate-ucr.sh   Generate: python3 scripts/generate-spec-md.py
+
+@prefix :        <https://jeswr.org/lws/ucr#> .
+@prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
+@prefix role:    <https://jeswr.org/ns/lws-ucr/roles#> .
+@prefix cat:     <https://jeswr.org/ns/lws-ucr/categories#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+#################################################################
+# Local-first and offline (cat:DataManagement)
+#################################################################
+
+:UC-offline-first-instant-load a lws-ucr:UseCase ;
+    dcterms:identifier "UC-offline-first-instant-load" ;
+    dcterms:title "Offline-First Instant Load"@en ;
+    lws-ucr:primaryActor role:AppDeveloper ;
+    lws-ucr:actor role:AppDeveloper , role:User ;
+    lws-ucr:goal "my app to paint instantly from a durable local cache and revalidate against the storage cheaply in the background"@en ;
+    lws-ucr:benefit "users never see a blank loading screen when a cache exists, online or offline, and revalidation costs almost nothing when nothing changed"@en ;
+    dcterms:description "The stale-while-revalidate pattern every offline-first app converges on (implemented in solid-offline as a service-worker layer): hydrate synchronously from cache, then revalidate. It depends on storage-side primitives — stable validators (ETags) so a conditional read of an unchanged resource costs a 304 and no body, and change notifications so caches are invalidated by push instead of blind polling."@en ;
+    lws-ucr:scenario :UC-offline-first-instant-load-main ;
+    lws-ucr:postcondition "Reopening the app with a warm cache renders immediately; a subsequent conditional read transfers no body when the resource is unchanged."@en ;
+    lws-ucr:category cat:DataManagement ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/solid-offline> ;
+    lws-ucr:motivates :REQ-offline-sync , :REQ-conditional-requests , :REQ-change-notifications .
+
+:UC-offline-first-instant-load-main a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:MainFlow ;
+    lws-ucr:steps (
+        "The user reopens the app; it renders synchronously from its durable local cache."
+        "In the background the app revalidates cached resources with conditional reads; unchanged resources return only a not-modified signal."
+        "The app subscribes to change notifications for the resources it caches; a push invalidates exactly the changed entries."
+        "Offline, the app serves the cache and queues writes for synchronization." ) .
+
+:UC-crdt-collaboration-log a lws-ucr:UseCase ;
+    dcterms:identifier "UC-crdt-collaboration-log" ;
+    dcterms:title "CRDT Update Log in Storage"@en ;
+    lws-ucr:primaryActor role:AppDeveloper ;
+    lws-ucr:goal "to persist a CRDT document as an append-only log of update resources plus a periodically compacted snapshot, with the storage as the sole synchronization point"@en ;
+    lws-ucr:benefit "multiple devices and collaborators converge without a dedicated sync server, without read-modify-write races, and crash/offline-safely"@en ;
+    dcterms:description "Two independent implementations converged on the same storage shape: a budgeting app's sync backend (jeswr/actual — an HLC-keyed append-only message log plus a merkle snapshot updated by compare-and-swap) and a Yjs persistence provider (jeswr/y-solid — binary update log plus compact()). The pattern needs: create-only writes (a new log entry must never overwrite an existing one), conditional snapshot replacement (CAS with retry), ordered container listing to replay the log, and a way to mark the log as internal non-indexable structure. Storage-level conflict handling is unnecessary — the CRDT semantics make appends commutative — but the primitives must not get in the way."@en ;
+    lws-ucr:precondition "The application's data type is CRDT-mergeable (appends commute)."@en ;
+    lws-ucr:scenario :UC-crdt-collaboration-log-main ;
+    lws-ucr:postcondition "Two replicas that each appended offline converge after both synchronize, with no lost updates."@en ;
+    lws-ucr:category cat:DataManagement ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/actual> , <https://github.com/jeswr/y-solid> ;
+    lws-ucr:motivates :REQ-conditional-requests , :REQ-collaborative-editing , :REQ-indexing-control .
+
+:UC-crdt-collaboration-log-main a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:MainFlow ;
+    lws-ucr:steps (
+        "Each device appends its local CRDT updates as new create-only resources in a log container."
+        "On sync, a device lists the log container, fetches entries it has not seen, and merges them (idempotently — re-merging is safe)."
+        "Periodically a device writes a compacted snapshot with a conditional replace, retrying on concurrent modification, then garbage-collects folded log entries."
+        "The log container is marked as internal structure so indexers skip it." ) .
+
+:UC-optimistic-concurrency a lws-ucr:UseCase ;
+    dcterms:identifier "UC-optimistic-concurrency" ;
+    dcterms:title "Optimistic, Non-Blocking Saves"@en ;
+    lws-ucr:primaryActor role:AppDeveloper ;
+    lws-ucr:actor role:AppDeveloper , role:User ;
+    lws-ucr:goal "user actions to update the interface immediately and persist asynchronously, with lost-update protection when the same resource changed underneath"@en ;
+    lws-ucr:benefit "the app feels instant, yet two writers (or two tabs) can never silently overwrite each other's changes"@en ;
+    dcterms:description "The standing UX invariant across the suite's apps (capital-notes, Pod Manager, solid-access-manager): mutate the UI at once, write behind a small saving indicator, and on write failure revert and explain. It is only safe if every replace can be made conditional on the version the client read (compare-and-swap via validators), and only implementable if the version-conflict rejection is structured enough to distinguish 'conflict — refetch and retry' from other failures. Access-control edits raise the stakes: solid-access-manager applies revocations with CAS specifically so concurrent policy edits cannot resurrect a revoked grant."@en ;
+    lws-ucr:scenario :UC-optimistic-concurrency-err ;
+    lws-ucr:category cat:DataManagement ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/capnote> , <https://github.com/jeswr/solid-access-manager> ,
+        <https://github.com/jeswr/solid-pod-manager> ;
+    lws-ucr:motivates :REQ-conditional-requests , :REQ-structured-errors .
+
+:UC-optimistic-concurrency-err a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:ErrorFlow ;
+    dcterms:description "Two tabs edit the same resource. Tab A saves first; tab B's conditional replace is rejected because the version it read is stale. Tab B refetches, reapplies the user's change over the new state (or surfaces a merge prompt), and retries. Without the conditional-write rejection, tab B would silently destroy tab A's save."@en .
+
+:UC-kv-mirror-hydrate a lws-ucr:UseCase ;
+    dcterms:identifier "UC-kv-mirror-hydrate" ;
+    dcterms:title "Key-Value Mirror with Atomic Hydration"@en ;
+    lws-ucr:primaryActor role:AppDeveloper ;
+    lws-ucr:goal "to mirror an app's key-value state (settings, drafts, small documents) as many small resources under a container, and to restore it on a new device as one consistent snapshot"@en ;
+    lws-ucr:benefit "any KV-shaped app gains pod persistence with no schema work, and a restore never applies a torn half-state"@en ;
+    dcterms:description "The KV-over-storage pattern appears twice independently: a generic unstorage driver (jeswr/unstorage-solid) mapping get/set/keys onto resources and container listings, and the Elk social client (jeswr/elk) mirroring its settings/drafts, whose restore path had to be hardened into an ATOMIC staged-batch hydrate — fetch all entries first, apply all-or-nothing — because applying entries one by one left the app in a torn state when a fetch failed mid-restore. Needs: efficient enumeration of container members (with pagination at size), cheap many-small-resource reads, and ideally batch or at-least-consistent multi-resource read semantics."@en ;
+    lws-ucr:scenario :UC-kv-mirror-hydrate-main ;
+    lws-ucr:postcondition "After hydration the local state equals a single point-in-time view of the mirrored container — never a mixture of two states."@en ;
+    lws-ucr:category cat:DataManagement ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/unstorage-solid> , <https://github.com/jeswr/elk> ;
+    lws-ucr:motivates :REQ-atomic-batch , :REQ-paginate-filter-sort , :REQ-conditional-requests .
+
+:UC-kv-mirror-hydrate-main a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:MainFlow ;
+    lws-ucr:steps (
+        "On login on a new device, the app lists the KV container and stages every entry locally without applying any."
+        "Only when every entry is fetched does the app apply the whole batch to its state in one step."
+        "Ongoing writes mirror individual keys as create-or-replace of individual resources."
+        "A failed restore leaves the prior local state untouched." ) .
+
+:UC-binary-asset-descriptor a lws-ucr:UseCase ;
+    dcterms:identifier "UC-binary-asset-descriptor" ;
+    dcterms:title "Binary Asset with Linked Descriptor"@en ;
+    lws-ucr:primaryActor role:AppDeveloper ;
+    lws-ucr:goal "to store an application's native binary or JSON artifact byte-exactly, with a small linked RDF descriptor carrying the metadata other apps need"@en ;
+    lws-ucr:benefit "the owning app round-trips its file with full fidelity while other apps can still discover, list and describe it without parsing the native format"@en ;
+    dcterms:description "The whiteboard fork (jeswr/excalidraw with the jeswr/solid-drawing model) stores each scene as the app's native file — which MUST round-trip byte-identical, or the app's own hashing/versioning breaks — paired with an RDF descriptor (title, thumbnail, schema version, pointer to the blob). The storage must (a) preserve non-RDF representations exactly as written, including content type, and (b) support associating descriptor metadata with a resource without touching its bytes. The same split recurs for media libraries and document stores."@en ;
+    lws-ucr:postcondition "A retrieved binary resource is byte-identical to what was stored, with the content type preserved."@en ;
+    lws-ucr:category cat:DataManagement ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/excalidraw> , <https://github.com/jeswr/solid-drawing> ;
+    lws-ucr:motivates :REQ-binary-fidelity , :REQ-paired-metadata .
+
+:UC-media-streaming a lws-ucr:UseCase ;
+    dcterms:identifier "UC-media-streaming" ;
+    dcterms:title "Media Playback from Storage"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User , role:AppDeveloper ;
+    lws-ucr:goal "to play music and video, and browse large photo collections, directly from my storage"@en ;
+    lws-ucr:benefit "my media library lives with me, not with a streaming platform, and still seeks, scrubs and thumbnails like one"@en ;
+    dcterms:description "Media apps over pods (the pod-music and pod-photos apps) need partial-content reads: seeking in an audio or video file is a byte-range request, not a full download; a photo grid needs to fetch many images efficiently. Without range support a seek re-downloads the file — unusable on large media. Derived representations (thumbnails, transcodes) also want a home that does not disturb the original (see the linked-descriptor use case)."@en ;
+    lws-ucr:category cat:DataManagement ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/pod-music> , <https://github.com/jeswr/pod-photos> ;
+    lws-ucr:motivates :REQ-range-requests , :REQ-binary-fidelity .
+
+:UC-replica-deletion-sync a lws-ucr:UseCase ;
+    dcterms:identifier "UC-replica-deletion-sync" ;
+    dcterms:title "Deletion Visibility for Replicas"@en ;
+    lws-ucr:primaryActor role:AppDeveloper ;
+    lws-ucr:goal "a replica that was offline to learn which resources were deleted while it was away"@en ;
+    lws-ucr:benefit "deletions propagate to every replica instead of silently resurrecting on the next push"@en ;
+    dcterms:description "A replication engine (jeswr/rxdb-solid, an RxDB replication plugin) cannot distinguish 'deleted upstream' from 'never existed' by observing absence: if a replica missed the deletion, its next push recreates the resource (the resurrection bug). The plugin resorts to app-level tombstone resources because the storage exposes no deletion signal. A protocol-level answer — tombstones, a deletion feed, or since-token change listing including deletes — serves every sync engine at once. Move markers (issue #195) are the same mechanism for renames."@en ;
+    lws-ucr:scenario :UC-replica-deletion-sync-err ;
+    lws-ucr:category cat:DataManagement ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/rxdb-solid> ;
+    lws-ucr:motivates :REQ-deletion-signaling , :REQ-offline-sync .
+
+:UC-replica-deletion-sync-err a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:ErrorFlow ;
+    dcterms:description "Device A deletes a document and syncs. Device B, offline during the deletion, comes back and pushes its full local set; the deleted document reappears for everyone. The deletion signal exists precisely to make this resurrection impossible."@en .
+
+:UC-durable-exit-save a lws-ucr:UseCase ;
+    dcterms:identifier "UC-durable-exit-save" ;
+    dcterms:title "Durable Save on Exit"@en ;
+    lws-ucr:primaryActor role:AppDeveloper ;
+    lws-ucr:goal "the final state of a document to be persisted reliably when the user closes the tab or app, within the tiny time budget the platform allows"@en ;
+    lws-ucr:benefit "closing the lid never loses the last minutes of work"@en ;
+    dcterms:description "Browsers give a closing page milliseconds and a strict payload budget (keepalive requests) for last-moment writes. The whiteboard fork (jeswr/excalidraw) implements a size-gated keepalive save with in-flight deduplication and clear-on-success. For this to work against a storage, small writes must be cheap (no multi-round-trip handshake on the hot path) and their success observable. This is a performance-envelope requirement on the write path, not a new primitive."@en ;
+    lws-ucr:category cat:DataManagement , cat:PerformanceUsability ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/excalidraw> ;
+    lws-ucr:motivates :REQ-performance-scalability , :REQ-conditional-requests .
+
+#################################################################
+# Cross-application interoperability (cat:ApplicationIntegration)
+#################################################################
+
+:UC-cross-app-interop a lws-ucr:UseCase ;
+    dcterms:identifier "UC-cross-app-interop" ;
+    dcterms:title "Cross-Application Data Interoperability"@en ;
+    lws-ucr:primaryActor role:AppDeveloper ;
+    lws-ucr:actor role:AppDeveloper , role:User ;
+    lws-ucr:goal "data written by one application to be readable and safely writable by every other application the user chooses"@en ;
+    lws-ucr:benefit "the user's chat history (or tasks, or bookmarks) is one corpus, not one silo per app"@en ;
+    dcterms:description "Reconciling chat messages across three incompatible app conventions into one canonical model (jeswr/solid-chat-interop, covering ActivityStreams 2.0, SolidOS LongChat and LibreChat) surfaced what interop actually takes: agreed vocabularies and shapes, defensive reading (a malformed literal written by one app must drop a field, not abort every other app's parse), asymmetric conventions (exactly one canonical reply edge, not two inverse ones), and attribution of which app wrote what. The storage protocol's contribution is the conventions registry: a discoverable, shared statement of where data of a given shape lives and which shapes apply (cf. the non-owner app choice of issue #120)."@en ;
+    lws-ucr:category cat:ApplicationIntegration ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/solid-chat-interop> , <https://github.com/w3c/lws-ucs/issues/120> ;
+    lws-ucr:motivates :REQ-serialization-format , :REQ-app-data-registry , :REQ-write-attribution .
+
+:UC-app-data-discovery a lws-ucr:UseCase ;
+    dcterms:identifier "UC-app-data-discovery" ;
+    dcterms:title "Discovering Where Data Lives"@en ;
+    lws-ucr:primaryActor role:AppDeveloper ;
+    lws-ucr:goal "to find where in a user's storage the data of a given class lives (their contacts, their tasks, their bookmarks), and to register where my app put its data"@en ;
+    lws-ucr:benefit "a newly authorized app finds existing data instead of starting an empty parallel world"@en ;
+    dcterms:description "The general-purpose manager (jeswr/solid-pod-manager) must locate every data class any app has stored; each suite app must register its containers so others (and the manager) find them — the type-index pattern. It must be authorized-only and non-leaky (an app allowed to see bookmarks must not learn that health data exists — issue #222), and needs bootstrap semantics: what happens when no registry exists yet."@en ;
+    lws-ucr:precondition "The app is authorized for the data class it queries the registry for."@en ;
+    lws-ucr:category cat:ApplicationIntegration ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/solid-pod-manager> ;
+    lws-ucr:motivates :REQ-app-data-registry .
+
+:UC-federated-task-dashboard a lws-ucr:UseCase ;
+    dcterms:identifier "UC-federated-task-dashboard" ;
+    dcterms:title "Federated Task Dashboard"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User , role:Collaborator ;
+    lws-ucr:goal "to see every task assigned to me in one view, across all the project storages I collaborate in"@en ;
+    lws-ucr:benefit "work assigned to me in ten different pods behaves like one work queue"@en ;
+    dcterms:description "An issue tracker whose issues live in project pods (jeswr/solid-issues over the shared jeswr/solid-task-model) plus a dashboard aggregating 'assigned to me' (Pod Manager) require: a shared task vocabulary, access-control-respecting reads across many storages, and change notifications so the dashboard stays current without polling every project pod. This is the concrete everyday shape of the federated-query requirement."@en ;
+    lws-ucr:category cat:ApplicationIntegration , cat:CollaborationCommunication ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/solid-issues> , <https://github.com/jeswr/solid-task-model> ;
+    lws-ucr:motivates :REQ-federated-queries , :REQ-change-notifications , :REQ-app-data-registry .
+
+:UC-legacy-app-migration a lws-ucr:UseCase ;
+    dcterms:identifier "UC-legacy-app-migration" ;
+    dcterms:title "Migrating an Existing App onto User Storage"@en ;
+    lws-ucr:primaryActor role:AppDeveloper ;
+    lws-ucr:goal "to replace an existing app's private database with user-controlled storage while keeping the app's UX intact"@en ;
+    lws-ucr:benefit "the fastest route to adoption: users keep the app they like and gain ownership of its data"@en ;
+    dcterms:description "Three production OSS apps were forked to pod persistence (jeswr/linkding bookmarks, jeswr/miniflux feed reading, jeswr/elk social): the browser app keeps its interface and swaps the persistence layer. What the migrations consistently needed from storage: full browser access from a foreign web origin (the app is not served by the storage provider), a stable application identity users can recognize at consent (per deployment origin), safe-by-default provisioning of the app's containers, and known serializations. Server-side components (the feed fetcher) additionally need the non-interactive service authentication the backend-integration story already covers."@en ;
+    lws-ucr:category cat:ApplicationIntegration ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/linkding> , <https://github.com/jeswr/miniflux> , <https://github.com/jeswr/elk> ;
+    lws-ucr:motivates :REQ-cors-browser-access , :REQ-app-identity , :REQ-serialization-format , :REQ-secure-defaults .
+
+:UC-workflow-automation a lws-ucr:UseCase ;
+    dcterms:identifier "UC-workflow-automation" ;
+    dcterms:title "Workflow Automation over Storage"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User , role:AutonomousAgent ;
+    lws-ucr:goal "my automation workflows (low-code pipelines, scheduled jobs) to read and write my storage as one step among many"@en ;
+    lws-ucr:benefit "my storage participates in the automation ecosystem — a new bookmark can trigger a pipeline; a pipeline can file data into my pod"@en ;
+    dcterms:description "A community node for a workflow platform (jeswr/n8n-nodes-solid) exposes storage CRUD to non-technical automation builders. Its hard requirements from the storage: credentials grantable to a WORKFLOW, scoped to a container subtree (the pipeline must not hold the user's full authority — the node enforces a pod-scope guard client-side today, which the server cannot verify); machine-actionable errors (a pipeline branches on 'conflict' vs 'forbidden' vs 'rate-limited'); and explicit rate-limit signalling with retry timing, since a fan-out pipeline hammers the storage in bursts."@en ;
+    lws-ucr:category cat:ApplicationIntegration ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/n8n-nodes-solid> ;
+    lws-ucr:motivates :REQ-scoped-access , :REQ-structured-errors , :REQ-rate-limit-signaling , :REQ-server-to-server-auth .
+
+:UC-ai-agent-access a lws-ucr:UseCase ;
+    dcterms:identifier "UC-ai-agent-access" ;
+    dcterms:title "AI Agent Access to Storage"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User , role:AutonomousAgent ;
+    lws-ucr:goal "to let an AI assistant read (and, where I say so, write) selected parts of my storage"@en ;
+    lws-ucr:benefit "my assistant works over my actual data while everything it does stays bounded and attributable to it — not to me"@en ;
+    dcterms:description "A protocol server exposing a pod to AI agents (jeswr/solid-mcp) ships read-only by default, with a fail-closed scope guard and per-hop redirect protection — all client-side, because the storage offers no way to issue an agent a credential that the STORAGE enforces as read-only-within-subtree. Agent access sharpens three needs: least-privilege scoping enforced server-side, audit attribution distinguishing the agent from the delegating user (the administrative-assistant requirement, mechanised), and revocation that kills the agent's authority instantly."@en ;
+    lws-ucr:scenario :UC-ai-agent-access-err ;
+    lws-ucr:category cat:ApplicationIntegration , cat:SecurityPrivacy ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/solid-mcp> ;
+    lws-ucr:motivates :REQ-scoped-access , :REQ-write-attribution , :REQ-auditable-trail .
+
+:UC-ai-agent-access-err a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:ErrorFlow ;
+    dcterms:description "The agent, misled by a prompt-injected instruction, attempts to read outside its granted subtree and then to exfiltrate via a redirect to a foreign host. The storage-enforced scope rejects the out-of-scope read regardless of what the agent's client-side guard does, and the attempt is attributed to the agent in the audit trail."@en .
+
+:UC-agent-memory a lws-ucr:UseCase ;
+    dcterms:identifier "UC-agent-memory" ;
+    dcterms:title "User-Owned Agent Memory"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User , role:AutonomousAgent ;
+    lws-ucr:goal "AI agents to keep their memory about me in MY storage rather than in each vendor's silo"@en ;
+    lws-ucr:benefit "memory becomes portable across agents and vendors, inspectable, and deletable by me"@en ;
+    dcterms:description "An agent-memory backend over pods (jeswr/solid-memory with an adapter for an agent framework, jeswr/openclaw-memory-solid): memory items are typed RDF, owner-private by default, carrying provenance of which agent generated each item. The storage needs are least-privilege agent credentials (an agent reads/writes only its memory container), provenance attribution per write, and the user's unilateral right to inspect and delete — which falls out of ordinary resource control once memory is IN the storage."@en ;
+    lws-ucr:category cat:ApplicationIntegration ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/solid-memory> , <https://github.com/jeswr/openclaw-memory-solid> ;
+    lws-ucr:motivates :REQ-scoped-access , :REQ-write-attribution .
+
+:UC-public-index-crawl a lws-ucr:UseCase ;
+    dcterms:identifier "UC-public-index-crawl" ;
+    dcterms:title "Crawling and Indexing Public Storage Data"@en ;
+    lws-ucr:primaryActor role:ServiceProvider ;
+    lws-ucr:actor role:ServiceProvider , role:User ;
+    lws-ucr:goal "to crawl and index publicly readable profiles and documents across storages, honouring each owner's indexing preferences, and to accept owner-initiated suggestions"@en ;
+    lws-ucr:benefit "people and data become findable across the decentralised web without a central platform"@en ;
+    dcterms:description "A WebID search platform (jeswr/solid-webid-index) crawls public profiles and lets owners push their own profile via an inbox notification for immediate (re)indexing. From the storage side this needs: clear public-readability semantics, machine-readable indexing consent (may this be indexed? — the selective-indexing declaration, outward-facing), an inbox to receive index-me suggestions, and polite-crawl affordances (rate-limit signalling, cheap conditional revalidation of unchanged profiles)."@en ;
+    lws-ucr:category cat:ApplicationIntegration , cat:AdvancedFeatures ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/solid-webid-index> ;
+    lws-ucr:motivates :REQ-inbox , :REQ-indexing-control , :REQ-rate-limit-signaling , :REQ-conditional-requests .
+
+#################################################################
+# Identity, authentication and trust (cat:IdentityAuthenticationTrust)
+#################################################################
+
+:UC-silent-session-restore a lws-ucr:UseCase ;
+    dcterms:identifier "UC-silent-session-restore" ;
+    dcterms:title "Silent Session Restore"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User , role:AppDeveloper ;
+    lws-ucr:goal "reopening an app to silently restore my authenticated session — no redirect, no popup, no re-login — until I log out or the grant is revoked"@en ;
+    lws-ucr:benefit "apps over my storage feel like apps, not like a login treadmill"@en ;
+    dcterms:description "The single most re-implemented piece of client plumbing in the suite (extracted to jeswr/solid-session-restore after being hand-rolled per app, then hardened again in the Elk and Excalidraw forks): persist a scoped refresh credential per user, restore the session by a silent token refresh on load, guard against restoring another user's session on a shared device (cross-user generation guard), and fall back to interactive login only on genuine failure. The protocol-level need: an auth flow with a persistable, silently refreshable, individually revocable credential — with sensitive-operation step-up (the passkey re-authentication profile) composing on top."@en ;
+    lws-ucr:scenario :UC-silent-session-restore-main ;
+    lws-ucr:category cat:IdentityAuthenticationTrust ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/solid-session-restore> , <https://github.com/jeswr/elk> ;
+    lws-ucr:motivates :REQ-silent-reauth .
+
+:UC-silent-session-restore-main a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:MainFlow ;
+    lws-ucr:steps (
+        "The user logs into the app once; the app persists a scoped refresh credential bound to that user."
+        "Days later the user reopens the app; it silently refreshes the session and lands on the actual page, showing only a brief restoring state."
+        "The user revokes the app's grant from another device; the next refresh fails cleanly and the app returns to login."
+        "On a shared device, a different user's login evicts the stored credential rather than restoring the wrong identity." ) .
+
+:UC-recognizable-app-identity a lws-ucr:UseCase ;
+    dcterms:identifier "UC-recognizable-app-identity" ;
+    dcterms:title "Recognizable Application Identity"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User , role:AppDeveloper ;
+    lws-ucr:goal "the consent screen to name the actual application I am authorizing — stably across sessions and deployments"@en ;
+    lws-ucr:benefit "I can make a meaningful trust decision, recognise the app in my grant list later, and revoke exactly it"@en ;
+    dcterms:description "With throwaway dynamic client registration the consent screen shows a random opaque identifier; the user learns nothing and the grant list is unreviewable. Every deployed suite app moved to a stable application identifier document (name, logo, redirect URIs) served by the app — with the operational gotcha that the identity is per deployment ORIGIN (a Vercel preview and production are different apps to the authorization server). Grants keyed to the stable app identity are what make the access-overview dashboard's by-application view possible."@en ;
+    lws-ucr:category cat:IdentityAuthenticationTrust ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/linkding> , <https://github.com/jeswr/solid-pod-manager> ;
+    lws-ucr:motivates :REQ-app-identity .
+
+#################################################################
+# Access control and sharing (cat:AccessControlSharing)
+#################################################################
+
+:UC-permission-aware-ui a lws-ucr:UseCase ;
+    dcterms:identifier "UC-permission-aware-ui" ;
+    dcterms:title "Permission-Aware User Interface"@en ;
+    lws-ucr:primaryActor role:AppDeveloper ;
+    lws-ucr:goal "to know, when reading a resource, which operations the current user may perform on it"@en ;
+    lws-ucr:benefit "the UI shows an edit button exactly when editing will succeed — no dead buttons, no trial-and-error writes"@en ;
+    dcterms:description "A file-manager UI (jeswr/solid-pod-manager) renders edit/delete/share affordances per resource; an access-management UI (jeswr/solid-access-manager) additionally must not let the user revoke their own control and lock themselves out — both need the server's effective-permission verdict for the CURRENT user on each resource, returned cheaply alongside the read rather than by client-side re-evaluation of the policy graph (which duplicates, and can contradict, the server's logic)."@en ;
+    lws-ucr:category cat:AccessControlSharing ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/solid-pod-manager> , <https://github.com/jeswr/solid-access-manager> ;
+    lws-ucr:motivates :REQ-permission-introspection .
+
+:UC-fail-closed-provisioning a lws-ucr:UseCase ;
+    dcterms:identifier "UC-fail-closed-provisioning" ;
+    dcterms:title "Fail-Closed Provisioning of App Data"@en ;
+    lws-ucr:primaryActor role:AppDeveloper ;
+    lws-ucr:actor role:AppDeveloper , role:User ;
+    lws-ucr:goal "the containers my app creates to be owner-private from the first instant, with no window in which they are readable more broadly"@en ;
+    lws-ucr:benefit "a crash, race or misconfiguration during setup can never leave user data exposed"@en ;
+    dcterms:description "Every pod-persisting fork in the suite (bookmarks, feeds, social, finance, whiteboards) independently converged on the same hardened provisioning ritual: create the container, write an owner-only access policy FIRST, verify it, only then write data — plus create-only conditions so two concurrent setups cannot half-overwrite each other. The ritual exists because default inherited permissions may be broader than the app's data warrants and policy-write is a separate, failable step. The protocol-level fix is atomic create-with-policy (or default-private-until-policy semantics): make the safe path the only path."@en ;
+    lws-ucr:scenario :UC-fail-closed-provisioning-err ;
+    lws-ucr:postcondition "At no observable instant does the new container's data have broader access than the policy the app requested."@en ;
+    lws-ucr:category cat:AccessControlSharing , cat:SecurityPrivacy ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/linkding> , <https://github.com/jeswr/miniflux> , <https://github.com/jeswr/actual> ;
+    lws-ucr:motivates :REQ-secure-defaults , :REQ-conditional-requests .
+
+:UC-fail-closed-provisioning-err a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:ErrorFlow ;
+    dcterms:description "The app creates its container inside a parent whose inherited policy is public-readable, intending to write a stricter policy next; the app crashes in between. Under create-with-policy (or private-until-policy) semantics this exposure window cannot exist; without them, the user's financial data was public for the duration of the outage."@en .
+
+#################################################################
+# Operations (cat:StorageResourceManagement / PerformanceUsability)
+#################################################################
+
+:UC-storage-usage-insight a lws-ucr:UseCase ;
+    dcterms:identifier "UC-storage-usage-insight" ;
+    dcterms:title "Storage Usage and Quota Insight"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User , role:AppDeveloper ;
+    lws-ucr:goal "to see how much space my storage uses, what is using it, and how much I have left"@en ;
+    lws-ucr:benefit "I can manage my storage before hitting a hard limit, and apps can warn me before a large write fails"@en ;
+    dcterms:description "A storage manager (jeswr/solid-pod-manager) has no standard way to render a usage view: per-container sizes require walking the whole tree, and quota limits are provider-proprietary. Apps writing large data (media, scene files) equally need to distinguish 'quota exceeded' from other write failures, before or at write time. Needs: discoverable usage/quota metadata on the storage description, per-container aggregate size, and a structured quota-exceeded error."@en ;
+    lws-ucr:category cat:StorageResourceManagement ;
+    lws-ucr:status lws-ucr:Proposed ;
+    lws-ucr:sourceIssue <https://github.com/jeswr/solid-pod-manager> ;
+    lws-ucr:motivates :REQ-quota-discovery , :REQ-structured-errors .

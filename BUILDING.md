@@ -28,3 +28,21 @@ Note that the server starts on port 8080. Now you can run `respec` to generate t
 $ respec --src http://localhost:8080/spec/index.html --out index.html
 ```
 
+
+## The UC&R corpus (generated markdown)
+
+`spec/user-stories.md`, `spec/requirements.md` and `spec/requirements-matrix.md` are
+**generated** from the machine-readable corpus in `ucr/*.ttl` (see
+[`docs/ontology.md`](docs/ontology.md)). Do not edit them by hand — edit the Turtle and
+regenerate before building the spec:
+
+```
+# validate the corpus (pySHACL: pip install pyshacl)
+$ sh scripts/validate-ucr.sh
+
+# regenerate the markdown from the corpus (rdflib, installed with pyshacl)
+$ python3 scripts/generate-spec-md.py
+
+# verify the committed markdown matches the corpus (CI-style drift check)
+$ python3 scripts/generate-spec-md.py --check
+```

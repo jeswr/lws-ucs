@@ -16,7 +16,7 @@
 
 :UC-large-file-uploads a lws-ucr:UseCase ;
     dcterms:identifier "UC-large-file-uploads" ;
-    dcterms:title "Large file uploads"@en ;
+    dcterms:title "Large File Uploads"@en ;
     lws-ucr:primaryActor role:User ;
     lws-ucr:actor role:User ;
     lws-ucr:goal "to upload very large files to my storage, resuming an interrupted transfer where it left off"@en ;
@@ -47,7 +47,7 @@
 
 :REQ-resumable-uploads a lws-ucr:Requirement , earl:TestRequirement ;
     dcterms:identifier "REQ-resumable-uploads" ;
-    dcterms:title "Resumable large data transfers"@en ;
+    dcterms:title "Resumable Large Data Transfers"@en ;
     dcterms:description "The protocol MUST provide a mechanism by which a client can resume an interrupted resource upload without retransmitting bytes the server has already durably received, and a partially transferred representation MUST NOT be observable at the target URI."@en ;
     lws-ucr:requirementType lws-ucr:Functional ;
     lws-ucr:priority lws-ucr:Should ;

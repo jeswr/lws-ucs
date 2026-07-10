@@ -14,9 +14,18 @@
 set -eu
 cd "$(dirname "$0")/.."
 
-PYSHACL="${PYSHACL:-pyshacl}"
 PYTHON="${PYTHON:-python3}"
-command -v "$PYSHACL" >/dev/null 2>&1 || { echo "pyshacl not found (pip install pyshacl, or set PYSHACL=)" >&2; exit 2; }
+if [ -n "${PYSHACL:-}" ]; then
+  command -v "$PYSHACL" >/dev/null 2>&1 || { echo "PYSHACL=$PYSHACL not found" >&2; exit 2; }
+elif command -v pyshacl >/dev/null 2>&1; then
+  PYSHACL=pyshacl
+elif "$PYTHON" -c "import pyshacl" >/dev/null 2>&1; then
+  # module installed but no console script on PATH — invoke via the interpreter
+  pyshacl_module() { "$PYTHON" -m pyshacl "$@"; }
+  PYSHACL=pyshacl_module
+else
+  echo "pyshacl not found (pip install pyshacl, or set PYSHACL=)" >&2; exit 2
+fi
 
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
@@ -32,10 +41,34 @@ for f in $VOCAB shapes/lws-ucr-shapes.ttl; do
 done
 
 echo
+echo "== UC&R corpus (ucr/*.ttl, merged — MUST conform) =="
+# The full Stage-2 corpus: current document port + issue-triage items +
+# app-derived use cases/requirements + the graduated Stage-1 instances.
+# Validated as ONE merged graph because motivatedBy/motivates edges cross
+# files; per-file Turtle syntax is checked first so a parse error names
+# its file.
+for f in ucr/*.ttl; do
+  [ -f "$f" ] || continue
+  if "$PYTHON" -c "import sys, rdflib; g = rdflib.Graph(); g.parse(sys.argv[1], format='turtle'); print(f'{sys.argv[1]}: OK ({len(g)} triples)')" "$f"; then :; else
+    echo "$f: PARSE FAILED" >&2; status=1
+  fi
+done
+if [ "$status" -eq 0 ]; then
+  cat $VOCAB ucr/*.ttl > "$tmp/corpus.ttl"
+  if "$PYSHACL" -s shapes/lws-ucr-shapes.ttl -df turtle -sf turtle --allow-warnings "$tmp/corpus.ttl"; then
+    echo "corpus: CONFORMS"
+  else
+    echo "  UNEXPECTED: UC&R corpus did NOT conform" >&2; status=1
+  fi
+else
+  echo "  (skipping corpus SHACL run — fix the parse errors above first)" >&2
+fi
+
+echo
 echo "== Positive examples (MUST conform) =="
-# The three re-described stories (examples/*.ttl) plus synthetic shape-proving
-# positives (examples/positive/*.ttl).
-for ex in examples/*.ttl examples/positive/*.ttl; do
+# Synthetic shape-proving positives (examples/positive/*.ttl); the three
+# Stage-1 re-described stories graduated into the ucr/ corpus above.
+for ex in examples/positive/*.ttl; do
   [ -f "$ex" ] || continue
   echo "-- $ex"
   cat $VOCAB "$ex" > "$tmp/data.ttl"

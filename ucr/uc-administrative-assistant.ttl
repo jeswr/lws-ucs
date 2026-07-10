@@ -14,7 +14,7 @@
 
 :UC-administrative-assistant a lws-ucr:UseCase ;
     dcterms:identifier "UC-administrative-assistant" ;
-    dcterms:title "Administrative assistant acting for a department head"@en ;
+    dcterms:title "Administrative Assistant"@en ;
     lws-ucr:primaryActor role:DataOwner ;
     lws-ucr:actor role:DataOwner , role:Delegate ;
     lws-ucr:goal "to delegate a specific subset of my permissions (e.g. calendar management, correspondence screening) to my assistant"@en ;
@@ -46,7 +46,7 @@
 
 :REQ-delegation-of-access-rights a lws-ucr:Requirement ;
     dcterms:identifier "REQ-delegation-of-access-rights" ;
-    dcterms:title "Delegation of access rights"@en ;
+    dcterms:title "Delegation of Access Rights"@en ;
     dcterms:description "The protocol MUST allow an entity to delegate a proper subset of its access rights to another entity, such that the delegate's actions are authorized by the delegation, remain attributable to the delegate, and the delegation can be revoked independently of any other grant."@en ;
     lws-ucr:requirementType lws-ucr:Functional ;
     lws-ucr:priority lws-ucr:Must ;
@@ -57,7 +57,7 @@
 
 :REQ-auditable-trail a lws-ucr:Requirement ;
     dcterms:identifier "REQ-auditable-trail" ;
-    dcterms:title "Auditable trail of delegated and shared access"@en ;
+    dcterms:title "Auditable Trail"@en ;
     dcterms:description "The protocol MUST enable a resource controller to obtain an auditable record of accesses to their resources, including, for delegated access, the identity of the acting delegate and the grant under which they acted."@en ;
     lws-ucr:requirementType lws-ucr:Security ;
     lws-ucr:priority lws-ucr:Should ;

@@ -71,6 +71,28 @@
         <li>Develop a comprehensive view of the potential of the Linked Web technologies.</li>
         <li>Clarify which use cases have been submitted, to avoid redundancy, where possible, in future use case submissions.</li>
       </ul>
+      <p>
+      The use cases and requirements in this document are maintained as a <strong>machine-readable corpus</strong>:
+      every use case and requirement is an RDF instance of the
+      <a href="https://github.com/jeswr/lws-ucs/blob/main/docs/ontology.md"><code>lws-ucr</code> ontology</a>
+      (stored under <a href="https://github.com/jeswr/lws-ucs/tree/main/ucr"><code>ucr/</code></a>),
+      validated by SHACL shapes that enforce, among other things, that every requirement traces to at
+      least one motivating use case, that actors and categories come from shared controlled vocabularies,
+      and that every item has a stable identifier. The prose below is <em>generated</em> from that corpus
+      (<code>scripts/generate-spec-md.py</code>); the Turtle is the source of truth. Items are marked with
+      their lifecycle status: <strong>Accepted</strong> items restate the previously published document,
+      while <strong>Proposed</strong> items are new submissions — triaged from open issues (see the
+      <a href="https://github.com/jeswr/lws-ucs/blob/main/docs/issue-triage.md">issue-triage record</a>) or
+      derived from deployed applications — awaiting review.
+      </p>
+    </section>
+    <section id="conformance">
+      <p>
+      This document is a non-normative use-cases-and-requirements Note. The uppercase
+      [[RFC2119]] keywords in the Requirements section quote <em>proposed requirements on the
+      future LWS protocol</em> — they state what the protocol under development is being asked
+      to mandate, and impose no conformance criteria on any implementation of this document.
+      </p>
     </section>
     <section id="glossary">
       <h2>Glossary</h2>
@@ -84,7 +106,7 @@
     </section>
     <section id="requirements">
       <h2>Requirements</h2>
-      <p>The following requirements were identified and sufficient to satisfy the use cases above. This is a non-normative document and the workgroup may decide that some requirements are out of scope.</p>
+      <p>The following requirements were identified and sufficient to satisfy the use cases above. This is a non-normative document and the workgroup may decide that some requirements are out of scope. Each requirement's traceability to its motivating use cases is machine-checked in the corpus; the table below is generated from those links.</p>
       <div data-include="requirements-matrix.md" data-include-format="markdown" data-include-replace="true"></div>
       <div data-include="requirements.md" data-include-format="markdown" data-include-replace="true"></div>
     </section>

@@ -17,7 +17,7 @@
 
 :UC-storage-portability a lws-ucr:UseCase ;
     dcterms:identifier "UC-storage-portability" ;
-    dcterms:title "Move between service providers without loss"@en ;
+    dcterms:title "Portable Storage"@en ;
     lws-ucr:primaryActor role:User ;
     lws-ucr:actor role:User ;
     lws-ucr:goal "to move my storage between providers, or self-host it, without losing data, identifiers, or standing access arrangements"@en ;
@@ -55,7 +55,7 @@
 
 :REQ-storage-portability a lws-ucr:Requirement ;
     dcterms:identifier "REQ-storage-portability" ;
-    dcterms:title "Storage portability"@en ;
+    dcterms:title "Storage Portability"@en ;
     dcterms:description "The protocol MUST enable an entity to move an entire storage between providers such that resource identity, data integrity, standing access grants, and public availability of published resources are preserved, and the former provider is released of responsibility."@en ;
     lws-ucr:requirementType lws-ucr:Interop ;
     lws-ucr:priority lws-ucr:Must ;

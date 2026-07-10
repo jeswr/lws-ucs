@@ -1,0 +1,670 @@
+# AUTHORED-BY Claude Fable
+# The current spec/user-stories.md corpus re-described with the lws-ucr ontology
+# (Stage 2 of the UC&R rewrite). Every story in the document as of main@9bb2340
+# is here as a lws-ucr:UseCase, preserving its goal ("I want ..."), benefit
+# ("so that ..."), context narrative and issue provenance. Three stories live in
+# their own files (graduated Stage-1 examples): ucr/uc-storage-portability.ttl
+# (Portable Storage), ucr/uc-large-file-uploads.ttl (Large File Uploads),
+# ucr/uc-administrative-assistant.ttl (Administrative Assistant).
+# Additionally, two use cases are RECONSTRUCTED here (marked in their
+# description): the requirements document back-references the stories
+# "Globally Unique Identifiers" and "Delegation of Control" by name, but no
+# such stories exist in user-stories.md — exactly the dangling-reference class
+# the machine-checked motivatedBy chain exists to catch.
+# The human-readable document is GENERATED from this corpus:
+#   python3 scripts/generate-spec-md.py
+# Validate: sh scripts/validate-ucr.sh
+
+@prefix :        <https://jeswr.org/lws/ucr#> .
+@prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
+@prefix role:    <https://jeswr.org/ns/lws-ucr/roles#> .
+@prefix cat:     <https://jeswr.org/ns/lws-ucr/categories#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+#################################################################
+# Data management
+#################################################################
+
+:UC-generic-storage a lws-ucr:UseCase ;
+    dcterms:identifier "UC-generic-storage" ;
+    dcterms:title "Generic Storage"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "a format-agnostic online storage system that supports any type of resource, so I can perform create, read, update and delete — including metadata and access-control modifications, and recovery of previous versions — from any device at any time"@en ;
+    lws-ucr:benefit "I have seamless data management across devices and full control over my resources"@en ;
+    dcterms:description "The foundational storage story: any resource type, full CRUD including metadata and access-control state, version recovery, device-independent."@en ;
+    lws-ucr:category cat:DataManagement ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/117> , <https://github.com/w3c/lws-ucs/issues/97> ,
+        <https://github.com/w3c/lws-ucs/issues/60> , <https://github.com/w3c/lws-ucs/issues/63> ,
+        <https://github.com/w3c/lws-ucs/issues/62> , <https://github.com/w3c/lws-ucs/issues/69> ;
+    lws-ucr:motivates :REQ-resource-crud , :REQ-resource-versioning .
+
+:UC-offline-data-access a lws-ucr:UseCase ;
+    dcterms:identifier "UC-offline-data-access" ;
+    dcterms:title "Offline Data Access"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "to access and modify my data offline, with automatic synchronization upon reconnection"@en ;
+    lws-ucr:benefit "I can work without a network and avoid data corruption or conflicts"@en ;
+    dcterms:description "Offline support is vital for users in areas with unreliable connectivity."@en ;
+    lws-ucr:category cat:DataManagement ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/138> , <https://github.com/w3c/lws-ucs/issues/64> ,
+        <https://github.com/w3c/lws-ucs/issues/65> , <https://github.com/w3c/lws-ucs/issues/67> ;
+    lws-ucr:motivates :REQ-offline-sync .
+
+#################################################################
+# Access control and sharing
+#################################################################
+
+:UC-sharing-access a lws-ucr:UseCase ;
+    dcterms:identifier "UC-sharing-access" ;
+    dcterms:title "Sharing Access"@en ;
+    lws-ucr:primaryActor role:DataOwner ;
+    lws-ucr:actor role:DataOwner , role:Collaborator ;
+    lws-ucr:goal "to grant and revoke fine-grained permissions on my resources"@en ;
+    lws-ucr:benefit "collaborators have appropriate access and receive notifications when their permissions change"@en ;
+    dcterms:description "Granular control ensures secure and tailored data sharing."@en ;
+    lws-ucr:category cat:AccessControlSharing ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/7> , <https://github.com/w3c/lws-ucs/issues/27> ,
+        <https://github.com/w3c/lws-ucs/issues/116> , <https://github.com/w3c/lws-ucs/issues/148> ,
+        <https://github.com/w3c/lws-ucs/issues/120> , <https://github.com/w3c/lws-ucs/issues/98> ;
+    lws-ucr:motivates :REQ-data-sharing .
+
+:UC-permission-change-notifications a lws-ucr:UseCase ;
+    dcterms:identifier "UC-permission-change-notifications" ;
+    dcterms:title "Notifications for Permission Changes"@en ;
+    lws-ucr:primaryActor role:Collaborator ;
+    lws-ucr:goal "to receive notifications when my permissions on a resource are granted, revoked, or modified"@en ;
+    lws-ucr:benefit "I am informed about changes to my access rights in a timely manner"@en ;
+    dcterms:description "Timely notifications help collaborators stay updated on their access to shared resources, enhancing collaboration and security. Issue #205 extends this to any agent being alerted when it is added to or removed from access control — including, under attribute-based access control, notifying the attribute's issuer."@en ;
+    lws-ucr:category cat:AccessControlSharing ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/116> , <https://github.com/w3c/lws-ucs/issues/78> ,
+        <https://github.com/w3c/lws-ucs/issues/205> ;
+    lws-ucr:motivates :REQ-change-notifications .
+
+:UC-profile-sharing a lws-ucr:UseCase ;
+    dcterms:identifier "UC-profile-sharing" ;
+    dcterms:title "Profile Sharing"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "to maintain multiple profiles with distinct access controls"@en ;
+    lws-ucr:benefit "I can share specific information while keeping other data private"@en ;
+    dcterms:description "Multiple profiles support different personas or contexts (e.g., work vs. personal). Issue #192 asks for this use case to be written out fully in support of the profile-management requirement: the elaboration here — distinct identifiers, metadata namespaces and access-control rules per profile — is that write-up."@en ;
+    lws-ucr:scenario :UC-profile-sharing-main ;
+    lws-ucr:category cat:AccessControlSharing ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/29> , <https://github.com/w3c/lws-ucs/issues/57> ,
+        <https://github.com/w3c/lws-ucs/issues/192> ;
+    lws-ucr:motivates :REQ-data-sharing , :REQ-profile-management .
+
+:UC-profile-sharing-main a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:MainFlow ;
+    lws-ucr:steps (
+        "The user creates a professional profile exposing employment and contact data, and a personal profile exposing social data."
+        "Each profile has its own identifier and its own access-control rules; the two are not linked by default."
+        "A colleague resolving the professional identifier sees only the professional profile's data."
+        "The user grants a friend access under the personal profile; the friend never learns the professional identifier exists." ) .
+
+:UC-group-sharing a lws-ucr:UseCase ;
+    dcterms:identifier "UC-group-sharing" ;
+    dcterms:title "Group Sharing"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User , role:Collaborator ;
+    lws-ucr:goal "to share data with dynamic groups (e.g., event attendees)"@en ;
+    lws-ucr:benefit "membership and permissions update automatically as the group evolves"@en ;
+    dcterms:description "This simplifies access management for temporary or changing collaborations. A group or organization must itself be able to be a data owner (issue #38)."@en ;
+    lws-ucr:category cat:AccessControlSharing ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/38> , <https://github.com/w3c/lws-ucs/issues/102> ;
+    lws-ucr:motivates :REQ-data-sharing , :REQ-group-access-control .
+
+:UC-context-aware-access-policies a lws-ucr:UseCase ;
+    dcterms:identifier "UC-context-aware-access-policies" ;
+    dcterms:title "Context-Aware Access Policies"@en ;
+    lws-ucr:primaryActor role:Administrator ;
+    lws-ucr:goal "to enforce access policies based on contextual factors like time or geolocation or relative location (near Bob)"@en ;
+    lws-ucr:benefit "access to data adapts dynamically to real-world conditions"@en ;
+    dcterms:description "Context-aware policies enhance security and flexibility."@en ;
+    lws-ucr:category cat:AccessControlSharing ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/17> , <https://github.com/w3c/lws-ucs/issues/147> ,
+        <https://github.com/w3c/lws-ucs/issues/94> ;
+    lws-ucr:motivates :REQ-contextual-access-control .
+
+:UC-health-record-access a lws-ucr:UseCase ;
+    dcterms:identifier "UC-health-record-access" ;
+    dcterms:title "Health Record Access"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User , role:Delegate , role:AutonomousAgent ;
+    lws-ucr:goal "to share specific health records with an AI assistant using delegated authorization"@en ;
+    lws-ucr:benefit "I can get a second opinion, with audit logs ensuring accountability"@en ;
+    dcterms:description "A patient shares selected health records with an AI assistant under a delegated, audited authorization — secure, accountable health data sharing for informed decisions."@en ;
+    lws-ucr:category cat:AccessControlSharing ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/11> , <https://github.com/w3c/lws-ucs/issues/46> ,
+        <https://github.com/w3c/lws-ucs/issues/54> ;
+    lws-ucr:motivates :REQ-data-sharing , :REQ-delegation-of-access-rights ,
+        :REQ-access-request-handling , :REQ-auditable-trail .
+
+#################################################################
+# Collaboration and communication
+#################################################################
+
+:UC-meeting-scheduling a lws-ucr:UseCase ;
+    dcterms:identifier "UC-meeting-scheduling" ;
+    dcterms:title "Meeting Scheduling"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User , role:Collaborator ;
+    lws-ucr:goal "to schedule meetings directly through my storage, with conflict detection for online and offline scenarios"@en ;
+    lws-ucr:benefit "I avoid double-booking"@en ;
+    dcterms:description "Integrated scheduling boosts productivity and coordination."@en ;
+    lws-ucr:category cat:CollaborationCommunication ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/3> , <https://github.com/w3c/lws-ucs/issues/42> ;
+    lws-ucr:motivates :REQ-inbox .
+
+:UC-real-time-notifications a lws-ucr:UseCase ;
+    dcterms:identifier "UC-real-time-notifications" ;
+    dcterms:title "Real-Time Notifications"@en ;
+    lws-ucr:primaryActor role:Collaborator ;
+    lws-ucr:goal "real-time notifications when resources I access are updated"@en ;
+    lws-ucr:benefit "I stay informed without manual checks"@en ;
+    dcterms:description "Timely updates enhance collaboration efficiency."@en ;
+    lws-ucr:category cat:CollaborationCommunication ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/32> , <https://github.com/w3c/lws-ucs/issues/79> ;
+    lws-ucr:motivates :REQ-change-notifications .
+
+:UC-application-notifications a lws-ucr:UseCase ;
+    dcterms:identifier "UC-application-notifications" ;
+    dcterms:title "Application Notifications"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "email or web push notifications for storage activity"@en ;
+    lws-ucr:benefit "I remain aware of important events"@en ;
+    dcterms:description "Notifications keep users engaged with their data."@en ;
+    lws-ucr:category cat:CollaborationCommunication ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/100> ;
+    lws-ucr:motivates :REQ-change-notifications .
+
+:UC-universal-communication a lws-ucr:UseCase ;
+    dcterms:identifier "UC-universal-communication" ;
+    dcterms:title "Universal Communication"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "direct messaging channels with other storage owners"@en ;
+    lws-ucr:benefit "I can collaborate seamlessly within the platform"@en ;
+    dcterms:description "Built-in communication strengthens user interaction."@en ;
+    lws-ucr:category cat:CollaborationCommunication ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/99> , <https://github.com/w3c/lws-ucs/issues/22> ;
+    lws-ucr:motivates :REQ-inbox .
+
+:UC-polling a lws-ucr:UseCase ;
+    dcterms:identifier "UC-polling" ;
+    dcterms:title "Polling"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "to create and manage polls within my storage"@en ;
+    lws-ucr:benefit "I can gather opinions and feedback from others"@en ;
+    dcterms:description "Polls support decision-making and community engagement."@en ;
+    lws-ucr:category cat:CollaborationCommunication ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/144> .
+
+:UC-semantic-collaboration a lws-ucr:UseCase ;
+    dcterms:identifier "UC-semantic-collaboration" ;
+    dcterms:title "Semantic Collaboration"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User , role:Collaborator ;
+    lws-ucr:goal "to co-author structured content with others using permanent URIs and flexible permissions"@en ;
+    lws-ucr:benefit "collaboration is efficient and traceable"@en ;
+    dcterms:description "This enables advanced use cases like shared knowledge bases."@en ;
+    lws-ucr:category cat:CollaborationCommunication ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/146> , <https://github.com/w3c/lws-ucs/issues/98> ;
+    lws-ucr:motivates :REQ-collaborative-editing .
+
+#################################################################
+# Application integration
+#################################################################
+
+:UC-personal-information-management a lws-ucr:UseCase ;
+    dcterms:identifier "UC-personal-information-management" ;
+    dcterms:title "Personal Information Management"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "to manage my personal data in my storage and integrate it with non-LWS apps via some data transformation"@en ;
+    lws-ucr:benefit "I can use various apps without creating data silos"@en ;
+    dcterms:description "This promotes interoperability and user control."@en ;
+    lws-ucr:category cat:ApplicationIntegration ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/2> ;
+    lws-ucr:motivates :REQ-serialization-format , :REQ-personal-data-projection .
+
+:UC-byod-apps a lws-ucr:UseCase ;
+    dcterms:identifier "UC-byod-apps" ;
+    dcterms:title "'Bring Your Own Data' Apps"@en ;
+    lws-ucr:primaryActor role:AppDeveloper ;
+    lws-ucr:actor role:AppDeveloper , role:User ;
+    lws-ucr:goal "my applications to store data in the user's storage, with support for CRUD operations and store discovery"@en ;
+    lws-ucr:benefit "users retain ownership and control of their data"@en ;
+    dcterms:description "This shifts data ownership from apps to users."@en ;
+    lws-ucr:category cat:ApplicationIntegration ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/12> , <https://github.com/w3c/lws-ucs/issues/120> ;
+    lws-ucr:motivates :REQ-self-descriptive-apis .
+
+:UC-digital-goods-delivery a lws-ucr:UseCase ;
+    dcterms:identifier "UC-digital-goods-delivery" ;
+    dcterms:title "Digital Goods Delivery"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User , role:ServiceProvider ;
+    lws-ucr:goal "secure delivery of digital goods (e.g., software, media) with confirmation receipts"@en ;
+    lws-ucr:benefit "providers can deliver assets with minimal intervention"@en ;
+    dcterms:description "This ensures reliable digital product delivery."@en ;
+    lws-ucr:category cat:ApplicationIntegration ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/14> ;
+    lws-ucr:motivates :REQ-auditable-trail .
+
+:UC-data-integration a lws-ucr:UseCase ;
+    dcterms:identifier "UC-data-integration" ;
+    dcterms:title "Data Integration"@en ;
+    lws-ucr:primaryActor role:AppDeveloper ;
+    lws-ucr:goal "a standardized API to combine data from multiple sources"@en ;
+    lws-ucr:benefit "integrating diverse datasets is straightforward and efficient"@en ;
+    dcterms:description "Simplified integration reduces development complexity."@en ;
+    lws-ucr:category cat:ApplicationIntegration ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/26> , <https://github.com/w3c/lws-ucs/issues/53> ,
+        <https://github.com/w3c/lws-ucs/issues/88> , <https://github.com/w3c/lws-ucs/issues/106> ;
+    lws-ucr:motivates :REQ-serialization-format , :REQ-federated-queries .
+
+:UC-business-data-access a lws-ucr:UseCase ;
+    dcterms:identifier "UC-business-data-access" ;
+    dcterms:title "Business Data Access"@en ;
+    lws-ucr:primaryActor role:DataOwner ;
+    lws-ucr:goal "clear enforcement rules for data sharing"@en ;
+    lws-ucr:benefit "enterprise integrations comply with organizational policies"@en ;
+    dcterms:description "A business user needs enterprise data sharing (granting and requesting access to business data) to comply with organizational policy — secure enterprise use cases."@en ;
+    lws-ucr:category cat:ApplicationIntegration ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/27> , <https://github.com/w3c/lws-ucs/issues/28> ;
+    lws-ucr:motivates :REQ-access-request-handling .
+
+#################################################################
+# Advanced features
+#################################################################
+
+:UC-timeseries-storage a lws-ucr:UseCase ;
+    dcterms:identifier "UC-timeseries-storage" ;
+    dcterms:title "Timeseries Storage"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "to store timeseries data with resolution limits and multidimensional analysis support"@en ;
+    lws-ucr:benefit "I can efficiently analyze trends over time"@en ;
+    dcterms:description "This is critical for applications like IoT or analytics."@en ;
+    lws-ucr:category cat:AdvancedFeatures ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/6> ;
+    lws-ucr:motivates :REQ-timeseries .
+
+:UC-sensor-data-sharing a lws-ucr:UseCase ;
+    dcterms:identifier "UC-sensor-data-sharing" ;
+    dcterms:title "Sensor Data Sharing"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "to share sensor data at varying levels of granularity without duplication"@en ;
+    lws-ucr:benefit "consumers receive only the detail they need"@en ;
+    dcterms:description "Efficient sharing reduces resource usage."@en ;
+    lws-ucr:category cat:AdvancedFeatures ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/8> ;
+    lws-ucr:motivates :REQ-view-based-sharing .
+
+:UC-legal-reporting a lws-ucr:UseCase ;
+    dcterms:identifier "UC-legal-reporting" ;
+    dcterms:title "Legal Reporting"@en ;
+    lws-ucr:primaryActor role:DataOwner ;
+    lws-ucr:actor role:DataOwner , role:Auditor ;
+    lws-ucr:goal "verifiable proof of data sharing to support audit compliance"@en ;
+    lws-ucr:benefit "I can meet legal obligations even after access is revoked"@en ;
+    dcterms:description "This ensures transparency and accountability."@en ;
+    lws-ucr:category cat:AdvancedFeatures ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/9> ;
+    lws-ucr:motivates :REQ-data-integrity-verification , :REQ-auditable-trail .
+
+:UC-search-functionality a lws-ucr:UseCase ;
+    dcterms:identifier "UC-search-functionality" ;
+    dcterms:title "Search Functionality"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "powerful search capabilities with contextual awareness and security enforcement"@en ;
+    lws-ucr:benefit "I can find relevant resources quickly and safely"@en ;
+    dcterms:description "Effective search is essential for large datasets."@en ;
+    lws-ucr:category cat:AdvancedFeatures ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/152> , <https://github.com/w3c/lws-ucs/issues/87> ;
+    lws-ucr:motivates :REQ-search-and-query .
+
+:UC-pagination-filtering a lws-ucr:UseCase ;
+    dcterms:identifier "UC-pagination-filtering" ;
+    dcterms:title "Pagination & Filtering"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "efficient pagination, filtering, and ordering of search results"@en ;
+    lws-ucr:benefit "I can navigate large datasets easily"@en ;
+    dcterms:description "These features enhance data usability."@en ;
+    lws-ucr:category cat:AdvancedFeatures ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/103> ;
+    lws-ucr:motivates :REQ-search-and-query , :REQ-paginate-filter-sort .
+
+:UC-sparql-queries a lws-ucr:UseCase ;
+    dcterms:identifier "UC-sparql-queries" ;
+    dcterms:title "SPARQL Queries"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "support for SPARQL queries to perform complex searches and data analysis"@en ;
+    lws-ucr:benefit "I can extract insights from linked data"@en ;
+    dcterms:description "A power user's story: SPARQL enables advanced semantic web queries."@en ;
+    lws-ucr:category cat:AdvancedFeatures ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/45> ;
+    lws-ucr:motivates :REQ-search-and-query , :REQ-federated-queries .
+
+:UC-website-creation a lws-ucr:UseCase ;
+    dcterms:identifier "UC-website-creation" ;
+    dcterms:title "Website Creation"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "to publish self-describing websites with persistent URIs"@en ;
+    lws-ucr:benefit "my content remains accessible and interoperable over time"@en ;
+    dcterms:description "This supports durable web publishing."@en ;
+    lws-ucr:category cat:AdvancedFeatures ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/31> ;
+    lws-ucr:motivates :REQ-website-publication .
+
+:UC-home-access a lws-ucr:UseCase ;
+    dcterms:identifier "UC-home-access" ;
+    dcterms:title "Home Access"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "to access my storage from home devices with dynamic IPs"@en ;
+    lws-ucr:benefit "connectivity issues don't prevent me from using my data"@en ;
+    dcterms:description "This ensures accessibility in home environments (self-hosting on home desktops or NAS devices behind consumer connections)."@en ;
+    lws-ucr:category cat:AdvancedFeatures ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/105> , <https://github.com/w3c/lws-ucs/issues/68> .
+
+:UC-contextual-interactions a lws-ucr:UseCase ;
+    dcterms:identifier "UC-contextual-interactions" ;
+    dcterms:title "Contextual Interactions"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "context-aware display of interactions alongside content"@en ;
+    lws-ucr:benefit "I can understand permissions and history intuitively"@en ;
+    dcterms:description "This improves user understanding of data interactions."@en ;
+    lws-ucr:category cat:AdvancedFeatures ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/55> .
+
+:UC-webid-profile-interaction a lws-ucr:UseCase ;
+    dcterms:identifier "UC-webid-profile-interaction" ;
+    dcterms:title "WebID Profile Interaction"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "clicking a WebID to display profiles and available actions"@en ;
+    lws-ucr:benefit "I can engage with contacts effortlessly"@en ;
+    dcterms:description "This enhances social and professional interactions."@en ;
+    lws-ucr:category cat:AdvancedFeatures ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/48> , <https://github.com/w3c/lws-ucs/issues/47> ;
+    lws-ucr:motivates :REQ-profile-interaction-ui .
+
+:UC-storage-listening a lws-ucr:UseCase ;
+    dcterms:identifier "UC-storage-listening" ;
+    dcterms:title "Storage Listening"@en ;
+    lws-ucr:primaryActor role:AppDeveloper ;
+    lws-ucr:goal "offline monitoring of storage changes"@en ;
+    lws-ucr:benefit "my applications stay synchronized even without connectivity"@en ;
+    dcterms:description "This supports robust offline app functionality: an application that was offline can catch up on what changed while it was away."@en ;
+    lws-ucr:category cat:AdvancedFeatures ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/101> ;
+    lws-ucr:motivates :REQ-offline-sync .
+
+#################################################################
+# Security and privacy
+#################################################################
+
+:UC-e2e-encryption a lws-ucr:UseCase ;
+    dcterms:identifier "UC-e2e-encryption" ;
+    dcterms:title "'End to End' Encryption"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "end-to-end encryption for all data storage and transfers"@en ;
+    lws-ucr:benefit "only authorized parties can decrypt and access my information"@en ;
+    dcterms:description "Encryption ensures data confidentiality — even against the storage provider itself."@en ;
+    lws-ucr:category cat:SecurityPrivacy ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/4> , <https://github.com/w3c/lws-ucs/issues/44> ,
+        <https://github.com/w3c/lws-ucs/issues/73> , <https://github.com/w3c/lws-ucs/issues/74> ,
+        <https://github.com/w3c/lws-ucs/issues/75> , <https://github.com/w3c/lws-ucs/issues/76> ;
+    lws-ucr:motivates :REQ-e2e-encryption .
+
+:UC-consent-based-sharing a lws-ucr:UseCase ;
+    dcterms:identifier "UC-consent-based-sharing" ;
+    dcterms:title "Consent-Based Sharing"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "verifiable consent mechanisms with audit trails for data sharing"@en ;
+    lws-ucr:benefit "I can ensure compliance with privacy regulations"@en ;
+    dcterms:description "Consent management supports ethical data practices. The cluster of usage-control issues (#80–#86) elaborates purpose-based, processing-based and automated usage control on top of consent."@en ;
+    lws-ucr:category cat:SecurityPrivacy ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/141> , <https://github.com/w3c/lws-ucs/issues/80> ,
+        <https://github.com/w3c/lws-ucs/issues/81> , <https://github.com/w3c/lws-ucs/issues/82> ,
+        <https://github.com/w3c/lws-ucs/issues/83> , <https://github.com/w3c/lws-ucs/issues/84> ,
+        <https://github.com/w3c/lws-ucs/issues/85> , <https://github.com/w3c/lws-ucs/issues/86> ;
+    lws-ucr:motivates :REQ-consent-based-sharing .
+
+:UC-legal-grounds-support a lws-ucr:UseCase ;
+    dcterms:identifier "UC-legal-grounds-support" ;
+    dcterms:title "Legal Grounds Support"@en ;
+    lws-ucr:primaryActor role:ComplianceOfficer ;
+    lws-ucr:goal "to define access policies based on legal grounds (e.g., GDPR)"@en ;
+    lws-ucr:benefit "data sharing adheres to regulatory requirements"@en ;
+    dcterms:description "This ensures global compliance readiness. Issue #210 extends it to differing legal CONTEXTS: the applicable local, state or national law of the user and of the storage may differ, and policies must be definable against the established legal context."@en ;
+    lws-ucr:scenario :UC-legal-grounds-support-alt ;
+    lws-ucr:category cat:SecurityPrivacy ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/80> , <https://github.com/w3c/lws-ucs/issues/141> ,
+        <https://github.com/w3c/lws-ucs/issues/77> , <https://github.com/w3c/lws-ucs/issues/210> ;
+    lws-ucr:motivates :REQ-legal-basis-enforcement .
+
+:UC-legal-grounds-support-alt a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:AlternativeFlow ;
+    dcterms:description "A compliance officer checks access controls for adherence to local law: the same sharing policy evaluates differently under the storage's jurisdiction than under the user's, and the policy engine resolves which legal context governs (from issue #210)."@en .
+
+#################################################################
+# Performance and usability
+#################################################################
+
+:UC-storage-ownership a lws-ucr:UseCase ;
+    dcterms:identifier "UC-storage-ownership" ;
+    dcterms:title "Storage Ownership"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "ownership assigned upon storage creation"@en ;
+    lws-ucr:benefit "I have full control from the outset"@en ;
+    dcterms:description "Immediate ownership clarifies user authority. The relationship between the controller of a storage and the controller of a resource within it is under WG clarification (issue #213)."@en ;
+    lws-ucr:category cat:PerformanceUsability ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/43> , <https://github.com/w3c/lws-ucs/issues/213> ;
+    lws-ucr:motivates :REQ-control-of-storages .
+
+:UC-performant-access-control a lws-ucr:UseCase ;
+    dcterms:identifier "UC-performant-access-control" ;
+    dcterms:title "Performant Access Control"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "access control mechanisms that are responsive and scalable"@en ;
+    lws-ucr:benefit "the system performs well even under heavy load"@en ;
+    dcterms:description "Performance is critical for large-scale use."@en ;
+    lws-ucr:category cat:PerformanceUsability ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/72> , <https://github.com/w3c/lws-ucs/issues/153> ,
+        <https://github.com/w3c/lws-ucs/issues/71> ;
+    lws-ucr:motivates :REQ-performance-scalability .
+
+:UC-clear-error-messages a lws-ucr:UseCase ;
+    dcterms:identifier "UC-clear-error-messages" ;
+    dcterms:title "Clear Error Messages"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User , role:AppDeveloper ;
+    lws-ucr:goal "error messages that are clear and actionable"@en ;
+    lws-ucr:benefit "I can resolve issues quickly and without frustration"@en ;
+    dcterms:description "Good error handling enhances user experience. For applications this means machine-readable error structure, not just human-readable text — an application can only render an actionable message if the server tells it precisely what failed."@en ;
+    lws-ucr:category cat:PerformanceUsability ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/34> ;
+    lws-ucr:motivates :REQ-structured-errors .
+
+#################################################################
+# Identity, authentication and trust
+#################################################################
+
+:UC-identity-credentials-management a lws-ucr:UseCase ;
+    dcterms:identifier "UC-identity-credentials-management" ;
+    dcterms:title "Identity & Credentials Management"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "to manage my identities and credentials locally"@en ;
+    lws-ucr:benefit "I control my authentication process directly from my device"@en ;
+    dcterms:description "Local management boosts security and autonomy."@en ;
+    lws-ucr:category cat:IdentityAuthenticationTrust ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/25> , <https://github.com/w3c/lws-ucs/issues/90> ,
+        <https://github.com/w3c/lws-ucs/issues/115> , <https://github.com/w3c/lws-ucs/issues/153> ,
+        <https://github.com/w3c/lws-ucs/issues/128> ;
+    lws-ucr:motivates :REQ-authentication-mechanisms .
+
+:UC-authentication-mechanisms a lws-ucr:UseCase ;
+    dcterms:identifier "UC-authentication-mechanisms" ;
+    dcterms:title "Authentication Mechanism(s)"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "support for modern authentication methods like passkeys, silent authentication, and script-friendly options"@en ;
+    lws-ucr:benefit "I can authenticate securely across diverse scenarios"@en ;
+    dcterms:description "Flexible authentication meets varied user needs: passkey/WebAuthn login (#51), browser-level login (#50), logging back into applications without re-directing to the identity provider (#49), silent authentication (#41), and script/backend-friendly flows."@en ;
+    lws-ucr:category cat:IdentityAuthenticationTrust ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/39> , <https://github.com/w3c/lws-ucs/issues/41> ,
+        <https://github.com/w3c/lws-ucs/issues/49> , <https://github.com/w3c/lws-ucs/issues/50> ,
+        <https://github.com/w3c/lws-ucs/issues/51> , <https://github.com/w3c/lws-ucs/issues/114> ,
+        <https://github.com/w3c/lws-ucs/issues/162> , <https://github.com/w3c/lws-ucs/issues/129> ,
+        <https://github.com/w3c/lws-ucs/issues/130> , <https://github.com/w3c/lws-ucs/issues/136> ;
+    lws-ucr:motivates :REQ-authentication-mechanisms .
+
+:UC-storage-provider-trust a lws-ucr:UseCase ;
+    dcterms:identifier "UC-storage-provider-trust" ;
+    dcterms:title "Trust Mechanism for Storage Providers"@en ;
+    lws-ucr:primaryActor role:StorageProvider ;
+    lws-ucr:goal "a mechanism to trust Identity Providers for authenticating entities"@en ;
+    lws-ucr:benefit "I can ensure only authenticated and authorized entities access the storage"@en ;
+    dcterms:description "This trust relationship is crucial for maintaining security in a decentralized system where multiple Identity Providers may be involved."@en ;
+    lws-ucr:category cat:IdentityAuthenticationTrust ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/129> ;
+    lws-ucr:motivates :REQ-trusted-identity-providers , :REQ-service-providers .
+
+#################################################################
+# API and protocol flexibility
+#################################################################
+
+:UC-api-protocol-decoupling a lws-ucr:UseCase ;
+    dcterms:identifier "UC-api-protocol-decoupling" ;
+    dcterms:title "API Protocol Decoupling"@en ;
+    lws-ucr:primaryActor role:AppDeveloper ;
+    lws-ucr:goal "APIs decoupled from HTTP"@en ;
+    lws-ucr:benefit "I can build local-first applications or use alternative protocols like gRPC or GraphQL"@en ;
+    dcterms:description "Decoupling enhances development flexibility."@en ;
+    lws-ucr:category cat:ApiProtocolFlexibility ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/24> ;
+    lws-ucr:motivates :REQ-protocol-decoupling .
+
+:UC-backend-service-integration a lws-ucr:UseCase ;
+    dcterms:identifier "UC-backend-service-integration" ;
+    dcterms:title "Backend Service Integration"@en ;
+    lws-ucr:primaryActor role:ServiceProvider ;
+    lws-ucr:goal "secure authentication methods like mTLS or simpler alternatives for backend services"@en ;
+    lws-ucr:benefit "integration with LWS is seamless and secure"@en ;
+    dcterms:description "This ensures reliable backend connectivity."@en ;
+    lws-ucr:category cat:ApiProtocolFlexibility ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/40> , <https://github.com/w3c/lws-ucs/issues/56> ,
+        <https://github.com/w3c/lws-ucs/issues/92> ;
+    lws-ucr:motivates :REQ-server-to-server-auth .
+
+:UC-storage-description-discovery a lws-ucr:UseCase ;
+    dcterms:identifier "UC-storage-description-discovery" ;
+    dcterms:title "Storage Description and Discovery"@en ;
+    lws-ucr:primaryActor role:AppDeveloper ;
+    lws-ucr:actor role:AppDeveloper , role:User ;
+    lws-ucr:goal "to retrieve metadata about available storage and service capabilities"@en ;
+    lws-ucr:benefit "I can configure interactions appropriately and adapt to different storage behaviors"@en ;
+    dcterms:description "Describing server capabilities in a standardized way allows clients to dynamically adjust their operations, improves interoperability, and facilitates tooling or automation."@en ;
+    lws-ucr:category cat:ApiProtocolFlexibility ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/21> ;
+    lws-ucr:motivates :REQ-self-descriptive-apis .
+
+#################################################################
+# Storage and resource management
+#################################################################
+
+:UC-storage-flexibility a lws-ucr:UseCase ;
+    dcterms:identifier "UC-storage-flexibility" ;
+    dcterms:title "Storage Flexibility"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "the ability to dynamically split or aggregate storage units"@en ;
+    lws-ucr:benefit "I can adjust capacity and organization as my needs evolve"@en ;
+    dcterms:description "Flexible storage supports scalability and customization."@en ;
+    lws-ucr:category cat:StorageResourceManagement ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/110> , <https://github.com/w3c/lws-ucs/issues/136> ,
+        <https://github.com/w3c/lws-ucs/issues/127> , <https://github.com/w3c/lws-ucs/issues/69> ,
+        <https://github.com/w3c/lws-ucs/issues/70> ;
+    lws-ucr:motivates :REQ-scalable-storage-management .
+
+:UC-hypermedia-authoring a lws-ucr:UseCase ;
+    dcterms:identifier "UC-hypermedia-authoring" ;
+    dcterms:title "Hypermedia Authoring"@en ;
+    lws-ucr:primaryActor role:AppDeveloper ;
+    lws-ucr:goal "consistent mechanisms for authoring hypermedia representations (e.g., JSON-LD, Siren)"@en ;
+    lws-ucr:benefit "clients can navigate and interact with APIs uniformly"@en ;
+    dcterms:description "Standardized hypermedia improves API usability."@en ;
+    lws-ucr:category cat:StorageResourceManagement ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/33> , <https://github.com/w3c/lws-ucs/issues/124> ;
+    lws-ucr:motivates :REQ-self-descriptive-apis .
+
+#################################################################
+# Reconstructed use cases — previously dangling story references.
+# The requirements document referenced these stories by name; no
+# story entry existed. The corresponding [UC] issues do exist.
+#################################################################
+
+:UC-globally-unique-identifiers a lws-ucr:UseCase ;
+    dcterms:identifier "UC-globally-unique-identifiers" ;
+    dcterms:title "Globally Unique Identity"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "my identity, my storages, and the resources in them to be identified by globally unique identifiers"@en ;
+    lws-ucr:benefit "anything I control can be referenced unambiguously from anywhere, by anyone I choose, without central coordination"@en ;
+    dcterms:description "RECONSTRUCTED: the requirements document back-referenced a story named 'Globally Unique Identifiers' that did not exist in the stories list — a dangling by-name reference now caught by the machine-checked motivatedBy chain. The submitted [UC] issues (#115 entity identity, #108 storage identity) supply the content: entities and storages need global, collision-free identity for cross-storage reference, access control and portability."@en ;
+    lws-ucr:category cat:IdentityAuthenticationTrust ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/115> , <https://github.com/w3c/lws-ucs/issues/108> ,
+        <https://github.com/w3c/lws-ucs/issues/136> ;
+    lws-ucr:motivates :REQ-globally-unique-identifiers .
+
+:UC-delegation-of-control a lws-ucr:UseCase ;
+    dcterms:identifier "UC-delegation-of-control" ;
+    dcterms:title "Delegating Control of a Storage"@en ;
+    lws-ucr:primaryActor role:DataOwner ;
+    lws-ucr:actor role:DataOwner , role:Delegate ;
+    lws-ucr:goal "to delegate control of a storage to another entity — temporarily or permanently — and to transfer control outright when needed"@en ;
+    lws-ucr:benefit "another party can administer my storage on my behalf (or take it over entirely, e.g. on succession) without my sharing credentials"@en ;
+    dcterms:description "RECONSTRUCTED: the requirements document back-referenced a story named 'Delegation of Control' (from both the delegation and transfer-of-control requirements) that did not exist in the stories list — a dangling by-name reference now caught by the machine-checked motivatedBy chain. Whole-storage control delegation is distinct from per-resource access delegation (see the Administrative Assistant use case): it covers administration, policy management, and irrevocable transfer (succession, organisational change)."@en ;
+    lws-ucr:category cat:AccessControlSharing ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/blob/main/spec/requirements.md> ;
+    lws-ucr:motivates :REQ-delegation-of-control , :REQ-transfer-of-control .

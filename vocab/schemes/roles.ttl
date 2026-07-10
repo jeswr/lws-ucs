@@ -34,3 +34,23 @@ role:StorageProvider a lws-ucr:ActorRole ; skos:inScheme lws-ucr:ActorRoleScheme
 role:Auditor a lws-ucr:ActorRole ; skos:inScheme lws-ucr:ActorRoleScheme ;
     skos:prefLabel "Auditor"@en ;
     skos:definition "An entity reviewing records of access and processing for compliance or accountability."@en .
+
+role:Collaborator a lws-ucr:ActorRole ; skos:inScheme lws-ucr:ActorRoleScheme ;
+    skos:prefLabel "Collaborator"@en ;
+    skos:definition "An entity granted access to another entity's resources in order to work over them together (a co-author, a team member, an invited reader)."@en .
+
+role:Administrator a lws-ucr:ActorRole ; skos:inScheme lws-ucr:ActorRoleScheme ;
+    skos:prefLabel "Administrator"@en ;
+    skos:definition "An entity operating and configuring a storage or its policies on behalf of an organisation or another entity (distinct from the Storage Provider, which operates the infrastructure)."@en .
+
+role:ServiceProvider a lws-ucr:ActorRole ; skos:inScheme lws-ucr:ActorRoleScheme ;
+    skos:prefLabel "Service provider"@en ;
+    skos:definition "An entity operating a non-storage service (backend service, indexer, notification relay, computation service) that interacts with LWS storages, typically without an interactive user present."@en .
+
+role:ComplianceOfficer a lws-ucr:ActorRole ; skos:inScheme lws-ucr:ActorRoleScheme ;
+    skos:prefLabel "Compliance officer"@en ;
+    skos:definition "An entity responsible for ensuring that data handling adheres to legal and regulatory obligations (glossary-adjacent to Auditor, but prospective: they define and check policy rather than review past behaviour)."@en .
+
+role:AutonomousAgent a lws-ucr:ActorRole ; skos:inScheme lws-ucr:ActorRoleScheme ;
+    skos:prefLabel "Autonomous agent"@en ;
+    skos:definition "A software agent (AI assistant, workflow engine, crawler, sync daemon) acting under a delegation from a person or organisation, whose actions must remain attributable to that delegation."@en .

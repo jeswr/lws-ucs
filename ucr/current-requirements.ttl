@@ -1,0 +1,489 @@
+# AUTHORED-BY Claude Fable
+# The current spec/requirements.md corpus re-described with the lws-ucr ontology
+# (Stage 2 of the UC&R rewrite). Every requirement in the document as of
+# main@9bb2340 is here as a lws-ucr:Requirement with an explicit motivatedBy
+# chain to its use cases (replacing the prose "Stories:" back-references).
+# Modality is normalised to uppercase RFC 2119 keywords (shall -> MUST etc.),
+# fixing the source document's modality drift without changing strength.
+# Four requirements live with their primary use case in the graduated Stage-1
+# files: REQ-storage-portability, REQ-resumable-uploads (titled "Resumable
+# Large Data Transfers" in the document), REQ-delegation-of-access-rights and
+# REQ-auditable-trail; this file only ADDS their remaining motivatedBy edges.
+# PRIORITY NOTE: the source document carries no explicit MoSCoW priorities —
+# the assignments here are provisional editorial judgments reflecting the
+# document's WG-vote ordering, pending explicit WG prioritisation.
+# Validate: sh scripts/validate-ucr.sh   Generate: python3 scripts/generate-spec-md.py
+
+@prefix :        <https://jeswr.org/lws/ucr#> .
+@prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
+@prefix feat:    <https://jeswr.org/ns/lws-ucr/features#> .
+@prefix oslc_rm: <http://open-services.net/ns/rm#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+:REQ-resource-crud a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-resource-crud" ;
+    dcterms:title "Adding, Updating, Deleting Resources in Storage"@en ;
+    dcterms:description "The protocol MUST allow resources to be added, updated and/or deleted within a storage by authorized entities. In general the protocol MUST allow any type of resource to be stored in a storage; storage providers MAY impose certain limitations, such as of type or size."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "The foundational read/write surface every other capability builds on."@en ;
+    lws-ucr:motivatedBy :UC-generic-storage ;
+    lws-ucr:relatedFeature feat:ResourceManagement ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/117> , <https://github.com/w3c/lws-ucs/issues/124> .
+
+:REQ-data-sharing a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-data-sharing" ;
+    dcterms:title "Data Sharing"@en ;
+    dcterms:description "The protocol MUST allow an entity to grant access to a resource it controls to another entity — allowing that entity to perform some operations (read, modify, remove, ...) on the resource. An access grant MAY be temporary (have an expiration time) or open-ended. The granting entity MUST be able to modify such a grant at a later time, by changing the expiration or revoking the grant altogether."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "Fine-grained, revocable sharing is the core promise of user-controlled storage; four independent stories converge on it."@en ;
+    lws-ucr:motivatedBy :UC-sharing-access , :UC-profile-sharing , :UC-group-sharing , :UC-health-record-access ;
+    lws-ucr:relatedFeature feat:Authorization ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/27> , <https://github.com/w3c/lws-ucs/issues/118> .
+
+:REQ-authentication-mechanisms a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-authentication-mechanisms" ;
+    dcterms:title "Authentication Mechanisms"@en ;
+    dcterms:description "The protocol MUST support centralized, federated, and/or self-sovereign types of authentication mechanism."@en ;
+    lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Security ;
+    lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "Loose coupling of identity from storage is a charter goal; no single authentication topology can be mandated."@en ;
+    lws-ucr:motivatedBy :UC-identity-credentials-management , :UC-authentication-mechanisms ;
+    lws-ucr:relatedFeature feat:Authentication ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/25> , <https://github.com/w3c/lws-ucs/issues/90> ,
+        <https://github.com/w3c/lws-ucs/issues/115> , <https://github.com/w3c/lws-ucs/issues/128> ,
+        <https://github.com/w3c/lws-ucs/issues/39> , <https://github.com/w3c/lws-ucs/issues/49> .
+
+:REQ-globally-unique-identifiers a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-globally-unique-identifiers" ;
+    dcterms:title "Globally Unique Identifiers"@en ;
+    dcterms:description "Resources, including entities and storages, MUST be uniquely identifiable globally. No two distinct resources SHALL share the same identifier (though a 'collective' resource with one identifier may comprise several resources, each with its own identifier, and actions on the collective resource can affect the resources comprising it). Further, a resource MAY be identifiable via multiple, distinct identifiers."@en ;
+    lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Interop ;
+    lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "Global identity underpins cross-storage reference, access control and portability; the multi-identifier clause also carries the ID-alias need of issue #211."@en ;
+    lws-ucr:motivatedBy :UC-globally-unique-identifiers , :UC-id-alias ;
+    lws-ucr:relatedFeature feat:Identity ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/136> , <https://github.com/w3c/lws-ucs/issues/108> .
+
+:REQ-group-access-control a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-group-access-control" ;
+    dcterms:title "Group-Based Access Control"@en ;
+    dcterms:description "The protocol MUST allow controllers to define and manage groups of entities, apply access control rules at the group level, and dynamically propagate membership changes so that permissions update automatically as the group evolves. The protocol SHOULD also allow group hierarchies (nested groups), e.g. Solid-admin defined as a subset of Solid-contributors, so permissions given to Solid-contributors also apply to Solid-admin."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "Per-individual grants do not scale to changing collaborations; groups are the unit real organisations manage."@en ;
+    lws-ucr:motivatedBy :UC-group-sharing ;
+    lws-ucr:relatedFeature feat:Authorization ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/38> , <https://github.com/w3c/lws-ucs/issues/102> .
+
+:REQ-delegation-of-control a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-delegation-of-control" ;
+    dcterms:title "Delegation of Control"@en ;
+    dcterms:description "The protocol MUST allow an entity to delegate control of a storage to another entity. Such delegation MAY be temporary (have an expiration date and time) or permanent. An entity MUST be able to modify its delegations at a later time, such as by changing expiration or revoking the delegation altogether."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Whole-storage administration must be transferable without credential sharing (assistants, organisational change)."@en ;
+    lws-ucr:motivatedBy :UC-delegation-of-control ;
+    lws-ucr:relatedFeature feat:Authorization .
+
+:REQ-change-notifications a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-change-notifications" ;
+    dcterms:title "Subscribing to Resource Changes (Notifications)"@en ;
+    dcterms:description "The protocol MUST provide a mechanism to notify relevant entities of significant events, such as changes to resources or updates to access permissions. For example, if access rights on a resource change or new data is made available, the affected parties can be alerted in a timely manner. Notification delivery MAY be real-time (e.g., push/SSE) or via queued channels (e.g., email or inbox), respecting user preferences and privacy."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "Collaboration and permission awareness both need change propagation; polling does not scale and leaks intent."@en ;
+    lws-ucr:motivatedBy :UC-permission-change-notifications , :UC-real-time-notifications , :UC-application-notifications ;
+    lws-ucr:relatedFeature feat:Notifications ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/32> , <https://github.com/w3c/lws-ucs/issues/100> ,
+        <https://github.com/w3c/lws-ucs/issues/101> , <https://github.com/w3c/lws-ucs/issues/205> .
+
+:REQ-server-to-server-auth a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-server-to-server-auth" ;
+    dcterms:title "Server-to-Server Authentication"@en ;
+    dcterms:description "The protocol MUST support secure authentication and authorization flows suitable for server-to-server and backend service integration, enabling trusted services to access user storages without interactive login. Possibilities include mutual TLS, signed JWT-based service credentials, and scoped long-lived tokens, among others."@en ;
+    lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Security ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Real deployments include headless services (sync daemons, feed readers, indexers) that cannot perform interactive login."@en ;
+    lws-ucr:motivatedBy :UC-backend-service-integration ;
+    lws-ucr:relatedFeature feat:Authentication ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/40> , <https://github.com/w3c/lws-ucs/issues/92> .
+
+:REQ-serialization-format a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-serialization-format" ;
+    dcterms:title "Serialization Format"@en ;
+    dcterms:description "The protocol MUST make it possible for data in a storage to be serialized in a known format."@en ;
+    lws-ucr:requirementType lws-ucr:Interop ;
+    lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "Known serializations are the precondition of any cross-application interoperability."@en ;
+    lws-ucr:motivatedBy :UC-data-integration , :UC-personal-information-management ;
+    lws-ucr:relatedFeature feat:ResourceManagement .
+
+:REQ-control-of-storages a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-control-of-storages" ;
+    dcterms:title "Control of Storages"@en ;
+    dcterms:description "An entity MUST be able to control one or more storages across one or more storage providers. A storage MUST have exactly one controller; this controller MAY be an abstract entity such as a group, rather than necessarily an individual person or agent."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "Unambiguous control is the root of the authorization model; the storage-controller vs resource-controller relationship remains under WG clarification (issue #213)."@en ;
+    lws-ucr:motivatedBy :UC-storage-ownership ;
+    lws-ucr:relatedFeature feat:Authorization ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/130> , <https://github.com/w3c/lws-ucs/issues/213> .
+
+:REQ-self-descriptive-apis a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-self-descriptive-apis" ;
+    dcterms:title "Self-Descriptive and Discoverable APIs"@en ;
+    dcterms:description "The protocol MUST include means by which services can discover a storage's available capabilities and uniformly navigate its data and access control interfaces, so that services can store, read, update, and delete their data within user-managed storages and users retain ownership of app-generated content. This might be achieved via hypermedia controls or standard descriptors in responses (e.g., JSON-LD links indicating available actions or endpoints). Servers SHOULD provide a discoverable description of their supported protocol versions, extensions, and features."@en ;
+    lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Interop ;
+    lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "Apps meeting an unknown storage must be able to adapt without out-of-band knowledge; discovery is what decouples app from provider."@en ;
+    lws-ucr:motivatedBy :UC-storage-description-discovery , :UC-byod-apps , :UC-hypermedia-authoring ;
+    lws-ucr:relatedFeature feat:Discovery ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/12> , <https://github.com/w3c/lws-ucs/issues/21> ,
+        <https://github.com/w3c/lws-ucs/issues/70> , <https://github.com/w3c/lws-ucs/issues/120> .
+
+:REQ-service-providers a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-service-providers" ;
+    dcterms:title "Use of Service Providers"@en ;
+    dcterms:description "The protocol MUST provide a mechanism by which entities can delegate some functions to trusted service providers. Some interactions might further require a trust relationship between service providers and entities. This MUST NOT impede the ability of an entity to operate or self-host such a service. Trust relationships are not transitive: if an entity trusts a service provider (e.g. an identity provider), no other service provider the entity interacts with is under any obligation to trust it."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Decomposition into swappable services (identity, notification, computation) is how the ecosystem stays loosely coupled."@en ;
+    lws-ucr:motivatedBy :UC-storage-provider-trust ;
+    lws-ucr:relatedFeature feat:Extensibility ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/127> .
+
+# --- Search and query (a decomposed requirement family) ---
+
+:REQ-search-and-query a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-search-and-query" ;
+    dcterms:title "Search and Query"@en ;
+    dcterms:description "The protocol MUST provide query capabilities over data in storages, respecting access control, so that relevant resources can be found in potentially large storages. This requirement decomposes into pod-level, metadata, resource-level, cross-storage, result-set-management and federated query requirements."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Search over large personal datasets is unusable client-side-only; every query must respect ACLs or it becomes an oracle."@en ;
+    lws-ucr:motivatedBy :UC-search-functionality , :UC-pagination-filtering , :UC-sparql-queries ;
+    lws-ucr:relatedFeature feat:Query ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/152> , <https://github.com/w3c/lws-ucs/issues/45> ;
+    oslc_rm:decomposedBy :REQ-pod-level-query , :REQ-metadata-query , :REQ-resource-level-query ,
+        :REQ-query-other-pods , :REQ-paginate-filter-sort , :REQ-federated-query-joins .
+
+:REQ-pod-level-query a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-pod-level-query" ;
+    dcterms:title "Pod-Level Query"@en ;
+    dcterms:description "The protocol SHOULD support queries (e.g. SPARQL) addressed to a whole storage, respecting access control, to easily find data in potentially large storages."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Whole-storage query is the primary discovery surface for large pods."@en ;
+    lws-ucr:motivatedBy :UC-search-functionality , :UC-sparql-queries ;
+    lws-ucr:relatedFeature feat:Query ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/45> , <https://github.com/w3c/lws-ucs/issues/152> .
+
+:REQ-metadata-query a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-metadata-query" ;
+    dcterms:title "Metadata Query"@en ;
+    dcterms:description "The protocol SHOULD support queries, respecting access control, over server-maintained data (e.g. on a root container, a nested container, or a resource's metadata)."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Server-maintained metadata (containment, timestamps, types) is what clients most often need to filter on."@en ;
+    lws-ucr:motivatedBy :UC-search-functionality ;
+    lws-ucr:relatedFeature feat:Query .
+
+:REQ-resource-level-query a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-resource-level-query" ;
+    dcterms:title "Resource-Level Query"@en ;
+    dcterms:description "The protocol SHOULD support queries scoped to a single resource or container, respecting access control."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Scoped query avoids transferring whole resources to extract a fragment."@en ;
+    lws-ucr:motivatedBy :UC-search-functionality , :UC-sparql-queries ;
+    lws-ucr:relatedFeature feat:Query .
+
+:REQ-query-other-pods a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-query-other-pods" ;
+    dcterms:title "Query Other Storages"@en ;
+    dcterms:description "The protocol SHOULD support querying other entities' storages, respecting their access control."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Social and collaborative use cases read across storages; access-control-respecting query is the safe primitive."@en ;
+    lws-ucr:motivatedBy :UC-search-functionality , :UC-sparql-queries ;
+    lws-ucr:relatedFeature feat:Query .
+
+:REQ-paginate-filter-sort a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-paginate-filter-sort" ;
+    dcterms:title "Pagination, Filtering and Sorting"@en ;
+    dcterms:description "To handle large result sets, the protocol MUST provide features like pagination, filtering, and sorting of query results, and MAY support standard query languages (such as SPARQL) for advanced semantic queries over the data. This applies equally to protocol-level reads such as retrieving a large container."@en ;
+    lws-ucr:requirementType lws-ucr:Functional , lws-ucr:NonFunctional ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Unpaginated container listings and result sets fail at real-world sizes (thousands of contained resources)."@en ;
+    lws-ucr:motivatedBy :UC-search-functionality , :UC-pagination-filtering , :UC-sparql-queries ;
+    lws-ucr:relatedFeature feat:Query ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/103> .
+
+:REQ-federated-query-joins a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-federated-query-joins" ;
+    dcterms:title "Federated Query Joins"@en ;
+    dcterms:description "The protocol MAY support queries joining data across multiple storages and external data sources (e.g. SPARQL federation), respecting each source's access control."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Could ;
+    lws-ucr:rationale "Joins across pods and public datasets unlock integration use cases but sit atop the simpler query layers."@en ;
+    lws-ucr:motivatedBy :UC-data-integration , :UC-sparql-queries ;
+    lws-ucr:relatedFeature feat:Query ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/88> .
+
+# --- (end query family) ---
+
+:REQ-profile-management a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-profile-management" ;
+    dcterms:title "Profile Management"@en ;
+    dcterms:description "The protocol MUST support entities having multiple distinct profiles (e.g., 'work' vs. 'personal'), each with its own identifiers, metadata namespaces and access-control rules, so that data can be selectively shared under different personas."@en ;
+    lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Privacy ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Contextual identity separation is a privacy requirement, not a convenience: linking personas leaks by default."@en ;
+    lws-ucr:motivatedBy :UC-profile-sharing ;
+    lws-ucr:relatedFeature feat:Identity ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/192> .
+
+:REQ-access-request-handling a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-access-request-handling" ;
+    dcterms:title "Access Request Handling"@en ;
+    dcterms:description "The protocol MUST enable an entity to easily request access to a resource they are currently not authorized to access, and allow the resource owner (or controller) to easily review and grant or deny such requests. There MUST be a standard way for a requester to signal a desire for access, and for the owner to be notified and respond. This ensures that data owners can share particular data upon request without preemptively granting broad access."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "Request-then-grant is how sharing actually starts; without a standard flow every app invents an incompatible one."@en ;
+    lws-ucr:motivatedBy :UC-health-record-access , :UC-business-data-access ;
+    lws-ucr:relatedFeature feat:Authorization ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/11> , <https://github.com/w3c/lws-ucs/issues/28> ,
+        <https://github.com/w3c/lws-ucs/issues/78> , <https://github.com/w3c/lws-ucs/issues/79> ,
+        <https://github.com/w3c/lws-ucs/issues/92> .
+
+:REQ-consent-based-sharing a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-consent-based-sharing" ;
+    dcterms:title "Consent-Based Data Sharing"@en ;
+    dcterms:description "The protocol MUST provide a means to record and honor user consent for data sharing, including whom they are sharing with, what they are sharing, the purpose of the sharing, and its duration. There MUST be a verifiable, auditable record of user consent (e.g., receipts or tokens) that is revocable, ensuring access removal upon withdrawal of consent."@en ;
+    lws-ucr:requirementType lws-ucr:Privacy ;
+    lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "Regulated data sharing (GDPR consent basis) requires demonstrable, revocable consent — not just an ACL entry."@en ;
+    lws-ucr:motivatedBy :UC-consent-based-sharing ;
+    lws-ucr:relatedFeature feat:Authorization , feat:Audit ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/141> , <https://github.com/w3c/lws-ucs/issues/81> .
+
+:REQ-data-integrity-verification a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-data-integrity-verification" ;
+    dcterms:title "Data Integrity Verification"@en ;
+    dcterms:description "The protocol MUST incorporate mechanisms to ensure and verify the integrity of stored data. Authorized entities SHOULD be able to detect whether data has been tampered with or corrupted (at rest or in transit). For example, the system may use cryptographic hashes, signatures, and/or checksums such that clients can confirm that a resource retrieved from storage is exactly as originally stored by the owner."@en ;
+    lws-ucr:requirementType lws-ucr:Security ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Verifiable integrity is the precondition of legal-grade records and of portability verification."@en ;
+    lws-ucr:motivatedBy :UC-legal-reporting ;
+    lws-ucr:relatedFeature feat:Encryption .
+
+:REQ-contextual-access-control a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-contextual-access-control" ;
+    dcterms:title "Contextual Access Control"@en ;
+    dcterms:description "The access control mechanisms MUST support context-aware policies. An entity SHOULD be able to impose additional conditions on resource access based on contexts such as time windows, location, and group membership status, among others. For instance, a policy could allow access only during certain hours, or only if the requesting party is within a specific role or group at the time."@en ;
+    lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Security ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Static grants cannot express real-world conditions (working hours, presence, jurisdiction)."@en ;
+    lws-ucr:motivatedBy :UC-context-aware-access-policies ;
+    lws-ucr:relatedFeature feat:Authorization ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/17> , <https://github.com/w3c/lws-ucs/issues/65> ,
+        <https://github.com/w3c/lws-ucs/issues/179> .
+
+:REQ-trusted-identity-providers a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-trusted-identity-providers" ;
+    dcterms:title "Trusted Identity Providers"@en ;
+    dcterms:description "The protocol MUST enable storage providers to establish trust relationships with identity providers of their choosing, rather than blindly accepting any identity source (though such blind acceptance SHOULD also be a configurable option). Trust is non-transitive: a storage does not inherit trust relationships; it only accepts credentials from identity providers it is configured to trust (which might be or include a wildcard, e.g., for website content intended for general consumption)."@en ;
+    lws-ucr:requirementType lws-ucr:Security ;
+    lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "An issuer-agnostic-but-configurable trust list is what keeps identity swappable without making every storage accept every issuer."@en ;
+    lws-ucr:motivatedBy :UC-storage-provider-trust ;
+    lws-ucr:relatedFeature feat:Authentication ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/129> .
+
+:REQ-transfer-of-control a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-transfer-of-control" ;
+    dcterms:title "Transfer of Control"@en ;
+    dcterms:description "The protocol MUST allow an entity to transfer, i.e., irrevocably reassign, control of a storage to another entity."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Succession, organisational change and account recovery all require control to move permanently, not just be delegated."@en ;
+    lws-ucr:motivatedBy :UC-delegation-of-control ;
+    lws-ucr:relatedFeature feat:Authorization .
+
+:REQ-scalable-storage-management a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-scalable-storage-management" ;
+    dcterms:title "Scalable Storage Management"@en ;
+    dcterms:description "The protocol MUST permit flexible management of an entity's data across multiple storage units or providers, allowing logical unification of disparate back-ends. Clients SHOULD be able to experience a single coherent storage view even if data is split or migrated across providers, supporting scenarios like jurisdictional partitioning or provider failover."@en ;
+    lws-ucr:requirementType lws-ucr:Functional , lws-ucr:NonFunctional ;
+    lws-ucr:priority lws-ucr:Could ;
+    lws-ucr:rationale "Splitting and aggregating storages is how capacity, jurisdiction and failover needs are met without lock-in."@en ;
+    lws-ucr:motivatedBy :UC-storage-flexibility ;
+    lws-ucr:relatedFeature feat:Operations ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/110> , <https://github.com/w3c/lws-ucs/issues/136> .
+
+:REQ-view-based-sharing a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-view-based-sharing" ;
+    dcterms:title "View-Based Data Sharing"@en ;
+    dcterms:description "The protocol MUST enable controllers to define and expose derived 'views' of a resource (e.g., filtered, aggregated, or redacted subsets) such that recipients see only the authorized slice without duplicating the underlying data."@en ;
+    lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Privacy ;
+    lws-ucr:priority lws-ucr:Could ;
+    lws-ucr:rationale "Granularity-appropriate sharing without duplication: consumers get the slice they need, never a copy of the whole."@en ;
+    lws-ucr:motivatedBy :UC-sensor-data-sharing ;
+    lws-ucr:relatedFeature feat:Query ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/63> , <https://github.com/w3c/lws-ucs/issues/106> ,
+        <https://github.com/w3c/lws-ucs/issues/116> .
+
+:REQ-protocol-decoupling a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-protocol-decoupling" ;
+    dcterms:title "Loose Coupling of Underlying Protocols"@en ;
+    dcterms:description "The core data access and identity interactions MUST be defined abstractly, decoupled from any single transport or encoding. While HTTP(S) is expected, the protocol's semantics MUST be mappable to alternative or future transports (e.g., gRPC, GraphQL over WebSocket, local IPC) without changing its fundamental model."@en ;
+    lws-ucr:requirementType lws-ucr:Interop ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Local-first and embedded scenarios need the semantics without the HTTP stack; abstract definition keeps the door open."@en ;
+    lws-ucr:motivatedBy :UC-api-protocol-decoupling ;
+    lws-ucr:relatedFeature feat:Extensibility ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/24> .
+
+:REQ-e2e-encryption a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-e2e-encryption" ;
+    dcterms:title "End-to-End Encryption"@en ;
+    dcterms:description "The protocol MUST enable end-to-end encryption of data such that data stored or transmitted is unreadable to anyone except the authorized parties. Even storage providers or network intermediaries cannot decrypt the content (only the data owner and intended recipients can). End-to-end encryption SHOULD be achievable for data at rest and in transit, using standard algorithms."@en ;
+    lws-ucr:requirementType lws-ucr:Security , lws-ucr:Privacy ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Provider-blind confidentiality is the strongest trust reduction the protocol can offer; it must be designed for, not bolted on."@en ;
+    lws-ucr:motivatedBy :UC-e2e-encryption ;
+    lws-ucr:relatedFeature feat:Encryption ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/4> , <https://github.com/w3c/lws-ucs/issues/44> .
+
+:REQ-performance-scalability a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-performance-scalability" ;
+    dcterms:title "Performance and Scalability"@en ;
+    dcterms:description "The protocol and its implementations MUST be designed for high performance at scale. Access control checks and data operations SHOULD incur minimal overhead, and the design SHOULD allow batching, caching, and distributed/clustered deployments to meet typical web performance needs."@en ;
+    lws-ucr:requirementType lws-ucr:NonFunctional ;
+    lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "Per-request access-control evaluation is the hot path; a design that cannot be cached or distributed fails at web scale."@en ;
+    lws-ucr:motivatedBy :UC-performant-access-control ;
+    lws-ucr:relatedFeature feat:Operations ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/72> .
+
+:REQ-federated-queries a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-federated-queries" ;
+    dcterms:title "Federated Data Queries"@en ;
+    dcterms:description "The protocol MUST support clients performing queries across multiple storages (including federated SPARQL), aggregating and returning results transparently while maintaining each storage's access controls."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Could ;
+    lws-ucr:rationale "Cross-storage aggregation is the payoff of decentralised storage; it must not become an access-control bypass."@en ;
+    lws-ucr:motivatedBy :UC-data-integration , :UC-sparql-queries ;
+    lws-ucr:relatedFeature feat:Query ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/88> .
+
+:REQ-resource-versioning a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-resource-versioning" ;
+    dcterms:title "Resource Versioning"@en ;
+    dcterms:description "The protocol MUST support maintaining and retrieving previous versions of resources. Authorized entities SHOULD be able to recover or inspect earlier versions of data (including metadata and access control states) to enable modification audits and change reversion, including recovery from accidental deletions."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Durability and traceability over time: version recovery is named in the foundational storage story itself."@en ;
+    lws-ucr:motivatedBy :UC-generic-storage ;
+    lws-ucr:relatedFeature feat:ResourceManagement .
+
+:REQ-inbox a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-inbox" ;
+    dcterms:title "Inbox (Notifications)"@en ;
+    dcterms:description "The protocol MUST provide a mechanism for users (or their agents/applications) to exchange messages or data directly via their storages in a standardized way, enabling built-in collaboration without relying on external messaging services. For example, a user can send a message, notification, or invite to another user's storage (with appropriate authorization), and the receiving user's client can retrieve or be alerted to this message."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Storage-to-storage message delivery (an inbox) is the collaboration primitive invitations, scheduling and access requests all build on."@en ;
+    lws-ucr:motivatedBy :UC-universal-communication , :UC-meeting-scheduling ;
+    lws-ucr:relatedFeature feat:Notifications ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/22> , <https://github.com/w3c/lws-ucs/issues/99> .
+
+:REQ-personal-data-projection a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-personal-data-projection" ;
+    dcterms:title "Personal Data Projection"@en ;
+    dcterms:description "The protocol MUST provide a mechanism to support automatic transformation (projection) of personal data into formats consumable by non-LWS applications (e.g., JSON, vCard), without duplicating underlying resources, to prevent data silos and provide compatibility and interoperability with existing web standards. This may also apply to converting from one LWS data schema or structure to another, for interoperability across LWS applications."@en ;
+    lws-ucr:requirementType lws-ucr:Interop ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Compatibility with the existing app ecosystem cannot require every consumer to speak RDF; projection bridges without duplication."@en ;
+    lws-ucr:motivatedBy :UC-personal-information-management ;
+    lws-ucr:relatedFeature feat:Extensibility ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/2> .
+
+:REQ-offline-sync a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-offline-sync" ;
+    dcterms:title "Offline Access and Synchronization"@en ;
+    dcterms:description "The protocol MUST allow entities to access and modify data even when disconnected from the network, with local changes synchronized to the online storage once connectivity is restored. This includes providing strong guarantees against data corruption and robust conflict resolution to ensure data consistency after offline edits."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "Unreliable connectivity is the norm, not the exception; synchronization semantics must be part of the protocol contract, not app folklore."@en ;
+    lws-ucr:motivatedBy :UC-offline-data-access , :UC-storage-listening ;
+    lws-ucr:relatedFeature feat:Synchronization .
+
+:REQ-website-publication a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-website-publication" ;
+    dcterms:title "Self-Describing Website Publication"@en ;
+    dcterms:description "The protocol MUST support publication of self-describing websites with persistent URIs directly from a storage, enabling durable, interoperable content hosting."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Could ;
+    lws-ucr:rationale "Public web publishing from user-controlled storage keeps content addressable independent of any hosting platform."@en ;
+    lws-ucr:motivatedBy :UC-website-creation ;
+    lws-ucr:relatedFeature feat:ResourceManagement ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/31> .
+
+:REQ-collaborative-editing a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-collaborative-editing" ;
+    dcterms:title "Collaborative Editing"@en ;
+    dcterms:description "The protocol MUST define optional mechanisms (e.g., locking, optimistic concurrency, CRDT-based merges) to allow multiple entities to co-author or edit the same resource concurrently, with built-in conflict detection and resolution."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Could ;
+    lws-ucr:rationale "Concurrent co-authoring needs protocol-level concurrency primitives; each app inventing its own merge story breaks interoperability."@en ;
+    lws-ucr:motivatedBy :UC-semantic-collaboration ;
+    lws-ucr:relatedFeature feat:Concurrency ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/146> .
+
+:REQ-timeseries a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-timeseries" ;
+    dcterms:title "Timeseries Data Support"@en ;
+    dcterms:description "The protocol MUST include primitives for storing, querying, and aggregating time series resources, supporting configurable resolution limits and multidimensional analysis for data like IoT streams or metrics."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Could ;
+    lws-ucr:rationale "High-frequency append-heavy data has access patterns (windowing, downsampling) generic resources do not serve."@en ;
+    lws-ucr:motivatedBy :UC-timeseries-storage ;
+    lws-ucr:relatedFeature feat:Query ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/6> .
+
+:REQ-legal-basis-enforcement a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-legal-basis-enforcement" ;
+    dcterms:title "Legal Basis Enforcement"@en ;
+    dcterms:description "The protocol MUST support associating access control decisions with legal bases or policies. For example, implementers SHOULD be able to tag data access rules with specific legal grounds (such as 'Consent – GDPR Article 6(1)(a)' or 'Contract – GDPR Article 6(1)(b)'), and record these as metadata alongside audit trails."@en ;
+    lws-ucr:requirementType lws-ucr:Privacy ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Regulated deployments must show WHY access was allowed, not just that it was; differing legal contexts (issue #210) make the basis explicit."@en ;
+    lws-ucr:motivatedBy :UC-legal-grounds-support ;
+    lws-ucr:relatedFeature feat:Audit ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/80> , <https://github.com/w3c/lws-ucs/issues/77> ,
+        <https://github.com/w3c/lws-ucs/issues/210> .
+
+:REQ-profile-interaction-ui a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-profile-interaction-ui" ;
+    dcterms:title "Profile Interaction UI"@en ;
+    dcterms:description "The protocol MUST define a standard method for clients to fetch and display an entity's profile (e.g., WebID), along with supported actions (follow, message, share), so users can engage seamlessly with contacts."@en ;
+    lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Interop ;
+    lws-ucr:priority lws-ucr:Could ;
+    lws-ucr:rationale "A common profile-rendering contract is what makes identities clickable across independently built applications."@en ;
+    lws-ucr:motivatedBy :UC-webid-profile-interaction ;
+    lws-ucr:relatedFeature feat:Discovery ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/47> , <https://github.com/w3c/lws-ucs/issues/48> .
+
+#################################################################
+# Additional motivatedBy edges for requirements defined in the
+# graduated Stage-1 files (their remaining story back-references).
+#################################################################
+
+:REQ-auditable-trail lws-ucr:motivatedBy :UC-legal-reporting , :UC-health-record-access , :UC-digital-goods-delivery ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/85> .
+
+:REQ-delegation-of-access-rights lws-ucr:motivatedBy :UC-health-record-access ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/104> .
