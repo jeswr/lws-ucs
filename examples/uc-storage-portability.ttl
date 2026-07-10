@@ -1,0 +1,65 @@
+# AUTHORED-BY Claude Fable
+# Example: the "Portable Storage" user story of spec/user-stories.md
+# (source issue w3c/lws-ucs#30) re-described with the lws-ucr ontology.
+# Demonstrates how later refinement issues (#164 standing grants across a move,
+# #165 published resources surviving account rescission) land as additional
+# postconditions + alternative scenarios on the EXISTING use case — no new UC
+# minted, provenance preserved via lws-ucr:sourceIssue. Validate together with
+# vocab/schemes/*.ttl against shapes/lws-ucr-shapes.ttl (see scripts/validate-ucr.sh).
+# The instance base IRI is a placeholder pending the published document URL.
+
+@prefix :        <https://jeswr.org/lws/ucr#> .
+@prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
+@prefix role:    <https://jeswr.org/ns/lws-ucr/roles#> .
+@prefix cat:     <https://jeswr.org/ns/lws-ucr/categories#> .
+@prefix feat:    <https://jeswr.org/ns/lws-ucr/features#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+:UC-storage-portability a lws-ucr:UseCase ;
+    dcterms:identifier "UC-storage-portability" ;
+    dcterms:title "Move between service providers without loss"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User ;
+    lws-ucr:goal "to move my storage between providers, or self-host it, without losing data, identifiers, or standing access arrangements"@en ;
+    lws-ucr:benefit "I am never locked in: my data, its addresses, and the grants I have made survive a change of provider"@en ;
+    dcterms:description "Data sovereignty is a founding motivation of LWS. Portability is only real if a move preserves not just the bytes but the web around them: long-lived authorizations (a patient's drug-interaction agent must keep access across a move — issue #164) and published public resources (a journalist's documents must remain retrievable after their publisher account is rescinded — issue #165)."@en ;
+    lws-ucr:precondition "The user controls a globally unique storage identity independent of the current provider."@en ;
+    lws-ucr:scenario :UC-storage-portability-main , :UC-storage-portability-alt-grants , :UC-storage-portability-alt-public ;
+    lws-ucr:postcondition "All resources are available at the new location with integrity verifiable against the source."@en ;
+    lws-ucr:postcondition "Long-lived access grants continue to authorize the same parties after the move."@en ;
+    lws-ucr:postcondition "Previously published public resources remain retrievable."@en ;
+    lws-ucr:postcondition "The former provider is released of responsibility for the moved storage."@en ;
+    lws-ucr:category cat:DataManagement ;
+    lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/30> ,
+        <https://github.com/w3c/lws-ucs/issues/164> ,
+        <https://github.com/w3c/lws-ucs/issues/165> ;
+    lws-ucr:motivates :REQ-storage-portability .
+
+:UC-storage-portability-main a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:MainFlow ;
+    lws-ucr:steps (
+        "The user initiates a transfer of their storage from provider A to provider B (or to self-hosting)."
+        "The complete storage — resources, metadata, and access-control state — is transferred."
+        "The user verifies the imported data is authentic and complete."
+        "Identifiers resolve to the new location; provider A is released of responsibility." ) .
+
+:UC-storage-portability-alt-grants a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:AlternativeFlow ;
+    dcterms:description "A patient moves storage providers. Their pharmacy's drug-interaction agent, granted read access to the medication list years earlier, continues to operate across the move without re-authorization (from issue #164)."@en .
+
+:UC-storage-portability-alt-public a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:AlternativeFlow ;
+    dcterms:description "A journalist's published public documents remain retrievable after their account at the original publisher is rescinded (from issue #165)."@en .
+
+:REQ-storage-portability a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-storage-portability" ;
+    dcterms:title "Storage portability"@en ;
+    dcterms:description "The protocol MUST enable an entity to move an entire storage between providers such that resource identity, data integrity, standing access grants, and public availability of published resources are preserved, and the former provider is released of responsibility."@en ;
+    lws-ucr:requirementType lws-ucr:Interop ;
+    lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "Loose provider coupling is the doc's own framing of LWS's purpose; #164/#165 show naive export/import (bytes only) fails the actual sovereignty goal."@en ;
+    lws-ucr:motivatedBy :UC-storage-portability ;
+    lws-ucr:relatedFeature feat:Portability ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/140> , <https://github.com/w3c/lws-ucs/issues/30> .

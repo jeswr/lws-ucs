@@ -1,0 +1,58 @@
+# AUTHORED-BY Claude Fable
+# Example: the "Large File Uploads" user story of spec/user-stories.md
+# (source issue w3c/lws-ucs#18) re-described with the lws-ucr ontology,
+# with its derived requirement. Validate together with vocab/schemes/*.ttl
+# against shapes/lws-ucr-shapes.ttl (see scripts/validate-ucr.sh).
+# The instance base IRI is a placeholder pending the published document URL.
+
+@prefix :        <https://jeswr.org/lws/ucr#> .
+@prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
+@prefix role:    <https://jeswr.org/ns/lws-ucr/roles#> .
+@prefix cat:     <https://jeswr.org/ns/lws-ucr/categories#> .
+@prefix feat:    <https://jeswr.org/ns/lws-ucr/features#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix earl:    <http://www.w3.org/ns/earl#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+
+:UC-large-file-uploads a lws-ucr:UseCase ;
+    dcterms:identifier "UC-large-file-uploads" ;
+    dcterms:title "Large file uploads"@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:actor role:User ;
+    lws-ucr:goal "to upload very large files to my storage, resuming an interrupted transfer where it left off"@en ;
+    lws-ucr:benefit "an unreliable connection never forces a multi-gigabyte transfer to restart from zero"@en ;
+    dcterms:description "Uploads of large media (video, disk images, sensor archives) routinely exceed the reliability window of consumer connections; without resumability the probability of ever completing a transfer falls with file size."@en ;
+    lws-ucr:precondition "The actor is authenticated and authorized to create the target resource."@en ;
+    lws-ucr:precondition "The storage advertises resumable-upload support in its storage description."@en ;
+    lws-ucr:scenario :UC-large-file-uploads-main , :UC-large-file-uploads-err ;
+    lws-ucr:postcondition "The resource exists in the storage byte-identical to the source, and its creation is observable exactly once (e.g. to notification subscribers)."@en ;
+    lws-ucr:category cat:DataManagement ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/18> ;
+    lws-ucr:motivates :REQ-resumable-uploads .
+
+:UC-large-file-uploads-main a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:MainFlow ;
+    lws-ucr:steps (
+        "The user's application begins uploading a 4 GB video to a container in their storage."
+        "The connection drops at 60% transferred."
+        "On reconnect, the application asks the server which bytes were durably received."
+        "The application resumes the transfer from that offset."
+        "The server completes creation of the resource exactly once and reports success." ) .
+
+:UC-large-file-uploads-err a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:ErrorFlow ;
+    dcterms:description "If the partial upload has expired before resumption, the server reports it as no longer resumable; the application restarts cleanly. No partially transferred bytes are ever observable at the target URI."@en .
+
+:REQ-resumable-uploads a lws-ucr:Requirement , earl:TestRequirement ;
+    dcterms:identifier "REQ-resumable-uploads" ;
+    dcterms:title "Resumable large data transfers"@en ;
+    dcterms:description "The protocol MUST provide a mechanism by which a client can resume an interrupted resource upload without retransmitting bytes the server has already durably received, and a partially transferred representation MUST NOT be observable at the target URI."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Large-media use cases fail on consumer connections without resumability; aligning with IETF Resumable Uploads for HTTP avoids inventing a parallel mechanism (the current doc's one localBiblio entry)."@en ;
+    lws-ucr:motivatedBy :UC-large-file-uploads ;
+    lws-ucr:relatedFeature feat:ResourceManagement ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/18> ;
+    rdfs:seeAlso <https://datatracker.ietf.org/doc/draft-ietf-httpbis-resumable-upload/> .

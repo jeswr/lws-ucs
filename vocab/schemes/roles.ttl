@@ -1,0 +1,36 @@
+# AUTHORED-BY Claude Fable
+# LWS actor roles — the open-ended scheme behind lws-ucr:ActorRoleScheme.
+# Slash sub-path namespace so this file can grow (the full glossary port is
+# a follow-on work item) without churning the core vocab document.
+# Seeds: User / Data owner / Storage provider anchor to the lws-ucs glossary's
+# User / Owner / Storage Provider terms; Delegate / Application developer /
+# Auditor come from the use-case corpus. Together the scheme is the consistent
+# actor cast asked for in w3c/lws-ucs#158.
+
+@prefix role:    <https://jeswr.org/ns/lws-ucr/roles#> .
+@prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+
+role:User a lws-ucr:ActorRole ; skos:inScheme lws-ucr:ActorRoleScheme ;
+    skos:prefLabel "User"@en ;
+    skos:definition "A person using LWS storage for their own data (glossary: User)."@en .
+
+role:DataOwner a lws-ucr:ActorRole ; skos:inScheme lws-ucr:ActorRoleScheme ;
+    skos:prefLabel "Data owner"@en ;
+    skos:definition "An entity that controls a storage (or a subset of its resources) and the policies governing access to it."@en .
+
+role:Delegate a lws-ucr:ActorRole ; skos:inScheme lws-ucr:ActorRoleScheme ;
+    skos:prefLabel "Delegate"@en ;
+    skos:definition "An entity granted a subset of another entity's rights to act on their behalf."@en .
+
+role:AppDeveloper a lws-ucr:ActorRole ; skos:inScheme lws-ucr:ActorRoleScheme ;
+    skos:prefLabel "Application developer"@en ;
+    skos:definition "A person or organisation building applications that read from or write to LWS storages."@en .
+
+role:StorageProvider a lws-ucr:ActorRole ; skos:inScheme lws-ucr:ActorRoleScheme ;
+    skos:prefLabel "Storage provider"@en ;
+    skos:definition "An entity operating LWS storage infrastructure on behalf of users."@en .
+
+role:Auditor a lws-ucr:ActorRole ; skos:inScheme lws-ucr:ActorRoleScheme ;
+    skos:prefLabel "Auditor"@en ;
+    skos:definition "An entity reviewing records of access and processing for compliance or accountability."@en .

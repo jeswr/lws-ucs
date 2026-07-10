@@ -1,0 +1,49 @@
+# AUTHORED-BY Claude Fable
+# Use-case categories — the open-ended scheme behind lws-ucr:CategoryScheme.
+# Slash sub-path namespace so the scheme can grow without churning the core vocab.
+# Seeded from the ten sub-category headings of the current lws-ucs
+# spec/user-stories.md; the finer-grained categorization asked for in w3c/lws-ucs#91.
+
+@prefix cat:     <https://jeswr.org/ns/lws-ucr/categories#> .
+@prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+
+cat:DataManagement a skos:Concept ; skos:inScheme lws-ucr:CategoryScheme ;
+    skos:prefLabel "Data management"@en ;
+    skos:definition "Storing, organising, moving and preserving data in a storage: portability, offline access, large transfers, backup and recovery."@en .
+
+cat:AccessControlSharing a skos:Concept ; skos:inScheme lws-ucr:CategoryScheme ;
+    skos:prefLabel "Access control and sharing"@en ;
+    skos:definition "Granting, delegating, restricting and revoking access to resources, and sharing them with other parties."@en .
+
+cat:CollaborationCommunication a skos:Concept ; skos:inScheme lws-ucr:CategoryScheme ;
+    skos:prefLabel "Collaboration and communication"@en ;
+    skos:definition "Multiple parties working over shared resources: co-editing, messaging, notifications and social interaction."@en .
+
+cat:ApplicationIntegration a skos:Concept ; skos:inScheme lws-ucr:CategoryScheme ;
+    skos:prefLabel "Application integration"@en ;
+    skos:definition "Applications discovering, interoperating over, and switching between storages and each other's data."@en .
+
+cat:AdvancedFeatures a skos:Concept ; skos:inScheme lws-ucr:CategoryScheme ;
+    skos:prefLabel "Advanced features"@en ;
+    skos:definition "Capabilities beyond the core read/write surface, such as querying, versioning, provenance and computation near data."@en .
+
+cat:SecurityPrivacy a skos:Concept ; skos:inScheme lws-ucr:CategoryScheme ;
+    skos:prefLabel "Security and privacy"@en ;
+    skos:definition "Protecting resources and persons: confidentiality, integrity, availability, and control over disclosure and inference."@en .
+
+cat:PerformanceUsability a skos:Concept ; skos:inScheme lws-ucr:CategoryScheme ;
+    skos:prefLabel "Performance and usability"@en ;
+    skos:definition "Qualities of the experience: responsiveness, scalability, and ease of understanding and use."@en .
+
+cat:IdentityAuthenticationTrust a skos:Concept ; skos:inScheme lws-ucr:CategoryScheme ;
+    skos:prefLabel "Identity, authentication and trust"@en ;
+    skos:definition "Identifying actors, authenticating them, and establishing trust between parties and components."@en .
+
+cat:ApiProtocolFlexibility a skos:Concept ; skos:inScheme lws-ucr:CategoryScheme ;
+    skos:prefLabel "API and protocol flexibility"@en ;
+    skos:definition "The shape of the protocol surface itself: extensibility, content negotiation, and evolution without breakage."@en .
+
+cat:StorageResourceManagement a skos:Concept ; skos:inScheme lws-ucr:CategoryScheme ;
+    skos:prefLabel "Storage and resource management"@en ;
+    skos:definition "Operating the storage as a system: provisioning, quotas, lifecycle and administration of resources."@en .

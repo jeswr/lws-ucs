@@ -1,0 +1,19 @@
+# AUTHORED-BY Claude Fable
+# NEGATIVE fixture (isolated): valid EXCEPT it has NO lws-ucr:primaryActor (only
+# a plain actor). Expected sole Violation: primaryActor sh:minCount 1. This also
+# guards the finding that primaryActor (not actor) is the mandatory 'As a ...'
+# slot. scripts/validate-ucr.sh asserts this fixture is REJECTED.
+
+@prefix :        <https://jeswr.org/lws/ucr#> .
+@prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
+@prefix role:    <https://jeswr.org/ns/lws-ucr/roles#> .
+@prefix cat:     <https://jeswr.org/ns/lws-ucr/categories#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+:UC-no-primary a lws-ucr:UseCase ;
+    dcterms:identifier "UC-no-primary" ; dcterms:title "Missing primary actor"@en ;
+    dcterms:description "ctx"@en ;
+    lws-ucr:actor role:User ;
+    lws-ucr:goal "g"@en ; lws-ucr:benefit "b"@en ;
+    lws-ucr:category cat:DataManagement ; lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/1> .

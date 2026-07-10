@@ -1,0 +1,25 @@
+# AUTHORED-BY Claude Fable
+# Protocol features — the open-ended scheme behind lws-ucr:FeatureScheme.
+# Slash sub-path namespace so the scheme can grow without churning the core vocab.
+# Feature concepts SHOULD ultimately be (or map to) the protocol spec's
+# capability-registry IRIs (cf. jeswr/lws-spec's capability registry).
+
+@prefix feat:    <https://jeswr.org/ns/lws-ucr/features#> .
+@prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+
+feat:ResourceManagement a skos:Concept ; skos:inScheme lws-ucr:FeatureScheme ;
+    skos:prefLabel "Resource management"@en ;
+    skos:definition "Creating, reading, updating and deleting resources and containers, including transfer mechanics."@en .
+
+feat:Authorization a skos:Concept ; skos:inScheme lws-ucr:FeatureScheme ;
+    skos:prefLabel "Authorization"@en ;
+    skos:definition "Deciding and enforcing who may perform which operations on which resources, including delegation and revocation."@en .
+
+feat:Portability a skos:Concept ; skos:inScheme lws-ucr:FeatureScheme ;
+    skos:prefLabel "Storage portability"@en ;
+    skos:definition "Moving a storage between providers (or to self-hosting) while preserving identity, integrity and standing arrangements."@en .
+
+feat:Audit a skos:Concept ; skos:inScheme lws-ucr:FeatureScheme ;
+    skos:prefLabel "Audit and accountability"@en ;
+    skos:definition "Recording and exposing who did what, under which grant, so that actions remain attributable and reviewable."@en .

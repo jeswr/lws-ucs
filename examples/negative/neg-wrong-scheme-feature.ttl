@@ -1,0 +1,29 @@
+# AUTHORED-BY Claude Fable
+# NEGATIVE fixture (isolated): a valid use case and a requirement that is valid
+# EXCEPT its lws-ucr:relatedFeature points at a category concept (a skos:Concept,
+# but in the CategoryScheme, not the FeatureScheme). Expected sole Violation:
+# the relatedFeature skos:inScheme sh:hasValue constraint.
+# scripts/validate-ucr.sh asserts this fixture is REJECTED.
+
+@prefix :        <https://jeswr.org/lws/ucr#> .
+@prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
+@prefix role:    <https://jeswr.org/ns/lws-ucr/roles#> .
+@prefix cat:     <https://jeswr.org/ns/lws-ucr/categories#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+:UC-wsf a lws-ucr:UseCase ;
+    dcterms:identifier "UC-wsf" ; dcterms:title "Wrong-scheme feature"@en ;
+    dcterms:description "ctx"@en ;
+    lws-ucr:primaryActor role:User ; lws-ucr:actor role:User ;
+    lws-ucr:goal "g"@en ; lws-ucr:benefit "b"@en ;
+    lws-ucr:category cat:DataManagement ; lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/1> ;
+    lws-ucr:motivates :REQ-wsf .
+
+:REQ-wsf a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-wsf" ; dcterms:title "Req"@en ;
+    dcterms:description "The protocol MUST do the thing."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ; lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "r"@en ; lws-ucr:motivatedBy :UC-wsf ;
+    lws-ucr:relatedFeature cat:DataManagement ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/1> .

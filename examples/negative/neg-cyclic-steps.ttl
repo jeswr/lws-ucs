@@ -1,0 +1,32 @@
+# AUTHORED-BY Claude Fable
+# NEGATIVE fixture (isolated): valid EXCEPT the scenario's steps form a CYCLIC
+# rdf:List (never reaches rdf:nil). A cyclic rdf:List is malformed RDF that
+# rdflib refuses to enumerate ("List contains a recursive rdf:rest reference"),
+# so it can NEVER validate as conforming — the correctness property this fixture
+# proves at the RDF-tooling layer. (It cannot arise from Turtle's () collection
+# syntax; only hand-written rdf:first/rdf:rest triples can form it.)
+# The SHACL StepListShape terminator constraint (nil reachable via rdf:rest*) is
+# proven independently, with clean renderable SHACL evidence, by the NON-cyclic
+# neg-unterminated-steps fixture. scripts/validate-ucr.sh asserts this fixture is
+# REJECTED (via the rdflib recursive-rest signal, NOT a generic exception).
+
+@prefix :        <https://jeswr.org/lws/ucr#> .
+@prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
+@prefix role:    <https://jeswr.org/ns/lws-ucr/roles#> .
+@prefix cat:     <https://jeswr.org/ns/lws-ucr/categories#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+:UC-cyclic a lws-ucr:UseCase ;
+    dcterms:identifier "UC-cyclic" ; dcterms:title "Cyclic steps"@en ;
+    dcterms:description "ctx"@en ;
+    lws-ucr:primaryActor role:User ; lws-ucr:actor role:User ;
+    lws-ucr:goal "g"@en ; lws-ucr:benefit "b"@en ;
+    lws-ucr:category cat:DataManagement ; lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/1> ;
+    lws-ucr:scenario :S-cyclic .
+
+:S-cyclic a lws-ucr:Scenario ; lws-ucr:scenarioKind lws-ucr:MainFlow ;
+    lws-ucr:steps _:c0 .
+_:c0 rdf:first "step one" ; rdf:rest _:c1 .
+_:c1 rdf:first "step two" ; rdf:rest _:c0 .

@@ -1,0 +1,133 @@
+# AUTHORED-BY Claude Fable
+# SHACL Core shapes for well-formed lws-ucr:UseCase / lws-ucr:Requirement /
+# lws-ucr:Scenario instances. Violations block; Warnings are advisory style
+# checks — reported but non-blocking (scripts/validate-ucr.sh runs pySHACL
+# with --allow-warnings accordingly).
+# The RequirementShape's mandatory motivatedBy edge is the machine-enforced fix
+# for the current lws-ucs document's dangling by-name story references.
+
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
+@prefix ucrsh:   <https://jeswr.org/ns/lws-ucr/shapes#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+
+ucrsh:UseCaseShape a sh:NodeShape ;
+    sh:targetClass lws-ucr:UseCase ;
+    sh:nodeKind sh:IRI ;
+    sh:message "A use case must be identified by an IRI (its stable fragment IRI), not a blank node." ;
+    sh:property [ sh:path dcterms:identifier ; sh:minCount 1 ; sh:maxCount 1 ;
+        sh:datatype xsd:string ; sh:pattern "^UC-[a-z0-9]+(-[a-z0-9]+)*$" ;
+        sh:message "Exactly one stable identifier of the form UC-<slug> (never a GitHub issue number)." ] ;
+    sh:property [ sh:path dcterms:title ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:Literal ] ;
+    sh:property [ sh:path lws-ucr:primaryActor ; sh:minCount 1 ; sh:maxCount 1 ;
+        sh:class lws-ucr:ActorRole ;
+        sh:node [ sh:property [ sh:path skos:inScheme ; sh:hasValue lws-ucr:ActorRoleScheme ] ] ;
+        sh:message "Exactly one primary actor (the 'As a ...' role), a member of the ActorRoleScheme." ] ;
+    # actor lists the full cast; it is NOT separately required, because the mandatory
+    # primaryActor is (by rdfs:subPropertyOf actor) already one of the use case's
+    # actors — requiring an explicit actor value too would wrongly reject a valid use
+    # case that states only its primary actor (validation runs without RDFS inference).
+    # Every SUPPLIED actor value, however, must be an in-scheme ActorRole.
+    sh:property [ sh:path lws-ucr:actor ; sh:class lws-ucr:ActorRole ;
+        sh:node [ sh:property [ sh:path skos:inScheme ; sh:hasValue lws-ucr:ActorRoleScheme ] ] ;
+        sh:message "Every actor role (the full cast) must be a member of the ActorRoleScheme." ] ;
+    sh:property [ sh:path lws-ucr:goal ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:Literal ;
+        sh:message "Exactly one goal ('I want ...')." ] ;
+    sh:property [ sh:path lws-ucr:benefit ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:Literal ;
+        sh:message "Exactly one benefit ('so that ...')." ] ;
+    sh:property [ sh:path lws-ucr:category ; sh:minCount 1 ; sh:class skos:Concept ;
+        sh:node [ sh:property [ sh:path skos:inScheme ; sh:hasValue lws-ucr:CategoryScheme ] ] ;
+        sh:message "Every category must be a concept in the CategoryScheme." ] ;
+    sh:property [ sh:path lws-ucr:status ; sh:minCount 1 ; sh:maxCount 1 ;
+        sh:in ( lws-ucr:Proposed lws-ucr:Accepted lws-ucr:Deferred lws-ucr:OutOfScope lws-ucr:Superseded ) ] ;
+    sh:property [ sh:path lws-ucr:priority ; sh:maxCount 1 ;
+        sh:in ( lws-ucr:Must lws-ucr:Should lws-ucr:Could lws-ucr:Wont ) ] ;
+    sh:property [ sh:path lws-ucr:precondition ; sh:nodeKind sh:Literal ] ;
+    sh:property [ sh:path lws-ucr:postcondition ; sh:nodeKind sh:Literal ] ;
+    sh:property [ sh:path lws-ucr:scenario ; sh:class lws-ucr:Scenario ] ;
+    sh:property [ sh:path lws-ucr:motivates ; sh:class lws-ucr:Requirement ] ;
+    # Advisory (warnings): recommended but not blocking
+    sh:property [ sh:path dcterms:description ; sh:minCount 1 ; sh:severity sh:Warning ;
+        sh:message "A context narrative is recommended." ] ;
+    sh:property [ sh:path lws-ucr:sourceIssue ; sh:nodeKind sh:IRI ; sh:minCount 1 ; sh:severity sh:Warning ;
+        sh:message "Use cases should trace to at least one source issue or imported document." ] .
+
+ucrsh:RequirementShape a sh:NodeShape ;
+    sh:targetClass lws-ucr:Requirement ;
+    sh:nodeKind sh:IRI ;
+    sh:message "A requirement must be identified by an IRI (its stable fragment IRI), not a blank node." ;
+    sh:property [ sh:path dcterms:identifier ; sh:minCount 1 ; sh:maxCount 1 ;
+        sh:datatype xsd:string ; sh:pattern "^REQ-[a-z0-9]+(-[a-z0-9]+)*$" ] ;
+    sh:property [ sh:path dcterms:title ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:Literal ] ;
+    sh:property [ sh:path dcterms:description ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:Literal ;
+        sh:message "Exactly one normative statement." ] ;
+    sh:property [ sh:path lws-ucr:requirementType ; sh:minCount 1 ;
+        sh:in ( lws-ucr:Functional lws-ucr:NonFunctional lws-ucr:Security lws-ucr:Privacy lws-ucr:Interop ) ] ;
+    sh:property [ sh:path lws-ucr:priority ; sh:minCount 1 ; sh:maxCount 1 ;
+        sh:in ( lws-ucr:Must lws-ucr:Should lws-ucr:Could lws-ucr:Wont ) ] ;
+    # NB: sh:class forces each motivatedBy target to carry rdf:type lws-ucr:UseCase,
+    # and ucrsh:UseCaseShape sh:targetClass then validates every such node in full —
+    # so an otherwise-empty type stub already fails validation; no sh:node needed here
+    # (adding one would only duplicate the UseCaseShape results).
+    sh:property [ sh:path lws-ucr:motivatedBy ; sh:minCount 1 ; sh:class lws-ucr:UseCase ;
+        sh:message "Every requirement must trace to at least one motivating use case — the machine-enforced fix for the current doc's dangling by-name story references." ] ;
+    sh:property [ sh:path lws-ucr:verifiedBy ; sh:nodeKind sh:IRI ;
+        sh:message "verifiedBy points at an earl:TestCase IRI in the test suite." ] ;
+    sh:property [ sh:path dcterms:requires ; sh:nodeKind sh:IRI ;
+        sh:message "Inter-requirement dependencies (dcterms:requires) point at other requirement IRIs." ] ;
+    # Advisory
+    sh:property [ sh:path dcterms:description ;
+        sh:pattern "\\b(MUST NOT|MUST|SHALL NOT|SHALL|SHOULD NOT|SHOULD|MAY)\\b" ;
+        sh:severity sh:Warning ;
+        sh:message "Statements should use RFC 2119 keywords (fixes the current shall/should/may modality drift)." ] ;
+    sh:property [ sh:path lws-ucr:rationale ; sh:minCount 1 ; sh:severity sh:Warning ] ;
+    # Advisory: SHOULD map to at least one protocol feature concept.
+    sh:property [ sh:path lws-ucr:relatedFeature ; sh:minCount 1 ; sh:severity sh:Warning ;
+        sh:message "Map to a protocol feature concept once the feature scheme is aligned with the capability registry." ] ;
+    # Violation-severity: WHEN a relatedFeature is given, it must be a skos:Concept
+    # AND a member of the FeatureScheme (class + scheme membership both blocking, so
+    # an untyped resource merely asserting scheme membership does not slip through).
+    sh:property [ sh:path lws-ucr:relatedFeature ; sh:class skos:Concept ;
+        sh:node [ sh:property [ sh:path skos:inScheme ; sh:hasValue lws-ucr:FeatureScheme ] ] ;
+        sh:message "relatedFeature values must be skos:Concepts in the FeatureScheme." ] ;
+    sh:property [ sh:path lws-ucr:sourceIssue ; sh:nodeKind sh:IRI ] .
+
+ucrsh:ScenarioShape a sh:NodeShape ;
+    sh:targetClass lws-ucr:Scenario ;
+    sh:property [ sh:path lws-ucr:scenarioKind ; sh:minCount 1 ; sh:maxCount 1 ;
+        sh:in ( lws-ucr:MainFlow lws-ucr:AlternativeFlow lws-ucr:ErrorFlow ) ] ;
+    sh:or ( [ sh:property [ sh:path dcterms:description ; sh:minCount 1 ; sh:nodeKind sh:Literal ] ]
+            [ sh:property [ sh:path lws-ucr:steps ; sh:minCount 1 ] ] ) ;
+    sh:property [ sh:path lws-ucr:steps ; sh:maxCount 1 ; sh:node ucrsh:StepListShape ;
+        sh:message "steps must be a well-formed, non-empty rdf:List whose members are literal step descriptions." ] .
+
+# A well-formed, NON-EMPTY, ACYCLIC rdf:List of literals: the head is not rdf:nil;
+# rdf:nil IS reachable via rdf:rest* (so a cyclic list, whose rest* never reaches
+# nil, is rejected); and every node reachable via rdf:rest* is either rdf:nil (the
+# terminator, with no first/rest) or a proper cons cell with exactly one literal
+# rdf:first and exactly one rdf:rest. (A bare literal or a non-list node as the
+# steps value fails StepListMemberShape, closing the vacuous-pass gap of a
+# values-only sequence-path check.)
+# NB a genuinely cyclic list is caught by the terminator constraint below, but
+# pyshacl's report renderer cannot stringify a cyclic list (rdflib raises "List
+# contains a recursive rdf:rest reference"); scripts/validate-ucr.sh recognises
+# that signal as a rejection. Turtle's () collection syntax cannot create a cycle.
+ucrsh:StepListShape a sh:NodeShape ;
+    sh:not [ sh:hasValue rdf:nil ] ;
+    sh:property [ sh:path [ sh:zeroOrMorePath rdf:rest ] ; sh:hasValue rdf:nil ;
+        sh:message "steps must be a properly terminated (acyclic) rdf:List ending in rdf:nil." ] ;
+    sh:property [ sh:path [ sh:zeroOrMorePath rdf:rest ] ;
+        sh:node ucrsh:StepListMemberShape ] .
+
+ucrsh:StepListMemberShape a sh:NodeShape ;
+    sh:xone (
+        [ sh:hasValue rdf:nil ;
+          sh:property [ sh:path rdf:first ; sh:maxCount 0 ] ;
+          sh:property [ sh:path rdf:rest ; sh:maxCount 0 ] ]
+        [ sh:nodeKind sh:BlankNodeOrIRI ;
+          sh:property [ sh:path rdf:first ; sh:minCount 1 ; sh:maxCount 1 ; sh:nodeKind sh:Literal ] ;
+          sh:property [ sh:path rdf:rest ; sh:minCount 1 ; sh:maxCount 1 ] ]
+    ) .

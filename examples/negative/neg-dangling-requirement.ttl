@@ -1,0 +1,18 @@
+# AUTHORED-BY Claude Fable
+# NEGATIVE fixture: a requirement with NO lws-ucr:motivatedBy use case — the
+# flagship failure the model exists to prevent (the current doc's dangling
+# by-name story references). Expected Violation: RequirementShape's
+# motivatedBy sh:minCount 1. scripts/validate-ucr.sh asserts this is REJECTED.
+
+@prefix :        <https://jeswr.org/lws/ucr#> .
+@prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
+@prefix feat:    <https://jeswr.org/ns/lws-ucr/features#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+:REQ-dangling a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-dangling" ; dcterms:title "Dangling requirement"@en ;
+    dcterms:description "The protocol MUST do the thing, but this requirement traces to no use case."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ; lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "r"@en ;
+    lws-ucr:relatedFeature feat:ResourceManagement ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/1> .

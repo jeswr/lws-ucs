@@ -1,0 +1,67 @@
+# AUTHORED-BY Claude Fable
+# Example: the "Administrative Assistant" user story of spec/user-stories.md
+# (source issue w3c/lws-ucs#10) re-described with the lws-ucr ontology —
+# a multi-actor use case deriving two requirements. Validate together with
+# vocab/schemes/*.ttl against shapes/lws-ucr-shapes.ttl (see scripts/validate-ucr.sh).
+# The instance base IRI is a placeholder pending the published document URL.
+
+@prefix :        <https://jeswr.org/lws/ucr#> .
+@prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
+@prefix role:    <https://jeswr.org/ns/lws-ucr/roles#> .
+@prefix cat:     <https://jeswr.org/ns/lws-ucr/categories#> .
+@prefix feat:    <https://jeswr.org/ns/lws-ucr/features#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+:UC-administrative-assistant a lws-ucr:UseCase ;
+    dcterms:identifier "UC-administrative-assistant" ;
+    dcterms:title "Administrative assistant acting for a department head"@en ;
+    lws-ucr:primaryActor role:DataOwner ;
+    lws-ucr:actor role:DataOwner , role:Delegate ;
+    lws-ucr:goal "to delegate a specific subset of my permissions (e.g. calendar management, correspondence screening) to my assistant"@en ;
+    lws-ucr:benefit "my assistant can act on my behalf within defined bounds while I remain accountable for, and informed of, what was done in my name"@en ;
+    dcterms:description "A department head delegates day-to-day handling of their calendar and inbox to an assistant. The assistant must be able to act without receiving the head's full authority, and every delegated action must remain attributable to the assistant while occurring under the head's mandate."@en ;
+    lws-ucr:precondition "Both the data owner and the delegate have distinct authenticatable identities."@en ;
+    lws-ucr:precondition "The resources to be delegated (calendar, inbox) reside in the owner's storage."@en ;
+    lws-ucr:scenario :UC-administrative-assistant-main , :UC-administrative-assistant-alt ;
+    lws-ucr:postcondition "The delegate can perform exactly the delegated operations and no others."@en ;
+    lws-ucr:postcondition "An audit log attributes each delegated action to the delegate acting under the owner's grant."@en ;
+    lws-ucr:postcondition "Revoking the delegation immediately withdraws the delegate's access without disturbing other grants."@en ;
+    lws-ucr:category cat:AccessControlSharing ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/10> ;
+    lws-ucr:motivates :REQ-delegation-of-access-rights , :REQ-auditable-trail .
+
+:UC-administrative-assistant-main a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:MainFlow ;
+    lws-ucr:steps (
+        "The department head grants the assistant write access to the calendar container and read access to the correspondence inbox."
+        "The assistant schedules meetings and screens correspondence using an application of their own choice."
+        "The head reviews the audit log and sees each action attributed to the assistant, acting under the head's grant."
+        "When the assistant changes role, the head revokes the delegation; the assistant's access ends immediately." ) .
+
+:UC-administrative-assistant-alt a lws-ucr:Scenario ;
+    lws-ucr:scenarioKind lws-ucr:AlternativeFlow ;
+    dcterms:description "The delegate attempts an operation outside the delegated subset (e.g. reading the head's health records); the storage denies it, and the attempt appears in the audit log."@en .
+
+:REQ-delegation-of-access-rights a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-delegation-of-access-rights" ;
+    dcterms:title "Delegation of access rights"@en ;
+    dcterms:description "The protocol MUST allow an entity to delegate a proper subset of its access rights to another entity, such that the delegate's actions are authorized by the delegation, remain attributable to the delegate, and the delegation can be revoked independently of any other grant."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ;
+    lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "Delegation recurs across the corpus (assistant #10, health-record AI #11, autonomous-group re-delegation #104, generic delegation #118); a subset-scoped, independently revocable, attributable delegation primitive is the common core."@en ;
+    lws-ucr:motivatedBy :UC-administrative-assistant ;
+    lws-ucr:relatedFeature feat:Authorization ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/10> , <https://github.com/w3c/lws-ucs/issues/118> .
+
+:REQ-auditable-trail a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-auditable-trail" ;
+    dcterms:title "Auditable trail of delegated and shared access"@en ;
+    dcterms:description "The protocol MUST enable a resource controller to obtain an auditable record of accesses to their resources, including, for delegated access, the identity of the acting delegate and the grant under which they acted."@en ;
+    lws-ucr:requirementType lws-ucr:Security ;
+    lws-ucr:priority lws-ucr:Should ;
+    lws-ucr:rationale "Accountability is the counterpart of delegation: without an attributable trail, subset delegation degenerates to credential sharing."@en ;
+    lws-ucr:motivatedBy :UC-administrative-assistant ;
+    lws-ucr:relatedFeature feat:Audit ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/10> , <https://github.com/w3c/lws-ucs/issues/84> .

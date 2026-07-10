@@ -1,0 +1,35 @@
+# AUTHORED-BY Claude Fable
+# NEGATIVE fixture: a scenario whose steps value is a BARE LITERAL instead of an
+# rdf:List. This is the realistic malformation (a cyclic list cannot arise from
+# Turtle's () syntax, but a mistyped literal can). It isolates and proves
+# StepListMemberShape: the value is validated over rdf:rest* and fails the
+# xone(nil-terminator | literal-first cons cell) member shape — a clean SHACL
+# Violation with no tooling crash. scripts/validate-ucr.sh asserts it is REJECTED.
+
+@prefix :        <https://jeswr.org/lws/ucr#> .
+@prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
+@prefix role:    <https://jeswr.org/ns/lws-ucr/roles#> .
+@prefix cat:     <https://jeswr.org/ns/lws-ucr/categories#> .
+@prefix feat:    <https://jeswr.org/ns/lws-ucr/features#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+:UC-nonlist a lws-ucr:UseCase ;
+    dcterms:identifier "UC-nonlist" ; dcterms:title "Non-list steps"@en ;
+    dcterms:description "ctx"@en ;
+    lws-ucr:primaryActor role:User ; lws-ucr:actor role:User ;
+    lws-ucr:goal "g"@en ; lws-ucr:benefit "b"@en ;
+    lws-ucr:category cat:DataManagement ; lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/1> ;
+    lws-ucr:scenario :S-nonlist ;
+    lws-ucr:motivates :REQ-nonlist .
+
+:S-nonlist a lws-ucr:Scenario ; lws-ucr:scenarioKind lws-ucr:MainFlow ;
+    lws-ucr:steps "not a list" .
+
+:REQ-nonlist a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-nonlist" ; dcterms:title "Req"@en ;
+    dcterms:description "The protocol MUST do the thing."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ; lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "r"@en ; lws-ucr:motivatedBy :UC-nonlist ;
+    lws-ucr:relatedFeature feat:ResourceManagement ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/1> .

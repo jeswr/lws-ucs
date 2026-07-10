@@ -1,0 +1,285 @@
+# AUTHORED-BY Claude Fable
+# lws-ucr — a minimal vocabulary for Linked Web Storage use cases & requirements.
+# The requirement layer reuses OSLC RM 2.1, DCMI Terms, SKOS, PROV-O and EARL;
+# only the use-case anatomy is minted here. See docs/ontology.md for the reuse
+# manifest and the persistent-identifier plan (PERSISTENT-ID RULE: served from
+# jeswr.org, never w3id / w3.org — nothing here is a W3C deliverable).
+
+@prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
+@prefix oslc_rm: <http://open-services.net/ns/rm#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix earl:    <http://www.w3.org/ns/earl#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix vann:    <http://purl.org/vocab/vann/> .
+
+<https://jeswr.org/ns/lws-ucr> a owl:Ontology ;
+    dcterms:title "LWS Use Cases & Requirements vocabulary (lws-ucr)"@en ;
+    dcterms:description """A minimal vocabulary for describing Linked Web Storage use cases and
+        the requirements derived from them. The requirement layer reuses OSLC RM 2.1, DCMI Terms,
+        SKOS, PROV-O and EARL; only the use-case anatomy (actor, goal, benefit, scenario,
+        pre/postconditions) is minted here, because no live, maintained ontology models it."""@en ;
+    vann:preferredNamespacePrefix "lws-ucr" ;
+    vann:preferredNamespaceUri "https://jeswr.org/ns/lws-ucr#" ;
+    dcterms:license <https://creativecommons.org/licenses/by/4.0/> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# Classes (4)
+#################################################################
+
+lws-ucr:UseCase a owl:Class ;
+    rdfs:label "Use Case"@en ;
+    rdfs:comment """A stakeholder use case: one or more actors pursuing a goal for a benefit,
+        optionally elaborated with context, preconditions, scenarios and postconditions, and
+        traceable to the requirements it motivates. Subsumes the current lws-ucs document's
+        'user stories': a user story is simply a UseCase whose scenario detail has not (yet)
+        been elaborated — the rich anatomy captured in the GitHub [UC] issue template maps
+        losslessly onto this class."""@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:Requirement a owl:Class ;
+    rdfs:subClassOf oslc_rm:Requirement ;
+    rdfs:label "LWS Requirement"@en ;
+    rdfs:comment """A requirement on the LWS protocol. Subclassed from oslc_rm:Requirement only
+        to (a) scope the LWS SHACL shapes without capturing foreign OSLC data and (b) denote
+        membership of the LWS requirement set; every OSLC RM traceability property applies
+        unchanged. A requirement covered by an executable test SHOULD additionally be typed
+        earl:TestRequirement so implementation reports compose with EARL tooling."""@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:Scenario a owl:Class ;
+    rdfs:label "Scenario"@en ;
+    rdfs:comment """A narrative elaboration of a use case: a main flow, an alternative flow, or
+        an error flow (mirroring the Scenario / Alternative case(s) / Error scenario sections of
+        the lws-ucs issue template). Content is prose and/or an ordered list of steps."""@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:ActorRole a owl:Class ;
+    rdfs:subClassOf skos:Concept ;
+    rdfs:label "Actor Role"@en ;
+    rdfs:comment """A role an actor plays in a use case (pod owner, app developer, storage
+        provider, auditor, ...). Modelled as SKOS concepts, not foaf:Agent instances, because
+        UC&R actors are roles, not identified agents; the scheme doubles as the consistent
+        actor cast the lws-ucs editors asked for (w3c/lws-ucs#158) and aligns with the
+        glossary's NIST/W3C-anchored role terms. Where a role is played by agents,
+        instances MAY link a foaf:Agent subclass via skos:related."""@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+#################################################################
+# Use-case anatomy properties
+#################################################################
+
+lws-ucr:actor a owl:ObjectProperty ;
+    rdfs:label "actor"@en ;
+    rdfs:domain lws-ucr:UseCase ; rdfs:range lws-ucr:ActorRole ;
+    rdfs:comment """An actor role participating in the use case — the full cast. The designated
+        'As a ...' protagonist is called out separately by lws-ucr:primaryActor; every use case
+        has exactly one primary actor, which (as primaryActor is a subproperty of actor) is also
+        one of its actor values."""@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:primaryActor a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:subPropertyOf lws-ucr:actor ;
+    rdfs:label "primary actor"@en ;
+    rdfs:domain lws-ucr:UseCase ; rdfs:range lws-ucr:ActorRole ;
+    rdfs:comment """The single designated protagonist of the use case — the 'As a ...' role. Made
+        an explicit property (rather than relying on statement order, which RDF does not preserve)
+        so the primary actor is unambiguous even when several actors participate. As a subproperty
+        of lws-ucr:actor it is also one of the use case's actors."""@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:goal a owl:DatatypeProperty ;
+    rdfs:label "goal"@en ; rdfs:domain lws-ucr:UseCase ;
+    rdfs:comment "The capability sought — the 'I want ...' clause."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:benefit a owl:DatatypeProperty ;
+    rdfs:label "benefit"@en ; rdfs:domain lws-ucr:UseCase ;
+    rdfs:comment "The motivation — the 'so that ...' clause."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:precondition a owl:DatatypeProperty ;
+    rdfs:label "precondition"@en ; rdfs:domain lws-ucr:UseCase ;
+    rdfs:comment "A condition that must hold before the use case begins."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:postcondition a owl:DatatypeProperty ;
+    rdfs:label "postcondition"@en ; rdfs:domain lws-ucr:UseCase ;
+    rdfs:comment "An observable outcome that holds after successful completion; doubles as acceptance criterion."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:scenario a owl:ObjectProperty ;
+    rdfs:label "scenario"@en ;
+    rdfs:domain lws-ucr:UseCase ; rdfs:range lws-ucr:Scenario ;
+    rdfs:comment "A narrative elaboration (main, alternative or error flow) of the use case."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:scenarioKind a owl:ObjectProperty ;
+    rdfs:label "scenario kind"@en ;
+    rdfs:domain lws-ucr:Scenario ; rdfs:range skos:Concept ;
+    rdfs:comment "MainFlow, AlternativeFlow or ErrorFlow."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:steps a owl:ObjectProperty ;
+    rdfs:label "steps"@en ;
+    rdfs:domain lws-ucr:Scenario ; rdfs:range rdf:List ;
+    rdfs:comment "An ordered rdf:List of literal step descriptions."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+#################################################################
+# Classification & lifecycle (values are SKOS concepts; domains
+# deliberately open where a property applies to both classes)
+#################################################################
+
+lws-ucr:priority a owl:ObjectProperty ;
+    rdfs:label "priority"@en ; rdfs:range skos:Concept ;
+    rdfs:comment "MoSCoW priority (Must/Should/Could/Wont) of a UseCase or Requirement."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:status a owl:ObjectProperty ;
+    rdfs:label "status"@en ; rdfs:range skos:Concept ;
+    rdfs:comment "Lifecycle status (Proposed/Accepted/Deferred/OutOfScope/Superseded). The current lws-ucs practice of RETAINING out-of-scope items for completeness is modelled, not deleted."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:category a owl:ObjectProperty ;
+    rdfs:label "category"@en ;
+    rdfs:domain lws-ucr:UseCase ; rdfs:range skos:Concept ;
+    rdfs:comment "Topic category driving document sectioning (data management, access control, ...). The scheme is the finer-grained categorization asked for in w3c/lws-ucs#91; dcterms:subject remains free for ad-hoc tags."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:requirementType a owl:ObjectProperty ;
+    rdfs:label "requirement type"@en ;
+    rdfs:domain lws-ucr:Requirement ; rdfs:range skos:Concept ;
+    rdfs:comment "functional | non-functional | security | privacy | interop."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:rationale a owl:DatatypeProperty ;
+    rdfs:label "rationale"@en ;
+    rdfs:comment "Why this requirement (or priority/status call) is warranted — CORE's approval/justification notion as plain prose."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+#################################################################
+# Traceability glue
+#################################################################
+
+lws-ucr:motivatedBy a owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:wasDerivedFrom ;
+    rdfs:label "motivated by"@en ;
+    rdfs:domain lws-ucr:Requirement ; rdfs:range lws-ucr:UseCase ;
+    owl:inverseOf lws-ucr:motivates ;
+    rdfs:comment "The use case(s) this requirement is derived from. The canonical story↔requirement edge — replaces lws-ucs's brittle by-name prose 'Stories:' back-references."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:motivates a owl:ObjectProperty ;
+    rdfs:label "motivates"@en ;
+    rdfs:domain lws-ucr:UseCase ; rdfs:range lws-ucr:Requirement ;
+    owl:inverseOf lws-ucr:motivatedBy ;
+    rdfs:comment "The requirement(s) derived from this use case; inverse of lws-ucr:motivatedBy."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:sourceIssue a owl:ObjectProperty ;
+    rdfs:subPropertyOf dcterms:source ;
+    rdfs:label "source issue"@en ;
+    rdfs:comment "The GitHub issue(s) an item originates from. Issues are provenance, never identity: identity is the dcterms:identifier fragment IRI."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:verifiedBy a owl:ObjectProperty ;
+    rdfs:label "verified by"@en ;
+    rdfs:domain lws-ucr:Requirement ; rdfs:range earl:TestCase ;
+    rdfs:comment "An executable test case that verifies an implementation against this requirement. Together with typing testable requirements earl:TestRequirement, this is the hook that lets an LWS test suite emit EARL implementation reports (earl:Assertion linking implementation, earl:TestCase and outcome) with zero new terms."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:relatedFeature a owl:ObjectProperty ;
+    rdfs:label "related protocol feature"@en ;
+    rdfs:domain lws-ucr:Requirement ; rdfs:range skos:Concept ;
+    rdfs:comment "The protocol feature area the requirement constrains. Feature concepts SHOULD ultimately be (or map to) the protocol spec's capability-registry IRIs (cf. jeswr/lws-spec's capability registry)."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+lws-ucr:conflictsWith a owl:ObjectProperty, owl:SymmetricProperty ;
+    rdfs:label "conflicts with"@en ;
+    rdfs:comment "Records a tension between two requirements (or use cases) the WG must resolve — SWORE-inspired; e.g. Keep-policies-secret (#69) vs Explainable-decisions (#86)."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+
+#################################################################
+# Controlled vocabularies (enum values live in the core vocab;
+# open-ended schemes — roles/categories/features — live at
+# .../lws-ucr/roles#, /categories#, /features# and grow freely)
+#################################################################
+
+lws-ucr:MoSCoWScheme a skos:ConceptScheme ; dcterms:title "MoSCoW priority"@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+lws-ucr:Must a skos:Concept ; skos:inScheme lws-ucr:MoSCoWScheme ;
+    skos:prefLabel "Must have"@en ;
+    skos:definition "Critical to the current deliverable: without it the protocol fails its purpose."@en .
+lws-ucr:Should a skos:Concept ; skos:inScheme lws-ucr:MoSCoWScheme ;
+    skos:prefLabel "Should have"@en ;
+    skos:definition "Important but not vital: painful to leave out, yet the deliverable remains viable without it."@en .
+lws-ucr:Could a skos:Concept ; skos:inScheme lws-ucr:MoSCoWScheme ;
+    skos:prefLabel "Could have"@en ;
+    skos:definition "Desirable if time and resources permit; included only where it does not jeopardise anything ranked above it."@en .
+lws-ucr:Wont a skos:Concept ; skos:inScheme lws-ucr:MoSCoWScheme ;
+    skos:prefLabel "Won't have (this time)"@en ;
+    skos:definition "Agreed to be out of scope for this iteration; recorded so the decision stays visible."@en .
+
+lws-ucr:StatusScheme a skos:ConceptScheme ; dcterms:title "UC&R lifecycle status"@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+lws-ucr:Proposed a skos:Concept ; skos:inScheme lws-ucr:StatusScheme ;
+    skos:prefLabel "Proposed"@en ;
+    skos:definition "Submitted (incl. items the proposer marked DRAFT); not yet triaged to acceptance."@en .
+lws-ucr:Accepted a skos:Concept ; skos:inScheme lws-ucr:StatusScheme ;
+    skos:prefLabel "Accepted"@en ;
+    skos:definition "Triaged and accepted by the editors into the current scope of the document."@en .
+lws-ucr:Deferred a skos:Concept ; skos:inScheme lws-ucr:StatusScheme ;
+    skos:prefLabel "Deferred"@en ;
+    skos:definition "Acknowledged as valid but postponed to a later iteration or deliverable."@en .
+lws-ucr:OutOfScope a skos:Concept ; skos:inScheme lws-ucr:StatusScheme ;
+    skos:prefLabel "Out of scope"@en ;
+    skos:definition "Determined to fall outside the charter or scope; retained for completeness rather than deleted."@en .
+lws-ucr:Superseded a skos:Concept ; skos:inScheme lws-ucr:StatusScheme ;
+    skos:prefLabel "Superseded"@en ;
+    skos:definition "Replaced by a newer item; retained with a pointer for traceability."@en .
+
+lws-ucr:RequirementTypeScheme a skos:ConceptScheme ; dcterms:title "Requirement type"@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+lws-ucr:Functional a skos:Concept ; skos:inScheme lws-ucr:RequirementTypeScheme ;
+    skos:prefLabel "Functional"@en ;
+    skos:definition "Constrains what the protocol must do — an observable capability or behaviour."@en .
+lws-ucr:NonFunctional a skos:Concept ; skos:inScheme lws-ucr:RequirementTypeScheme ;
+    skos:prefLabel "Non-functional"@en ;
+    skos:definition "Constrains how well the protocol does it — a quality such as performance, scalability, usability or reliability."@en .
+lws-ucr:Security a skos:Concept ; skos:inScheme lws-ucr:RequirementTypeScheme ;
+    skos:prefLabel "Security"@en ;
+    skos:definition "Protects confidentiality, integrity or availability against adversarial action."@en .
+lws-ucr:Privacy a skos:Concept ; skos:inScheme lws-ucr:RequirementTypeScheme ;
+    skos:prefLabel "Privacy"@en ;
+    skos:definition "Protects persons against unwanted disclosure, inference or correlation of information about them."@en .
+lws-ucr:Interop a skos:Concept ; skos:inScheme lws-ucr:RequirementTypeScheme ;
+    skos:prefLabel "Interoperability"@en ;
+    skos:definition "Ensures independent implementations and deployments can work together and be substituted for one another."@en .
+
+lws-ucr:ScenarioKindScheme a skos:ConceptScheme ; dcterms:title "Scenario kind"@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+lws-ucr:MainFlow a skos:Concept ; skos:inScheme lws-ucr:ScenarioKindScheme ;
+    skos:prefLabel "Main flow"@en ;
+    skos:definition "The primary success path of the use case."@en .
+lws-ucr:AlternativeFlow a skos:Concept ; skos:inScheme lws-ucr:ScenarioKindScheme ;
+    skos:prefLabel "Alternative flow"@en ;
+    skos:definition "A legitimate variant path that still achieves (a variant of) the goal."@en .
+lws-ucr:ErrorFlow a skos:Concept ; skos:inScheme lws-ucr:ScenarioKindScheme ;
+    skos:prefLabel "Error flow"@en ;
+    skos:definition "A path in which the goal is not achieved; specifies the required failure behaviour."@en .
+
+lws-ucr:ActorRoleScheme a skos:ConceptScheme ; dcterms:title "LWS actor roles"@en ;
+    rdfs:comment "Concepts at https://jeswr.org/ns/lws-ucr/roles# — seeded from the lws-ucs glossary; the consistent cast of w3c/lws-ucs#158."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+lws-ucr:CategoryScheme a skos:ConceptScheme ; dcterms:title "Use-case categories"@en ;
+    rdfs:comment "Concepts at https://jeswr.org/ns/lws-ucr/categories# — the finer categorization of w3c/lws-ucs#91."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .
+lws-ucr:FeatureScheme a skos:ConceptScheme ; dcterms:title "Protocol features"@en ;
+    rdfs:comment "Concepts at https://jeswr.org/ns/lws-ucr/features# — to be aligned with the protocol capability registry."@en ;
+    rdfs:isDefinedBy <https://jeswr.org/ns/lws-ucr> .

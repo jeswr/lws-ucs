@@ -1,0 +1,28 @@
+# AUTHORED-BY Claude Fable
+# NEGATIVE fixture (isolated): valid EXCEPT the scenario's steps form an
+# improperly terminated but NON-cyclic list — the final rdf:rest points at a
+# literal instead of rdf:nil. This is the clean, renderable SHACL evidence that
+# StepListShape's acyclic-terminator constraint (rdf:nil reachable via rdf:rest*)
+# fires: rdflib can enumerate the finite chain, so pyshacl emits a real
+# "Conforms: False" report (unlike the genuinely cyclic case).
+# scripts/validate-ucr.sh asserts this fixture is REJECTED.
+
+@prefix :        <https://jeswr.org/lws/ucr#> .
+@prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
+@prefix role:    <https://jeswr.org/ns/lws-ucr/roles#> .
+@prefix cat:     <https://jeswr.org/ns/lws-ucr/categories#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+:UC-unterminated a lws-ucr:UseCase ;
+    dcterms:identifier "UC-unterminated" ; dcterms:title "Unterminated steps"@en ;
+    dcterms:description "ctx"@en ;
+    lws-ucr:primaryActor role:User ; lws-ucr:actor role:User ;
+    lws-ucr:goal "g"@en ; lws-ucr:benefit "b"@en ;
+    lws-ucr:category cat:DataManagement ; lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/1> ;
+    lws-ucr:scenario :S-unterminated .
+
+:S-unterminated a lws-ucr:Scenario ; lws-ucr:scenarioKind lws-ucr:MainFlow ;
+    lws-ucr:steps _:u0 .
+_:u0 rdf:first "step one" ; rdf:rest "not nil — a dangling literal terminator" .
