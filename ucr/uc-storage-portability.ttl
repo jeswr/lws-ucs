@@ -33,6 +33,9 @@
     lws-ucr:priority lws-ucr:Must ;
     lws-ucr:status lws-ucr:Accepted ;
     lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/30> ,
+        <https://github.com/w3c/lws-ucs/issues/58> ,
+        <https://github.com/w3c/lws-ucs/issues/61> ,
+        <https://github.com/w3c/lws-ucs/issues/140> ,
         <https://github.com/w3c/lws-ucs/issues/164> ,
         <https://github.com/w3c/lws-ucs/issues/165> ;
     lws-ucr:motivates :REQ-storage-portability .
@@ -57,6 +60,7 @@
     dcterms:identifier "REQ-storage-portability" ;
     dcterms:title "Storage Portability"@en ;
     dcterms:description "The protocol MUST enable an entity to move an entire storage between providers such that resource identity, data integrity, standing access grants, and public availability of published resources are preserved, and the former provider is released of responsibility."@en ;
+    lws-ucr:status lws-ucr:Accepted ;
     lws-ucr:requirementType lws-ucr:Interop ;
     lws-ucr:priority lws-ucr:Must ;
     lws-ucr:rationale "Loose provider coupling is the doc's own framing of LWS's purpose; #164/#165 show naive export/import (bytes only) fails the actual sovereignty goal."@en ;

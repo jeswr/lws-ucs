@@ -48,6 +48,7 @@
     dcterms:identifier "REQ-delegation-of-access-rights" ;
     dcterms:title "Delegation of Access Rights"@en ;
     dcterms:description "The protocol MUST allow an entity to delegate a proper subset of its access rights to another entity, such that the delegate's actions are authorized by the delegation, remain attributable to the delegate, and the delegation can be revoked independently of any other grant."@en ;
+    lws-ucr:status lws-ucr:Accepted ;
     lws-ucr:requirementType lws-ucr:Functional ;
     lws-ucr:priority lws-ucr:Must ;
     lws-ucr:rationale "Delegation recurs across the corpus (assistant #10, health-record AI #11, autonomous-group re-delegation #104, generic delegation #118); a subset-scoped, independently revocable, attributable delegation primitive is the common core."@en ;
@@ -59,6 +60,7 @@
     dcterms:identifier "REQ-auditable-trail" ;
     dcterms:title "Auditable Trail"@en ;
     dcterms:description "The protocol MUST enable a resource controller to obtain an auditable record of accesses to their resources, including, for delegated access, the identity of the acting delegate and the grant under which they acted."@en ;
+    lws-ucr:status lws-ucr:Accepted ;
     lws-ucr:requirementType lws-ucr:Security ;
     lws-ucr:priority lws-ucr:Should ;
     lws-ucr:rationale "Accountability is the counterpart of delegation: without an attributable trail, subset delegation degenerates to credential sharing."@en ;

@@ -66,6 +66,13 @@ ucrsh:RequirementShape a sh:NodeShape ;
         sh:message "Exactly one normative statement." ] ;
     sh:property [ sh:path lws-ucr:requirementType ; sh:minCount 1 ;
         sh:in ( lws-ucr:Functional lws-ucr:NonFunctional lws-ucr:Security lws-ucr:Privacy lws-ucr:Interop ) ] ;
+    # A requirement MUST carry a lifecycle status (same StatusScheme as a use case).
+    # This is the machine guard for the honesty claim that Proposed items are
+    # identified as such: a new requirement that omits its status — and would
+    # otherwise be rendered among the ported/Accepted set — is a validation error.
+    sh:property [ sh:path lws-ucr:status ; sh:minCount 1 ; sh:maxCount 1 ;
+        sh:in ( lws-ucr:Proposed lws-ucr:Accepted lws-ucr:Deferred lws-ucr:OutOfScope lws-ucr:Superseded ) ;
+        sh:message "Every requirement must carry exactly one lifecycle status (Proposed for new submissions, Accepted for ported items)." ] ;
     sh:property [ sh:path lws-ucr:priority ; sh:minCount 1 ; sh:maxCount 1 ;
         sh:in ( lws-ucr:Must lws-ucr:Should lws-ucr:Could lws-ucr:Wont ) ] ;
     # NB: sh:class forces each motivatedBy target to carry rdf:type lws-ucr:UseCase,

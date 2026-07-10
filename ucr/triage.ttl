@@ -49,6 +49,7 @@
     dcterms:identifier "REQ-usage-control" ;
     dcterms:title "Usage Control Policies"@en ;
     dcterms:description "The protocol SHOULD support policies expressing usage conditions beyond access — notably the purpose of use — such that a requesting party can declare its intended usage, the policy decision can evaluate that declaration, and the recipient receives a verifiable attestation of the usage that was authorized."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Privacy , lws-ucr:Functional ;
     lws-ucr:priority lws-ucr:Could ;
     lws-ucr:rationale "Purpose limitation is a core data-protection principle (and the heart of the #59–#86 usage-control issue cluster); technically it composes with, rather than replaces, access control."@en ;
@@ -90,6 +91,7 @@
     dcterms:identifier "REQ-write-validation" ;
     dcterms:title "Server-Side Write Validation"@en ;
     dcterms:description "The protocol SHOULD allow a resource controller to associate validation rules (e.g., shapes or conditions over the mutation and the authenticated agent) with a resource, such that mutating requests not satisfying the rules are rejected with a structured error before any change is applied."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Security ;
     lws-ucr:priority lws-ucr:Could ;
     lws-ucr:rationale "Append-capable shared resources (groups, inboxes) are otherwise spam- and spoof-prone; client-side discipline cannot secure a multi-writer resource."@en ;
@@ -126,6 +128,7 @@
     dcterms:identifier "REQ-rename-move" ;
     dcterms:title "Server-Side Rename and Move"@en ;
     dcterms:description "The protocol SHOULD support renaming or moving a resource or container (including its contents) as a server-side operation that does not require re-transferring content, and SHOULD define how inbound references to the old identifier behave afterwards."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Functional ;
     lws-ucr:priority lws-ucr:Could ;
     lws-ucr:rationale "Reorganisation is routine data management; client-side copy-then-delete is quadratically expensive and loses metadata and grants."@en ;
@@ -154,6 +157,7 @@
     dcterms:identifier "REQ-pseudonymity" ;
     dcterms:title "Pseudonymous Identifiers"@en ;
     dcterms:description "The protocol SHOULD allow an entity to present distinct, unlinkable pseudonymous identifiers to distinct relying parties (and to rotate them over time), such that access still authorizes correctly but relying parties cannot correlate the entity across contexts via the identifier or storage location."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Privacy ;
     lws-ucr:priority lws-ucr:Could ;
     lws-ucr:rationale "Stable global identifiers are a tracking vector by construction; pseudonymity is the standing mitigation and interacts with the profile-management requirement (one persona per context) without replacing it."@en ;
@@ -195,6 +199,7 @@
     dcterms:identifier "REQ-extension-endpoints" ;
     dcterms:title "Discoverable Extension Endpoints"@en ;
     dcterms:description "The protocol MAY define a mechanism by which a storage controller registers additional, discoverable API endpoints (possibly served by third parties) under their storage, such that clients can discover, authenticate to, and verify the owner's endorsement of these endpoints; the mechanism MUST NOT weaken the access control of ordinary resources."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Interop ;
     lws-ucr:priority lws-ucr:Could ;
     lws-ucr:rationale "One sanctioned extension point absorbs a family of 'add feature X to the server' requests without bloating the core protocol."@en ;
@@ -222,6 +227,7 @@
     dcterms:identifier "REQ-indexing-control" ;
     dcterms:title "Indexing Control"@en ;
     dcterms:description "The protocol SHOULD provide a way to declare, at resource or container granularity, whether data is intended for indexing and discovery by other consumers, and indexing services SHOULD honour the declaration."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Functional ;
     lws-ucr:priority lws-ucr:Could ;
     lws-ucr:rationale "Discovery quality degrades fast when internal representations pollute indexes; the CRDT-log pattern in real local-first apps makes this concrete."@en ;
@@ -285,6 +291,7 @@
     dcterms:identifier "REQ-authorization-enumeration" ;
     dcterms:title "Authorization Enumeration"@en ;
     dcterms:description "The protocol SHOULD allow an authorized entity (at minimum the controller) to enumerate, in a bounded number of requests, the effective access grants over a resource or container subtree — who holds which modes over which resources, and whether each grant is direct or inherited."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Security ;
     lws-ucr:priority lws-ucr:Should ;
     lws-ucr:rationale "Access review is a security control; if the answer requires a full client-side crawl and re-implementation of inheritance, owners will not audit and over-permissioning persists."@en ;
@@ -312,6 +319,7 @@
     dcterms:identifier "REQ-external-identifier-access" ;
     dcterms:title "Access to Data About External Identifiers"@en ;
     dcterms:description "The protocol SHOULD provide a mechanism to store, and to request from a given storage, the data that storage holds about an identifier whose canonical location is elsewhere, without requiring a new identifier to be minted for the local description."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Interop ;
     lws-ucr:priority lws-ucr:Could ;
     lws-ucr:rationale "Annotation of the web under original identifiers is core linked-data practice; forcing local re-identification breaks the graph."@en ;
@@ -345,6 +353,7 @@
     dcterms:identifier "REQ-non-leaky-discovery" ;
     dcterms:title "Non-Leaky Discovery"@en ;
     dcterms:description "Discovery mechanisms (data registries, type indexes, capability descriptions, search) MUST NOT disclose the existence, type, or location of data an agent is not authorized to know about; a discovery response MUST be indistinguishable between 'does not exist' and 'exists but not authorized for you'."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Privacy , lws-ucr:Security ;
     lws-ucr:priority lws-ucr:Must ;
     lws-ucr:rationale "Existence metadata is data: a leaky index defeats resource-level access control wholesale. This constrains every discovery requirement (self-descriptive APIs, search, indexes) rather than adding a parallel surface."@en ;
@@ -411,6 +420,7 @@
     dcterms:identifier "REQ-immutable-snapshots" ;
     dcterms:title "Immutable Resource Snapshots"@en ;
     dcterms:description "The protocol SHOULD allow a storage to designate a resource as an immutable snapshot: once written it MUST NOT be overwritten or edited, only superseded by a new resource carrying a reference to its predecessor; supersession chains MUST be traversable by authorized entities."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Security ;
     lws-ucr:priority lws-ucr:Could ;
     lws-ucr:rationale "Provable records need write-once semantics the generic update model cannot express; versioning alone does not forbid in-place mutation."@en ;
@@ -422,6 +432,7 @@
     dcterms:identifier "REQ-verified-references" ;
     dcterms:title "Verified References to External Resources"@en ;
     dcterms:description "The protocol SHOULD support storing a typed reference to an external resource consisting of its identifier and a content hash, without copying the payload, such that a client can verify at link time — and re-verify on demand — that the referenced content still matches the hash."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Security ;
     lws-ucr:priority lws-ucr:Could ;
     lws-ucr:rationale "Reference-not-copy with cryptographic pinning is what lets a personal storage aggregate institution-held records without becoming a second source of truth."@en ;

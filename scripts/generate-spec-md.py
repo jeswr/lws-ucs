@@ -85,6 +85,25 @@ def anchor(ident: str) -> str:
     return ident.lower()
 
 
+# Words beginning with a vowel LETTER but a consonant SOUND ("a user", "a European")
+_CONSONANT_SOUND = {"user", "users", "european", "unicorn", "unit", "unified",
+                    "unique", "universal", "university", "utility", "one", "once",
+                    "ubiquitous"}
+# Words beginning with a consonant LETTER but a vowel SOUND ("an hour", "an honest")
+_VOWEL_SOUND = {"hour", "honest", "heir", "honour", "honor", "honorary"}
+
+
+def indefinite_article(noun_phrase: str) -> str:
+    """'a' or 'an' for a noun phrase, exception-aware (a plain vowel-letter
+    heuristic gives the wrong result for 'user', 'hour', etc.)."""
+    word = noun_phrase.strip().split()[0].lower().strip(".,;:")
+    if word in _VOWEL_SOUND:
+        return "an"
+    if word in _CONSONANT_SOUND or word.startswith(("uni", "use", "usu", "eu")):
+        return "a"
+    return "an" if word[:1] in "aeiou" else "a"
+
+
 def source_link(url: str) -> str:
     """Render a source IRI as a short markdown link."""
     u = str(url)
@@ -182,7 +201,7 @@ def render_use_case(g, uc, ucs, reqs, uc2req, out):
     goal = text(g, uc, LWS_UCR.goal) or ""
     benefit = text(g, uc, LWS_UCR.benefit) or ""
     actor_name = label(g, primary).lower() if primary is not None else "user"
-    article = "an" if actor_name[0] in "aeiou" else "a"
+    article = indefinite_article(actor_name)
     out.append(f"  **As {article}** {actor_name}, **I want** {goal}, **so that** {benefit}.")
     out.append("")
     desc = text(g, uc, DCTERMS.description)

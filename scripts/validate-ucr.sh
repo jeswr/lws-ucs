@@ -113,5 +113,18 @@ for ex in examples/negative/*.ttl; do
 done
 
 echo
+echo "== Generated spec markdown matches the corpus (drift check) =="
+# The corpus (ucr/*.ttl) is the source of truth; spec/*.md are build artifacts.
+# A conforming corpus with STALE committed markdown must FAIL the gate, otherwise
+# the anti-drift check is only advisory. --check regenerates in memory and diffs
+# against the committed files (non-zero exit on drift).
+if "$PYTHON" scripts/generate-spec-md.py --check; then
+  echo "  OK: spec/*.md is in sync with ucr/*.ttl"
+else
+  echo "  DRIFT: spec/*.md is stale — run: python3 scripts/generate-spec-md.py" >&2
+  status=1
+fi
+
+echo
 if [ "$status" -eq 0 ]; then echo "ALL CHECKS PASSED"; else echo "SOME CHECKS FAILED"; fi
 exit $status

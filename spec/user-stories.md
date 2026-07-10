@@ -9,7 +9,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-generic-storage">Generic Storage</dfn>** <span class="informative">(`UC-generic-storage` — Accepted)</span>
 
-  **As an** user, **I want** a format-agnostic online storage system that supports any type of resource, so I can perform create, read, update and delete — including metadata and access-control modifications, and recovery of previous versions — from any device at any time, **so that** I have seamless data management across devices and full control over my resources.
+  **As a** user, **I want** a format-agnostic online storage system that supports any type of resource, so I can perform create, read, update and delete — including metadata and access-control modifications, and recovery of previous versions — from any device at any time, **so that** I have seamless data management across devices and full control over my resources.
 
   *Context:* The foundational storage story: any resource type, full CRUD including metadata and access-control state, version recovery, device-independent.
 
@@ -19,7 +19,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-large-file-uploads">Large File Uploads</dfn>** <span class="informative">(`UC-large-file-uploads` — Accepted)</span>
 
-  **As an** user, **I want** to upload very large files to my storage, resuming an interrupted transfer where it left off, **so that** an unreliable connection never forces a multi-gigabyte transfer to restart from zero.
+  **As a** user, **I want** to upload very large files to my storage, resuming an interrupted transfer where it left off, **so that** an unreliable connection never forces a multi-gigabyte transfer to restart from zero.
 
   *Context:* Uploads of large media (video, disk images, sensor archives) routinely exceed the reliability window of consumer connections; without resumability the probability of ever completing a transfer falls with file size.
 
@@ -42,7 +42,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-offline-data-access">Offline Data Access</dfn>** <span class="informative">(`UC-offline-data-access` — Accepted)</span>
 
-  **As an** user, **I want** to access and modify my data offline, with automatic synchronization upon reconnection, **so that** I can work without a network and avoid data corruption or conflicts.
+  **As a** user, **I want** to access and modify my data offline, with automatic synchronization upon reconnection, **so that** I can work without a network and avoid data corruption or conflicts.
 
   *Context:* Offline support is vital for users in areas with unreliable connectivity.
 
@@ -52,7 +52,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-storage-portability">Portable Storage</dfn>** <span class="informative">(`UC-storage-portability` — Accepted)</span>
 
-  **As an** user, **I want** to move my storage between providers, or self-host it, without losing data, identifiers, or standing access arrangements, **so that** I am never locked in: my data, its addresses, and the grants I have made survive a change of provider.
+  **As a** user, **I want** to move my storage between providers, or self-host it, without losing data, identifiers, or standing access arrangements, **so that** I am never locked in: my data, its addresses, and the grants I have made survive a change of provider.
 
   *Context:* Data sovereignty is a founding motivation of LWS. Portability is only real if a move preserves not just the bytes but the web around them: long-lived authorizations (a patient's drug-interaction agent must keep access across a move — issue #164) and published public resources (a journalist's documents must remain retrievable after their publisher account is rescinded — issue #165).
 
@@ -72,7 +72,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
   *Derived requirements:* [Storage Portability](#req-storage-portability).
 
-  *Sources:* [#30](https://github.com/w3c/lws-ucs/issues/30), [#164](https://github.com/w3c/lws-ucs/issues/164), [#165](https://github.com/w3c/lws-ucs/issues/165)
+  *Sources:* [#30](https://github.com/w3c/lws-ucs/issues/30), [#58](https://github.com/w3c/lws-ucs/issues/58), [#61](https://github.com/w3c/lws-ucs/issues/61), [#140](https://github.com/w3c/lws-ucs/issues/140), [#164](https://github.com/w3c/lws-ucs/issues/164), [#165](https://github.com/w3c/lws-ucs/issues/165)
 
 - **<dfn id="uc-binary-asset-descriptor">Binary Asset with Linked Descriptor</dfn>** <span class="informative">(`UC-binary-asset-descriptor` — Proposed)</span>
 
@@ -168,7 +168,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-foreign-identifier-data">Local Data About Foreign Identifiers</dfn>** <span class="informative">(`UC-foreign-identifier-data` — Proposed)</span>
 
-  **As an** user, **I want** to store and retrieve data in my storage about an identifier whose canonical location is a different storage (a friend's WebID, a remote ontology), **so that** I can keep information I own about external entities under their own identifier — no invented duplicate identifiers — and still reach the canonical source.
+  **As a** user, **I want** to store and retrieve data in my storage about an identifier whose canonical location is a different storage (a friend's WebID, a remote ontology), **so that** I can keep information I own about external entities under their own identifier — no invented duplicate identifiers — and still reach the canonical source.
 
   *Context:* Bob keeps notes about Alice under Alice's own identifier; a service caches ontologies whose original hosting lapsed under their original IRIs. The storage must support retrieving what a storage says about an identifier it does not host (distinct from dereferencing the identifier itself), preserving interoperability of the original IRI.
 
@@ -178,7 +178,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-link-preservation">Markers for Moved or Deleted Resources</dfn>** <span class="informative">(`UC-link-preservation` — Proposed)</span>
 
-  **As an** user, **I want** moved or deleted resources to leave a discoverable marker, **so that** existing links do not silently break when data moves within a provider or migrates to another one.
+  **As a** user, **I want** moved or deleted resources to leave a discoverable marker, **so that** existing links do not silently break when data moves within a provider or migrates to another one.
 
   *Context:* Linked data is built on links; a move or delete without a marker severs every inbound reference indistinguishably from a network error. A marker (tombstone for deletions, forwarding marker for moves) lets clients distinguish gone from moved from never-existed. Cf. pdsinterop's solid-link-metadata as prior art.
 
@@ -190,7 +190,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-media-streaming">Media Playback from Storage</dfn>** <span class="informative">(`UC-media-streaming` — Proposed)</span>
 
-  **As an** user, **I want** to play music and video, and browse large photo collections, directly from my storage, **so that** my media library lives with me, not with a streaming platform, and still seeks, scrubs and thumbnails like one.
+  **As a** user, **I want** to play music and video, and browse large photo collections, directly from my storage, **so that** my media library lives with me, not with a streaming platform, and still seeks, scrubs and thumbnails like one.
 
   *Context:* Media apps over pods (the pod-music and pod-photos apps) need partial-content reads: seeking in an audio or video file is a byte-range request, not a full download; a photo grid needs to fetch many images efficiently. Without range support a seek re-downloads the file — unusable on large media. Derived representations (thumbnails, transcodes) also want a home that does not disturb the original (see the linked-descriptor use case).
 
@@ -236,7 +236,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-resource-rename-move">Renaming / Moving a Resource or Container</dfn>** <span class="informative">(`UC-resource-rename-move` — Proposed)</span>
 
-  **As an** user, **I want** to rename or move a resource or container to a different name or location, **so that** I can organize my storage my preferred way (and apps can migrate old layouts to new conventions).
+  **As a** user, **I want** to rename or move a resource or container to a different name or location, **so that** I can organize my storage my preferred way (and apps can migrate old layouts to new conventions).
 
   *Context:* Moving changes the resource's identifier and may break inbound links (including registrations in type indexes); it thus differs from create/modify/delete. Unlike whole-storage portability, relative-URL tricks do not help within a storage. A server-side move must not require re-uploading content — decisive for large resources and containers.
 
@@ -301,7 +301,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-group-sharing">Group Sharing</dfn>** <span class="informative">(`UC-group-sharing` — Accepted)</span>
 
-  **As an** user, **I want** to share data with dynamic groups (e.g., event attendees), **so that** membership and permissions update automatically as the group evolves.
+  **As a** user, **I want** to share data with dynamic groups (e.g., event attendees), **so that** membership and permissions update automatically as the group evolves.
 
   *Context:* This simplifies access management for temporary or changing collaborations. A group or organization must itself be able to be a data owner (issue #38).
 
@@ -313,7 +313,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-health-record-access">Health Record Access</dfn>** <span class="informative">(`UC-health-record-access` — Accepted)</span>
 
-  **As an** user, **I want** to share specific health records with an AI assistant using delegated authorization, **so that** I can get a second opinion, with audit logs ensuring accountability.
+  **As a** user, **I want** to share specific health records with an AI assistant using delegated authorization, **so that** I can get a second opinion, with audit logs ensuring accountability.
 
   *Context:* A patient shares selected health records with an AI assistant under a delegated, audited authorization — secure, accountable health data sharing for informed decisions.
 
@@ -335,7 +335,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-profile-sharing">Profile Sharing</dfn>** <span class="informative">(`UC-profile-sharing` — Accepted)</span>
 
-  **As an** user, **I want** to maintain multiple profiles with distinct access controls, **so that** I can share specific information while keeping other data private.
+  **As a** user, **I want** to maintain multiple profiles with distinct access controls, **so that** I can share specific information while keeping other data private.
 
   *Context:* Multiple profiles support different personas or contexts (e.g., work vs. personal). Issue #192 asks for this use case to be written out fully in support of the profile-management requirement: the elaboration here — distinct identifiers, metadata namespaces and access-control rules per profile — is that write-up.
 
@@ -395,7 +395,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-profile-indexing">Indexing a Volunteer Profile</dfn>** <span class="informative">(`UC-profile-indexing` — Proposed)</span>
 
-  **As an** user, **I want** platforms and organisations that offer volunteering opportunities to index my profile, with my consent, **so that** they can reach out to me when opportunities relevant to my profile need volunteers.
+  **As a** user, **I want** platforms and organisations that offer volunteering opportunities to index my profile, with my consent, **so that** they can reach out to me when opportunities relevant to my profile need volunteers.
 
   *Context:* Consented third-party indexing of user-controlled data, end to end: the volunteer submits their profile URL and grants read access for the purpose of indexing; indexers are notified of (or poll for) profile updates; suggestions flow back; and the volunteer can both revoke the indexer's access and require removal from the index. Purpose-bound, revocable, notification-driven — a composition of access request, consent, notification and usage-control requirements.
 
@@ -447,7 +447,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-application-notifications">Application Notifications</dfn>** <span class="informative">(`UC-application-notifications` — Accepted)</span>
 
-  **As an** user, **I want** email or web push notifications for storage activity, **so that** I remain aware of important events.
+  **As a** user, **I want** email or web push notifications for storage activity, **so that** I remain aware of important events.
 
   *Context:* Notifications keep users engaged with their data.
 
@@ -457,7 +457,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-meeting-scheduling">Meeting Scheduling</dfn>** <span class="informative">(`UC-meeting-scheduling` — Accepted)</span>
 
-  **As an** user, **I want** to schedule meetings directly through my storage, with conflict detection for online and offline scenarios, **so that** I avoid double-booking.
+  **As a** user, **I want** to schedule meetings directly through my storage, with conflict detection for online and offline scenarios, **so that** I avoid double-booking.
 
   *Context:* Integrated scheduling boosts productivity and coordination.
 
@@ -469,7 +469,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-polling">Polling</dfn>** <span class="informative">(`UC-polling` — Accepted)</span>
 
-  **As an** user, **I want** to create and manage polls within my storage, **so that** I can gather opinions and feedback from others.
+  **As a** user, **I want** to create and manage polls within my storage, **so that** I can gather opinions and feedback from others.
 
   *Context:* Polls support decision-making and community engagement.
 
@@ -489,7 +489,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-semantic-collaboration">Semantic Collaboration</dfn>** <span class="informative">(`UC-semantic-collaboration` — Accepted)</span>
 
-  **As an** user, **I want** to co-author structured content with others using permanent URIs and flexible permissions, **so that** collaboration is efficient and traceable.
+  **As a** user, **I want** to co-author structured content with others using permanent URIs and flexible permissions, **so that** collaboration is efficient and traceable.
 
   *Context:* This enables advanced use cases like shared knowledge bases.
 
@@ -501,7 +501,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-universal-communication">Universal Communication</dfn>** <span class="informative">(`UC-universal-communication` — Accepted)</span>
 
-  **As an** user, **I want** direct messaging channels with other storage owners, **so that** I can collaborate seamlessly within the platform.
+  **As a** user, **I want** direct messaging channels with other storage owners, **so that** I can collaborate seamlessly within the platform.
 
   *Context:* Built-in communication strengthens user interaction.
 
@@ -511,7 +511,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-federated-task-dashboard">Federated Task Dashboard</dfn>** <span class="informative">(`UC-federated-task-dashboard` — Proposed)</span>
 
-  **As an** user, **I want** to see every task assigned to me in one view, across all the project storages I collaborate in, **so that** work assigned to me in ten different pods behaves like one work queue.
+  **As a** user, **I want** to see every task assigned to me in one view, across all the project storages I collaborate in, **so that** work assigned to me in ten different pods behaves like one work queue.
 
   *Context:* An issue tracker whose issues live in project pods (jeswr/solid-issues over the shared jeswr/solid-task-model) plus a dashboard aggregating 'assigned to me' (Pod Manager) require: a shared task vocabulary, access-control-respecting reads across many storages, and change notifications so the dashboard stays current without polling every project pod. This is the concrete everyday shape of the federated-query requirement.
 
@@ -557,7 +557,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-digital-goods-delivery">Digital Goods Delivery</dfn>** <span class="informative">(`UC-digital-goods-delivery` — Accepted)</span>
 
-  **As an** user, **I want** secure delivery of digital goods (e.g., software, media) with confirmation receipts, **so that** providers can deliver assets with minimal intervention.
+  **As a** user, **I want** secure delivery of digital goods (e.g., software, media) with confirmation receipts, **so that** providers can deliver assets with minimal intervention.
 
   *Context:* This ensures reliable digital product delivery.
 
@@ -569,7 +569,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-personal-information-management">Personal Information Management</dfn>** <span class="informative">(`UC-personal-information-management` — Accepted)</span>
 
-  **As an** user, **I want** to manage my personal data in my storage and integrate it with non-LWS apps via some data transformation, **so that** I can use various apps without creating data silos.
+  **As a** user, **I want** to manage my personal data in my storage and integrate it with non-LWS apps via some data transformation, **so that** I can use various apps without creating data silos.
 
   *Context:* This promotes interoperability and user control.
 
@@ -579,7 +579,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-ai-agent-access">AI Agent Access to Storage</dfn>** <span class="informative">(`UC-ai-agent-access` — Proposed)</span>
 
-  **As an** user, **I want** to let an AI assistant read (and, where I say so, write) selected parts of my storage, **so that** my assistant works over my actual data while everything it does stays bounded and attributable to it — not to me.
+  **As a** user, **I want** to let an AI assistant read (and, where I say so, write) selected parts of my storage, **so that** my assistant works over my actual data while everything it does stays bounded and attributable to it — not to me.
 
   *Context:* A protocol server exposing a pod to AI agents (jeswr/solid-mcp) ships read-only by default, with a fail-closed scope guard and per-hop redirect protection — all client-side, because the storage offers no way to issue an agent a credential that the STORAGE enforces as read-only-within-subtree. Agent access sharpens three needs: least-privilege scoping enforced server-side, audit attribution distinguishing the agent from the delegating user (the administrative-assistant requirement, mechanised), and revocation that kills the agent's authority instantly.
 
@@ -649,7 +649,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-agent-memory">User-Owned Agent Memory</dfn>** <span class="informative">(`UC-agent-memory` — Proposed)</span>
 
-  **As an** user, **I want** AI agents to keep their memory about me in MY storage rather than in each vendor's silo, **so that** memory becomes portable across agents and vendors, inspectable, and deletable by me.
+  **As a** user, **I want** AI agents to keep their memory about me in MY storage rather than in each vendor's silo, **so that** memory becomes portable across agents and vendors, inspectable, and deletable by me.
 
   *Context:* An agent-memory backend over pods (jeswr/solid-memory with an adapter for an agent framework, jeswr/openclaw-memory-solid): memory items are typed RDF, owner-private by default, carrying provenance of which agent generated each item. The storage needs are least-privilege agent credentials (an agent reads/writes only its memory container), provenance attribution per write, and the user's unilateral right to inspect and delete — which falls out of ordinary resource control once memory is IN the storage.
 
@@ -661,7 +661,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-workflow-automation">Workflow Automation over Storage</dfn>** <span class="informative">(`UC-workflow-automation` — Proposed)</span>
 
-  **As an** user, **I want** my automation workflows (low-code pipelines, scheduled jobs) to read and write my storage as one step among many, **so that** my storage participates in the automation ecosystem — a new bookmark can trigger a pipeline; a pipeline can file data into my pod.
+  **As a** user, **I want** my automation workflows (low-code pipelines, scheduled jobs) to read and write my storage as one step among many, **so that** my storage participates in the automation ecosystem — a new bookmark can trigger a pipeline; a pipeline can file data into my pod.
 
   *Context:* A community node for a workflow platform (jeswr/n8n-nodes-solid) exposes storage CRUD to non-technical automation builders. Its hard requirements from the storage: credentials grantable to a WORKFLOW, scoped to a container subtree (the pipeline must not hold the user's full authority — the node enforces a pod-scope guard client-side today, which the server cannot verify); machine-actionable errors (a pipeline branches on 'conflict' vs 'forbidden' vs 'rate-limited'); and explicit rate-limit signalling with retry timing, since a fan-out pipeline hammers the storage in bursts.
 
@@ -675,7 +675,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-contextual-interactions">Contextual Interactions</dfn>** <span class="informative">(`UC-contextual-interactions` — Accepted)</span>
 
-  **As an** user, **I want** context-aware display of interactions alongside content, **so that** I can understand permissions and history intuitively.
+  **As a** user, **I want** context-aware display of interactions alongside content, **so that** I can understand permissions and history intuitively.
 
   *Context:* This improves user understanding of data interactions.
 
@@ -685,7 +685,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-home-access">Home Access</dfn>** <span class="informative">(`UC-home-access` — Accepted)</span>
 
-  **As an** user, **I want** to access my storage from home devices with dynamic IPs, **so that** connectivity issues don't prevent me from using my data.
+  **As a** user, **I want** to access my storage from home devices with dynamic IPs, **so that** connectivity issues don't prevent me from using my data.
 
   *Context:* This ensures accessibility in home environments (self-hosting on home desktops or NAS devices behind consumer connections).
 
@@ -707,7 +707,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-pagination-filtering">Pagination & Filtering</dfn>** <span class="informative">(`UC-pagination-filtering` — Accepted)</span>
 
-  **As an** user, **I want** efficient pagination, filtering, and ordering of search results, **so that** I can navigate large datasets easily.
+  **As a** user, **I want** efficient pagination, filtering, and ordering of search results, **so that** I can navigate large datasets easily.
 
   *Context:* These features enhance data usability.
 
@@ -717,7 +717,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-search-functionality">Search Functionality</dfn>** <span class="informative">(`UC-search-functionality` — Accepted)</span>
 
-  **As an** user, **I want** powerful search capabilities with contextual awareness and security enforcement, **so that** I can find relevant resources quickly and safely.
+  **As a** user, **I want** powerful search capabilities with contextual awareness and security enforcement, **so that** I can find relevant resources quickly and safely.
 
   *Context:* Effective search is essential for large datasets.
 
@@ -727,7 +727,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-sensor-data-sharing">Sensor Data Sharing</dfn>** <span class="informative">(`UC-sensor-data-sharing` — Accepted)</span>
 
-  **As an** user, **I want** to share sensor data at varying levels of granularity without duplication, **so that** consumers receive only the detail they need.
+  **As a** user, **I want** to share sensor data at varying levels of granularity without duplication, **so that** consumers receive only the detail they need.
 
   *Context:* Efficient sharing reduces resource usage.
 
@@ -737,7 +737,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-sparql-queries">SPARQL Queries</dfn>** <span class="informative">(`UC-sparql-queries` — Accepted)</span>
 
-  **As an** user, **I want** support for SPARQL queries to perform complex searches and data analysis, **so that** I can extract insights from linked data.
+  **As a** user, **I want** support for SPARQL queries to perform complex searches and data analysis, **so that** I can extract insights from linked data.
 
   *Context:* A power user's story: SPARQL enables advanced semantic web queries.
 
@@ -757,7 +757,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-timeseries-storage">Timeseries Storage</dfn>** <span class="informative">(`UC-timeseries-storage` — Accepted)</span>
 
-  **As an** user, **I want** to store timeseries data with resolution limits and multidimensional analysis support, **so that** I can efficiently analyze trends over time.
+  **As a** user, **I want** to store timeseries data with resolution limits and multidimensional analysis support, **so that** I can efficiently analyze trends over time.
 
   *Context:* This is critical for applications like IoT or analytics.
 
@@ -767,7 +767,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-webid-profile-interaction">WebID Profile Interaction</dfn>** <span class="informative">(`UC-webid-profile-interaction` — Accepted)</span>
 
-  **As an** user, **I want** clicking a WebID to display profiles and available actions, **so that** I can engage with contacts effortlessly.
+  **As a** user, **I want** clicking a WebID to display profiles and available actions, **so that** I can engage with contacts effortlessly.
 
   *Context:* This enhances social and professional interactions.
 
@@ -777,7 +777,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-website-creation">Website Creation</dfn>** <span class="informative">(`UC-website-creation` — Accepted)</span>
 
-  **As an** user, **I want** to publish self-describing websites with persistent URIs, **so that** my content remains accessible and interoperable over time.
+  **As a** user, **I want** to publish self-describing websites with persistent URIs, **so that** my content remains accessible and interoperable over time.
 
   *Context:* This supports durable web publishing.
 
@@ -791,7 +791,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-e2e-encryption">'End to End' Encryption</dfn>** <span class="informative">(`UC-e2e-encryption` — Accepted)</span>
 
-  **As an** user, **I want** end-to-end encryption for all data storage and transfers, **so that** only authorized parties can decrypt and access my information.
+  **As a** user, **I want** end-to-end encryption for all data storage and transfers, **so that** only authorized parties can decrypt and access my information.
 
   *Context:* Encryption ensures data confidentiality — even against the storage provider itself.
 
@@ -801,7 +801,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-consent-based-sharing">Consent-Based Sharing</dfn>** <span class="informative">(`UC-consent-based-sharing` — Accepted)</span>
 
-  **As an** user, **I want** verifiable consent mechanisms with audit trails for data sharing, **so that** I can ensure compliance with privacy regulations.
+  **As a** user, **I want** verifiable consent mechanisms with audit trails for data sharing, **so that** I can ensure compliance with privacy regulations.
 
   *Context:* Consent management supports ethical data practices. The cluster of usage-control issues (#80–#86) elaborates purpose-based, processing-based and automated usage control on top of consent.
 
@@ -842,7 +842,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-private-data-discovery">Privacy in Data Discovery</dfn>** <span class="informative">(`UC-private-data-discovery` — Proposed)</span>
 
-  **As an** user, **I want** data discovery to respect my privacy, **so that** unauthorized parties can't profile me because my storage discloses too much through the discovery layer itself.
+  **As a** user, **I want** data discovery to respect my privacy, **so that** unauthorized parties can't profile me because my storage discloses too much through the discovery layer itself.
 
   *Context:* Discovery is itself a disclosure channel: when a tax app asks where tax-relevant data lives, the storage must not reveal to it that health-related data classes exist (their mere existence can suggest, e.g., a pregnancy). Authorized discovery must return exactly the authorized data locations and nothing about the existence of anything else.
 
@@ -856,7 +856,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-pseudonymous-access">Pseudonymous Access for Vendors</dfn>** <span class="informative">(`UC-pseudonymous-access` — Proposed)</span>
 
-  **As an** user, **I want** vendors to access my data without being able to uniquely identify me across services, **so that** vendors cannot track me across domains or correlate their records with other vendors'.
+  **As a** user, **I want** vendors to access my data without being able to uniquely identify me across services, **so that** vendors cannot track me across domains or correlate their records with other vendors'.
 
   *Context:* Fixed identifier or storage URLs (https://ID.provider.example, /ID/ paths) let vendors track a user across vendor domains or collude by exchanging the stable identifier. The storage/identity layer needs rotating per-vendor aliases (pseudo-identifiers) — per vendor, and rotatable over time for a single vendor.
 
@@ -870,7 +870,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-clear-error-messages">Clear Error Messages</dfn>** <span class="informative">(`UC-clear-error-messages` — Accepted)</span>
 
-  **As an** user, **I want** error messages that are clear and actionable, **so that** I can resolve issues quickly and without frustration.
+  **As a** user, **I want** error messages that are clear and actionable, **so that** I can resolve issues quickly and without frustration.
 
   *Context:* Good error handling enhances user experience. For applications this means machine-readable error structure, not just human-readable text — an application can only render an actionable message if the server tells it precisely what failed.
 
@@ -882,7 +882,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-performant-access-control">Performant Access Control</dfn>** <span class="informative">(`UC-performant-access-control` — Accepted)</span>
 
-  **As an** user, **I want** access control mechanisms that are responsive and scalable, **so that** the system performs well even under heavy load.
+  **As a** user, **I want** access control mechanisms that are responsive and scalable, **so that** the system performs well even under heavy load.
 
   *Context:* Performance is critical for large-scale use.
 
@@ -892,7 +892,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-storage-ownership">Storage Ownership</dfn>** <span class="informative">(`UC-storage-ownership` — Accepted)</span>
 
-  **As an** user, **I want** ownership assigned upon storage creation, **so that** I have full control from the outset.
+  **As a** user, **I want** ownership assigned upon storage creation, **so that** I have full control from the outset.
 
   *Context:* Immediate ownership clarifies user authority. The relationship between the controller of a storage and the controller of a resource within it is under WG clarification (issue #213).
 
@@ -906,7 +906,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-authentication-mechanisms">Authentication Mechanism(s)</dfn>** <span class="informative">(`UC-authentication-mechanisms` — Accepted)</span>
 
-  **As an** user, **I want** support for modern authentication methods like passkeys, silent authentication, and script-friendly options, **so that** I can authenticate securely across diverse scenarios.
+  **As a** user, **I want** support for modern authentication methods like passkeys, silent authentication, and script-friendly options, **so that** I can authenticate securely across diverse scenarios.
 
   *Context:* Flexible authentication meets varied user needs: passkey/WebAuthn login (#51), browser-level login (#50), logging back into applications without re-directing to the identity provider (#49), silent authentication (#41), and script/backend-friendly flows.
 
@@ -916,7 +916,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-globally-unique-identifiers">Globally Unique Identity</dfn>** <span class="informative">(`UC-globally-unique-identifiers` — Accepted)</span>
 
-  **As an** user, **I want** my identity, my storages, and the resources in them to be identified by globally unique identifiers, **so that** anything I control can be referenced unambiguously from anywhere, by anyone I choose, without central coordination.
+  **As a** user, **I want** my identity, my storages, and the resources in them to be identified by globally unique identifiers, **so that** anything I control can be referenced unambiguously from anywhere, by anyone I choose, without central coordination.
 
   *Context:* RECONSTRUCTED: the requirements document back-referenced a story named 'Globally Unique Identifiers' that did not exist in the stories list — a dangling by-name reference now caught by the machine-checked motivatedBy chain. The submitted [UC] issues (#115 entity identity, #108 storage identity) supply the content: entities and storages need global, collision-free identity for cross-storage reference, access control and portability.
 
@@ -926,7 +926,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-identity-credentials-management">Identity & Credentials Management</dfn>** <span class="informative">(`UC-identity-credentials-management` — Accepted)</span>
 
-  **As an** user, **I want** to manage my identities and credentials locally, **so that** I control my authentication process directly from my device.
+  **As a** user, **I want** to manage my identities and credentials locally, **so that** I control my authentication process directly from my device.
 
   *Context:* Local management boosts security and autonomy.
 
@@ -946,7 +946,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-id-alias">ID Alias</dfn>** <span class="informative">(`UC-id-alias` — Proposed)</span>
 
-  **As an** user, **I want** to link multiple identifiers as aliases of the same entity, **so that** any of my identifiers represents me — access keeps working when one identity service is down, and unlinking one alias never breaks social links held under the others.
+  **As a** user, **I want** to link multiple identifiers as aliases of the same entity, **so that** any of my identifiers represents me — access keeps working when one identity service is down, and unlinking one alias never breaks social links held under the others.
 
   *Context:* Alias semantics beyond migration: grants made to one identifier honour requests presented under its aliases; aliases are individually revocable (removing one revokes only that identifier's access); and contacts can address the entity under any active alias. Error handling matters: the home server of one alias being unreachable must not lock out access under another.
 
@@ -962,7 +962,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-recognizable-app-identity">Recognizable Application Identity</dfn>** <span class="informative">(`UC-recognizable-app-identity` — Proposed)</span>
 
-  **As an** user, **I want** the consent screen to name the actual application I am authorizing — stably across sessions and deployments, **so that** I can make a meaningful trust decision, recognise the app in my grant list later, and revoke exactly it.
+  **As a** user, **I want** the consent screen to name the actual application I am authorizing — stably across sessions and deployments, **so that** I can make a meaningful trust decision, recognise the app in my grant list later, and revoke exactly it.
 
   *Context:* With throwaway dynamic client registration the consent screen shows a random opaque identifier; the user learns nothing and the grant list is unreviewable. Every deployed suite app moved to a stable application identifier document (name, logo, redirect URIs) served by the app — with the operational gotcha that the identity is per deployment ORIGIN (a Vercel preview and production are different apps to the authorization server). Grants keyed to the stable app identity are what make the access-overview dashboard's by-application view possible.
 
@@ -974,7 +974,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-silent-session-restore">Silent Session Restore</dfn>** <span class="informative">(`UC-silent-session-restore` — Proposed)</span>
 
-  **As an** user, **I want** reopening an app to silently restore my authenticated session — no redirect, no popup, no re-login — until I log out or the grant is revoked, **so that** apps over my storage feel like apps, not like a login treadmill.
+  **As a** user, **I want** reopening an app to silently restore my authenticated session — no redirect, no popup, no re-login — until I log out or the grant is revoked, **so that** apps over my storage feel like apps, not like a login treadmill.
 
   *Context:* The single most re-implemented piece of client plumbing in the suite (extracted to jeswr/solid-session-restore after being hand-rolled per app, then hardened again in the Elk and Excalidraw forks): persist a scoped refresh credential per user, restore the session by a silent token refresh on load, guard against restoring another user's session on a shared device (cross-user generation guard), and fall back to interactive login only on genuine failure. The protocol-level need: an auth flow with a persistable, silently refreshable, individually revocable credential — with sensitive-operation step-up (the passkey re-authentication profile) composing on top.
 
@@ -1050,7 +1050,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-storage-flexibility">Storage Flexibility</dfn>** <span class="informative">(`UC-storage-flexibility` — Accepted)</span>
 
-  **As an** user, **I want** the ability to dynamically split or aggregate storage units, **so that** I can adjust capacity and organization as my needs evolve.
+  **As a** user, **I want** the ability to dynamically split or aggregate storage units, **so that** I can adjust capacity and organization as my needs evolve.
 
   *Context:* Flexible storage supports scalability and customization.
 
@@ -1060,7 +1060,7 @@ The use cases below are generated from the machine-readable corpus in [`ucr/`](h
 
 - **<dfn id="uc-storage-usage-insight">Storage Usage and Quota Insight</dfn>** <span class="informative">(`UC-storage-usage-insight` — Proposed)</span>
 
-  **As an** user, **I want** to see how much space my storage uses, what is using it, and how much I have left, **so that** I can manage my storage before hitting a hard limit, and apps can warn me before a large write fails.
+  **As a** user, **I want** to see how much space my storage uses, what is using it, and how much I have left, **so that** I can manage my storage before hitting a hard limit, and apps can warn me before a large write fails.
 
   *Context:* A storage manager (jeswr/solid-pod-manager) has no standard way to render a usage view: per-container sizes require walking the whole tree, and quota limits are provider-proprietary. Apps writing large data (media, scene files) equally need to distinguish 'quota exceeded' from other write failures, before or at write time. Needs: discoverable usage/quota metadata on the storage description, per-container aggregate size, and a structured quota-exceeded error.
 

@@ -17,6 +17,7 @@
     dcterms:identifier "REQ-conditional-requests" ;
     dcterms:title "Conditional Requests and Optimistic Concurrency"@en ;
     dcterms:description "Every resource MUST expose a stable version validator that changes exactly when the representation changes. Reads MUST be conditionable on the validator (returning a cheap not-modified answer for an unchanged resource). Writes MUST be conditionable on (a) the validator the client last read — rejecting the write if the resource changed (lost-update protection) — and (b) non-existence, so a create-only write can never overwrite an existing resource. Conditional-failure rejections MUST be distinguishable from authorization and other failures."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Interop ;
     lws-ucr:priority lws-ucr:Must ;
     lws-ucr:rationale "The single most load-bearing storage primitive across the app corpus: optimistic saves (capnote, access-manager), CRDT logs (actual, y-solid — create-only appends + CAS snapshots), cache revalidation (solid-offline), and fail-closed provisioning all reduce to conditional requests. HTTP has the machinery (ETag, If-Match, If-None-Match); the requirement is that the protocol mandate its coherent support."@en ;
@@ -30,6 +31,7 @@
     dcterms:identifier "REQ-atomic-batch" ;
     dcterms:title "Atomic Multi-Resource Operations"@en ;
     dcterms:description "The protocol SHOULD provide a mechanism to read a set of resources as one consistent point-in-time view, and MAY provide all-or-nothing application of a set of writes, so that clients restoring or migrating multi-resource state never observe or produce a torn half-state."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Functional ;
     lws-ucr:priority lws-ucr:Could ;
     lws-ucr:rationale "The Elk fork's restore path had to be hardened into a client-side staged all-or-nothing hydrate; a batch/consistency primitive would make that guarantee a protocol property rather than per-app discipline. Kept SHOULD/MAY: it is in tension with stateless horizontal scaling and must not become a distributed-transaction mandate."@en ;
@@ -41,6 +43,7 @@
     dcterms:identifier "REQ-binary-fidelity" ;
     dcterms:title "Byte-Exact Non-RDF Resource Fidelity"@en ;
     dcterms:description "A non-RDF resource retrieved from storage MUST be byte-identical to the representation that was stored, and its declared content type MUST be preserved. A storage MUST NOT transform, re-serialize, or re-encode non-RDF representations."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Interop ;
     lws-ucr:priority lws-ucr:Must ;
     lws-ucr:rationale "Applications hash, sign and version their native files; a storage that rewrites bytes breaks them undetectably (the whiteboard fork's scene files and media libraries both depend on exact round-trips)."@en ;
@@ -52,6 +55,7 @@
     dcterms:identifier "REQ-paired-metadata" ;
     dcterms:title "Descriptive Metadata Without Touching the Resource"@en ;
     dcterms:description "The protocol MUST support associating descriptive RDF metadata with a resource (including a non-RDF resource) such that the metadata can be created, read and updated without modifying the described resource's bytes or validator, and is discoverable from the resource."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Functional ;
     lws-ucr:priority lws-ucr:Should ;
     lws-ucr:rationale "The blob+descriptor split (native artifact plus RDF description) is how binary-centric apps stay discoverable to the rest of the ecosystem; without a standard association, each app invents its own naming convention."@en ;
@@ -63,6 +67,7 @@
     dcterms:identifier "REQ-range-requests" ;
     dcterms:title "Partial-Content Reads"@en ;
     dcterms:description "The protocol MUST support partial-content reads (byte ranges) of large resources, so that clients can seek within media and resume interrupted downloads without re-transferring the whole representation."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Functional ;
     lws-ucr:priority lws-ucr:Should ;
     lws-ucr:rationale "Seeking in audio/video is a range read; without it media playback from storage re-downloads whole files per seek. The download-side complement of resumable uploads."@en ;
@@ -74,6 +79,7 @@
     dcterms:identifier "REQ-deletion-signaling" ;
     dcterms:title "Deletion and Move Signaling"@en ;
     dcterms:description "The protocol MUST make deletions (and SHOULD make moves) discoverable after the fact by authorized entities: a client that missed the event MUST be able to distinguish 'deleted' (and, where supported, 'moved, now at X') from 'never existed', e.g. via tombstones, move markers, or a change feed that includes deletions. Erasure obligations MUST be satisfiable: a tombstone MUST NOT be required to retain the deleted content."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Functional ;
     lws-ucr:priority lws-ucr:Should ;
     lws-ucr:rationale "Without a deletion signal every sync engine has the resurrection bug (rxdb-solid resorts to app-level tombstones); link integrity on move/delete is the same mechanism (issues #195, #171), and record lineage after erasure (#228) is its compliance-grade form."@en ;
@@ -86,6 +92,7 @@
     dcterms:identifier "REQ-app-data-registry" ;
     dcterms:title "Data Location Registry"@en ;
     dcterms:description "The protocol MUST define a discoverable registry mechanism by which applications record where data of a given class or shape lives in a storage and find where other applications put theirs, including bootstrap semantics when no registry exists yet. Registry reads MUST be access-controlled and MUST NOT leak the existence of data classes the requesting agent is not authorized to know about."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Interop , lws-ucr:Privacy ;
     lws-ucr:priority lws-ucr:Should ;
     lws-ucr:rationale "Cross-app interoperability in practice starts with 'where are the user's tasks?'; the type-index pattern answers it but is unspecified in the core protocol, and its privacy constraint (issue #222) must be normative, not folklore."@en ;
@@ -97,6 +104,7 @@
     dcterms:identifier "REQ-cors-browser-access" ;
     dcterms:title "Browser Access from Foreign Origins"@en ;
     dcterms:description "In its HTTP binding, the protocol MUST be fully usable by browser-based applications served from origins other than the storage's, for all operations the protocol defines (including authentication flows and notifications). Cross-origin support MUST NOT require per-application server configuration."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Interop ;
     lws-ucr:priority lws-ucr:Must ;
     lws-ucr:rationale "The app-and-storage-decoupled model IS the cross-origin model: every migrated browser app (linkding, elk) is a foreign origin to the user's storage. A storage that requires registering each app origin server-side re-couples what the charter decouples."@en ;
@@ -108,6 +116,7 @@
     dcterms:identifier "REQ-app-identity" ;
     dcterms:title "Stable, Verifiable Application Identity"@en ;
     dcterms:description "The protocol MUST support a stable, dereferenceable application identifier presenting verifiable metadata (name, operator, redirect endpoints), such that consent prompts can display the actual application, grants can be keyed to it and individually revoked, and the same application is recognizable across sessions. Distinct deployments (origins) of an application MUST be distinguishable where they change the trust context."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Security , lws-ucr:Interop ;
     lws-ucr:priority lws-ucr:Should ;
     lws-ucr:rationale "Anonymous throwaway client registrations make consent meaningless and grant lists unreviewable; stable app identity is also what authorization-by-application (restricting client access, issue #147) presupposes."@en ;
@@ -119,6 +128,7 @@
     dcterms:identifier "REQ-silent-reauth" ;
     dcterms:title "Silent Session Continuation"@en ;
     dcterms:description "The authentication mechanism MUST support non-interactive continuation of a previously consented session: a client holding a persistable credential from an earlier interactive login MUST be able to obtain fresh short-lived credentials without user interaction, redirects, or hidden-frame tricks. Such credentials MUST be scoped to the authenticated user, individually revocable, and refused after revocation; higher-sensitivity operations MAY require interactive step-up."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Security ;
     lws-ucr:priority lws-ucr:Should ;
     lws-ucr:rationale "Session restore was re-implemented (and re-broken) in every suite app until extracted into a shared library — evidence the capability belongs in the protocol contract (with issues #41/#49 asking for exactly this), not in per-app heroics."@en ;
@@ -131,6 +141,7 @@
     dcterms:identifier "REQ-scoped-access" ;
     dcterms:title "Least-Privilege Scoped Credentials"@en ;
     dcterms:description "The protocol MUST support issuing a credential whose authority is a server-enforced subset of the granting user's: at minimum restrictable to named containers or resource subtrees and to an operation set (e.g. read-only). The storage — not the client — MUST enforce the scope, and the grantor MUST be able to revoke the credential independently of their other grants."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Security ;
     lws-ucr:priority lws-ucr:Must ;
     lws-ucr:rationale "Automation nodes and AI agents currently enforce their own scope guards client-side (n8n-nodes-solid, solid-mcp) — worthless against a compromised or prompt-injected client. Least privilege only exists if the server enforces it."@en ;
@@ -142,6 +153,7 @@
     dcterms:identifier "REQ-permission-introspection" ;
     dcterms:title "Effective-Permission Introspection"@en ;
     dcterms:description "The protocol MUST allow a client to learn, cheaply and authoritatively, which operations the currently authenticated agent may perform on a resource (e.g. alongside a read response), without the client re-implementing policy evaluation. The answer MUST reflect the server's actual decision procedure."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Functional ;
     lws-ucr:priority lws-ucr:Should ;
     lws-ucr:rationale "UIs need affordances that match reality; client-side policy re-evaluation duplicates the server's logic and diverges from it (Pod Manager and the access dashboard both hit this). Complementary to authorization ENUMERATION (who has access): this is 'what may I do here?'."@en ;
@@ -153,6 +165,7 @@
     dcterms:identifier "REQ-secure-defaults" ;
     dcterms:title "Fail-Closed Creation Semantics"@en ;
     dcterms:description "The protocol MUST make it possible to create a resource or container together with its access policy such that there is no observable interval in which the new data is accessible more broadly than the requested policy — via atomic create-with-policy, or by newly created resources defaulting to no-broader-than-creator access until a policy is set. Where inheritance would grant broader access, the creating client MUST be able to prevent it from the first instant."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Security ;
     lws-ucr:priority lws-ucr:Must ;
     lws-ucr:rationale "Five independent app forks each hand-rolled the same write-policy-first-verify-then-write ritual; a protocol in which the safe order is optional will keep producing exposure windows (financial and health data included)."@en ;
@@ -164,6 +177,7 @@
     dcterms:identifier "REQ-quota-discovery" ;
     dcterms:title "Usage and Quota Discovery"@en ;
     dcterms:description "The storage description SHOULD expose machine-readable usage and quota information (total used, limit if any, and per-container aggregate size on request), and a write rejected for quota reasons MUST be signalled with a structured, distinguishable error."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Functional ;
     lws-ucr:priority lws-ucr:Could ;
     lws-ucr:rationale "Storage management UIs cannot render a usage view by crawling the tree, and apps cannot pre-empt quota failures they cannot see coming."@en ;
@@ -175,6 +189,7 @@
     dcterms:identifier "REQ-structured-errors" ;
     dcterms:title "Structured, Machine-Actionable Errors"@en ;
     dcterms:description "Error responses MUST carry a structured, machine-readable representation (e.g. RFC 9457 problem details) identifying the failure class — at minimum distinguishing authentication, authorization, validation, version-conflict, quota, and rate-limit failures — so applications can branch, retry or surface actionable messages. Error detail MUST NOT leak information the requester is not authorized to learn."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Functional , lws-ucr:Interop ;
     lws-ucr:priority lws-ucr:Should ;
     lws-ucr:rationale "The existing clear-error-messages story has no requirement in the current document; every consumer (optimistic-save revert logic, workflow branch nodes, quota warnings) needs the failure CLASS, which free-text cannot provide."@en ;
@@ -187,6 +202,7 @@
     dcterms:identifier "REQ-rate-limit-signaling" ;
     dcterms:title "Rate-Limit Signaling"@en ;
     dcterms:description "A storage that applies rate limits MUST signal them with a structured response including retry timing, so that well-behaved automated clients (pipelines, crawlers, sync engines) can back off correctly instead of failing opaquely or hammering the server."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:NonFunctional ;
     lws-ucr:priority lws-ucr:Should ;
     lws-ucr:rationale "Automated traffic (workflow fan-outs, index crawls, sync bursts) is normal LWS load, and rate limiting is a legitimate defence (issue #179 requests it) — but undisciplined limiting without signalling just breaks the clients that try to behave."@en ;
@@ -198,6 +214,7 @@
     dcterms:identifier "REQ-write-attribution" ;
     dcterms:title "Attribution of Writes"@en ;
     dcterms:description "The protocol SHOULD record, for each write, the authenticated agent AND the application or delegated credential through which it acted, and expose this attribution to authorized entities — so that data written by an agent acting under delegation is distinguishable from data written by the delegating user directly."@en ;
+    lws-ucr:status lws-ucr:Proposed ;
     lws-ucr:requirementType lws-ucr:Security , lws-ucr:Functional ;
     lws-ucr:priority lws-ucr:Should ;
     lws-ucr:rationale "Agent-written data (memory items, AI edits) must never masquerade as the user's own hand; this is the auditable-trail requirement's write-side counterpart, mechanised for the agent era."@en ;
