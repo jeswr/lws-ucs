@@ -1,0 +1,34 @@
+# AUTHORED-BY Claude Fable
+# NEGATIVE fixture (isolated): a requirement valid in EVERY respect except it
+# carries NO lws-ucr:status. Expected sole Violation: RequirementShape's
+# lws-ucr:status sh:minCount 1 — the machine guard for the honesty claim that
+# Proposed items are identified as such (a statusless new requirement would
+# otherwise render among the ported/Accepted set). The motivatedBy target is a
+# fully-valid use case so no other constraint fires.
+# scripts/validate-ucr.sh asserts this fixture is REJECTED.
+
+@prefix :        <https://jeswr.org/lws/ucr#> .
+@prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
+@prefix role:    <https://jeswr.org/ns/lws-ucr/roles#> .
+@prefix cat:     <https://jeswr.org/ns/lws-ucr/categories#> .
+@prefix feat:    <https://jeswr.org/ns/lws-ucr/features#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+:UC-statusless-motivator a lws-ucr:UseCase ;
+    dcterms:identifier "UC-statusless-motivator" ;
+    dcterms:title "Motivating use case for the statusless requirement"@en ;
+    dcterms:description "A fully valid use case so only the requirement's missing status fires."@en ;
+    lws-ucr:primaryActor role:User ;
+    lws-ucr:goal "to do the thing"@en ; lws-ucr:benefit "the benefit follows"@en ;
+    lws-ucr:category cat:DataManagement ; lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/1> .
+
+:REQ-statusless a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-statusless" ;
+    dcterms:title "Statusless requirement"@en ;
+    dcterms:description "The protocol MUST do the thing, but this requirement omits its lifecycle status."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ; lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:rationale "r"@en ;
+    lws-ucr:relatedFeature feat:ResourceManagement ;
+    lws-ucr:motivatedBy :UC-statusless-motivator ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/1> .
