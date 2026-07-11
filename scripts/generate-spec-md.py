@@ -85,23 +85,51 @@ def anchor(ident: str) -> str:
     return ident.lower()
 
 
-# Words beginning with a vowel LETTER but a consonant SOUND ("a user", "a European")
-_CONSONANT_SOUND = {"user", "users", "european", "unicorn", "unit", "unified",
-                    "unique", "universal", "university", "utility", "one", "once",
-                    "ubiquitous"}
+# Words beginning with a vowel LETTER but a consonant SOUND ("a user", "a
+# European"). EXACT exceptions only — a broad `uni`/`use`/`eu` prefix rule is
+# wrong for the vowel-sounding negation words ("an unidentified user", "an
+# uninsured patient", "an unusable pod"): "uni-" is only consonant-sounding
+# ("yoo") for the Latin one-root, not for "un-" + i… . Anything not listed
+# falls through to the vowel-letter default, which is correct for those.
+_CONSONANT_SOUND = {"user", "users", "usual", "usable", "useful", "useless",
+                    "usage", "use", "used", "utility", "utilities",
+                    "european", "euro", "eulogy", "one", "once", "ubiquitous",
+                    "unicorn", "unit", "units", "unified", "uniform", "union",
+                    "unique", "unilateral", "unison", "universal", "universe",
+                    "university", "universities"}
 # Words beginning with a consonant LETTER but a vowel SOUND ("an hour", "an honest")
 _VOWEL_SOUND = {"hour", "honest", "heir", "honour", "honor", "honorary"}
 
 
 def indefinite_article(noun_phrase: str) -> str:
     """'a' or 'an' for a noun phrase, exception-aware (a plain vowel-letter
-    heuristic gives the wrong result for 'user', 'hour', etc.)."""
+    heuristic gives the wrong result for 'user', 'hour', etc.).
+
+    Consonant-sounding vowel-letter words (the exact-exception set):
+
+    >>> [indefinite_article(p) for p in ("user", "university", "unique unit",
+    ...                                  "european auditor", "one shared pod")]
+    ['a', 'a', 'a', 'a', 'a']
+
+    Vowel-sounding "un-" negation words must NOT be caught by a `uni` prefix
+    rule (the bug this test pins down):
+
+    >>> [indefinite_article(p) for p in ("unidentified user", "uninsured patient",
+    ...                                  "unusual actor", "unauthorized agent")]
+    ['an', 'an', 'an', 'an']
+
+    Plain vowel/consonant defaults and the silent-h exceptions:
+
+    >>> (indefinite_article("administrator"), indefinite_article("application developer"),
+    ...  indefinite_article("hour"), indefinite_article("data owner"))
+    ('an', 'an', 'an', 'a')
+    """
     word = noun_phrase.strip().split()[0].lower().strip(".,;:")
     if word in _VOWEL_SOUND:
         return "an"
-    if word in _CONSONANT_SOUND or word.startswith(("uni", "use", "usu", "eu")):
+    if word in _CONSONANT_SOUND:
         return "a"
-    return "an" if word[:1] in "aeiou" else "a"
+    return "an" if word and word[0] in "aeiou" else "a"
 
 
 def source_link(url: str) -> str:
@@ -366,8 +394,23 @@ def gen_matrix(g, ucs, reqs, uc2req) -> str:
     return "\n".join(out).rstrip() + "\n"
 
 
+def _selftest() -> int:
+    """Run the module's doctests (e.g. indefinite_article's article table).
+
+    Returns the failure count; main() treats any failure as fatal so a
+    regression in the prose helpers can never silently regenerate wrong text.
+    """
+    import doctest
+    return doctest.testmod(sys.modules[__name__], verbose=False).failed
+
+
 def main() -> int:
     check = "--check" in sys.argv
+    failures = _selftest()
+    if failures:
+        print(f"SELFTEST FAILED: {failures} doctest failure(s) in generate-spec-md.py",
+              file=sys.stderr)
+        return 1
     g = load_graph()
     ucs, reqs = collect(g)
     uc2req, req2uc = motivations(g, ucs, reqs)
