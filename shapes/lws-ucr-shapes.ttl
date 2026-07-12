@@ -12,6 +12,7 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
 @prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix earl:    <http://www.w3.org/ns/earl#> .
 @prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
 
 ucrsh:UseCaseShape a sh:NodeShape ;
@@ -76,9 +77,9 @@ ucrsh:RequirementShape a sh:NodeShape ;
     # (adding one would only duplicate the UseCaseShape results).
     sh:property [ sh:path lws-ucr:motivatedBy ; sh:minCount 1 ; sh:class lws-ucr:UseCase ;
         sh:message "Every requirement must trace to at least one motivating use case — the machine-enforced fix for the current doc's dangling by-name story references." ] ;
-    sh:property [ sh:path lws-ucr:verifiedBy ; sh:nodeKind sh:IRI ;
+    sh:property [ sh:path lws-ucr:verifiedBy ; sh:nodeKind sh:IRI ; sh:class earl:TestCase ;
         sh:message "verifiedBy points at an earl:TestCase IRI in the test suite." ] ;
-    sh:property [ sh:path dcterms:requires ; sh:nodeKind sh:IRI ;
+    sh:property [ sh:path dcterms:requires ; sh:nodeKind sh:IRI ; sh:class lws-ucr:Requirement ;
         sh:message "Inter-requirement dependencies (dcterms:requires) point at other requirement IRIs." ] ;
     # Advisory
     sh:property [ sh:path dcterms:description ;

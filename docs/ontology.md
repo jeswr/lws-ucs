@@ -98,15 +98,16 @@ ODRL (subject matter of LWS use cases, not the meta-model).
 - `examples/positive/*.ttl` — synthetic shape-proving positives that MUST conform (e.g. a
   use case that names only its `primaryActor`, since `primaryActor rdfs:subPropertyOf actor`
   makes it also an actor — so a separate `actor` value is not required).
-- `examples/negative/*.ttl` — eleven single-defect fixtures the shapes MUST reject, each valid
+- `examples/negative/*.ttl` — thirteen single-defect fixtures the shapes MUST reject, each valid
   *except* the one constraint it targets: empty / bare-literal / improperly-terminated
   (non-cyclic) / cyclic step list; a wrong-scheme actor; a wrong-scheme feature; a dangling
-  requirement; a bad identifier; a bad-enum status; a missing `primaryActor`; and a blank-node
-  entity. Each fixture declares its expected constraint component plus result path or stable
-  source shape; the gate parses the SHACL report graph and asserts that exact violation, so an
-  unrelated non-conformance cannot hide a regression. (A cyclic `rdf:List` is malformed RDF that
-  rdflib refuses to enumerate, so it can never conform; the `nil`-terminator SHACL constraint
-  itself is proven with clean renderable evidence by the non-cyclic improperly-terminated fixture.)
+  requirement; a bad identifier; a bad-enum status; a missing `primaryActor`; a blank-node
+  entity; and wrong-class `verifiedBy` / `dcterms:requires` targets. Each fixture declares its
+  expected constraint component plus result path or stable source shape; the gate parses the
+  SHACL report graph and asserts that exact violation, so an unrelated non-conformance cannot hide
+  a regression. (A cyclic `rdf:List` is malformed RDF that rdflib refuses to enumerate, so it can
+  never conform; the `nil`-terminator SHACL constraint itself is proven with clean renderable
+  evidence by the non-cyclic improperly-terminated fixture.)
 - `scripts/validate-ucr.sh` — parses the vocabulary and runs the positive/negative SHACL gate
   with [pySHACL](https://github.com/RDFLib/pySHACL) (`pip install pyshacl`).
 - `scripts/assert-shacl-result.py` — checks each negative fixture's expected-violation metadata
