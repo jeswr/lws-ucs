@@ -3,6 +3,7 @@
 # EXCEPT its status is a made-up concept outside the StatusScheme enum. Expected
 # sole Violation: RequirementShape's lws-ucr:status sh:in constraint.
 # scripts/validate-ucr.sh asserts this fixture is REJECTED.
+# EXPECTED-VIOLATION: constraint=sh:InConstraintComponent path=lws-ucr:status
 
 @prefix :        <https://jeswr.org/lws/ucr#> .
 @prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .

@@ -3,6 +3,7 @@
 # the actor values is an lws-ucr:ActorRole that is NOT in the ActorRoleScheme.
 # Expected sole Violation: the lws-ucr:actor skos:inScheme sh:hasValue constraint.
 # scripts/validate-ucr.sh asserts this fixture is REJECTED.
+# EXPECTED-VIOLATION: constraint=sh:HasValueConstraintComponent path=skos:inScheme
 
 @prefix :        <https://jeswr.org/lws/ucr#> .
 @prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .

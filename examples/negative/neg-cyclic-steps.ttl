@@ -9,6 +9,7 @@
 # proven independently, with clean renderable SHACL evidence, by the NON-cyclic
 # neg-unterminated-steps fixture. scripts/validate-ucr.sh asserts this fixture is
 # REJECTED (via the rdflib recursive-rest signal, NOT a generic exception).
+# EXPECTED-REJECTION: cyclic-rdf-list
 
 @prefix :        <https://jeswr.org/lws/ucr#> .
 @prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .

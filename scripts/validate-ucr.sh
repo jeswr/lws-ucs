@@ -3,8 +3,8 @@
 # Validate the lws-ucr model:
 #   1. Turtle syntax of the vocabulary, scheme seeds and shapes.
 #   2. Positive examples (examples/*.ttl) MUST conform.
-#   3. Negative fixtures (examples/negative/*.ttl) MUST be rejected (report a
-#      SHACL Violation) — proving the constraints actually bite.
+#   3. Negative fixtures (examples/negative/*.ttl) MUST be rejected by their
+#      declared, specific SHACL Violation — proving the intended constraints bite.
 # Every graph is validated over vocab/lws-ucr.ttl + ALL vocab/schemes/*.ttl +
 # the instance, so sh:class / sh:node(skos:inScheme) constraints see the
 # referenced concepts' types and scheme memberships. --allow-warnings makes
@@ -68,34 +68,29 @@ ASK {
 """)
 sys.exit(0 if cycle.askAnswer else 1)
 ' "$tmp/data.ttl"; then
-    echo "  OK: correctly rejected (cyclic rdf:List pre-detected before pySHACL report rendering)"
+    expected_rejection="$(sed -n 's/^# EXPECTED-REJECTION: //p' "$ex")"
+    if [ "$expected_rejection" = "cyclic-rdf-list" ]; then
+      echo "  OK: intended rejection observed (cyclic rdf:List pre-detected before pySHACL report rendering)"
+    else
+      echo "  REGRESSION: cyclic rdf:List found without the matching fixture expectation" >&2
+      status=1
+    fi
+    continue
+  fi
+  if grep -q '^# EXPECTED-REJECTION:' "$ex"; then
+    echo "  REGRESSION: fixture's expected cyclic rdf:List was not detected" >&2
+    status=1
     continue
   fi
   set +e
-  out="$("$PYSHACL" -s shapes/lws-ucr-shapes.ttl -df turtle -sf turtle --allow-warnings "$tmp/data.ttl" 2>&1)"
+  "$PYSHACL" -s shapes/lws-ucr-shapes.ttl -df turtle -sf turtle --allow-warnings \
+    -f turtle -o "$tmp/report.ttl" "$tmp/data.ttl"
   rc=$?
   set -e
-  # Decide by the OUTPUT, not just the exit code: a non-zero exit could be a real
-  # SHACL non-conformance, a cyclic-list tooling crash, or an unexpected error —
-  # and blindly treating any non-zero as "rejected" would hide a shape regression.
-  if printf '%s' "$out" | grep -q "Conforms: False"; then
-    echo "  OK: correctly rejected (SHACL Violation) —"
-    printf '%s\n' "$out" | grep -E "Result Path|Message" | sed 's/^/     /'
-  elif printf '%s' "$out" | grep -q "recursive rdf:rest"; then
-    # A genuinely CYCLIC rdf:List. rdflib refuses to enumerate it ("List contains a
-    # recursive rdf:rest reference") — a specific RDF-layer malformation guard, NOT a
-    # generic exception — so such a list can never conform. (Unreachable via Turtle's
-    # () syntax; only hand-written rdf:first/rdf:rest triples form it.) The SHACL
-    # terminator constraint itself is proven with clean renderable evidence by the
-    # NON-cyclic neg-unterminated-steps fixture, so this branch is not the sole proof
-    # of that constraint.
-    echo "  OK: correctly rejected (cyclic rdf:List — rdflib recursive-rest malformation guard)"
-  elif printf '%s' "$out" | grep -q "Conforms: True"; then
-    echo "  REGRESSION: negative fixture CONFORMED but should have been rejected" >&2
+  if [ "$rc" -gt 1 ]; then
+    echo "  ERROR: validator errored (rc=$rc)" >&2
     status=1
-  else
-    echo "  ERROR: validator errored (rc=$rc) without a clean rejection:" >&2
-    printf '%s\n' "$out" | tail -3 >&2
+  elif ! "$PYTHON" scripts/assert-shacl-result.py "$tmp/report.ttl" "$ex"; then
     status=1
   fi
 done

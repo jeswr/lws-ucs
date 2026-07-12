@@ -3,6 +3,7 @@
 # it is identified by a BLANK NODE rather than an IRI, violating the stable-IRI
 # identity model. Expected sole Violation: UseCaseShape's sh:nodeKind sh:IRI on
 # the focus node. scripts/validate-ucr.sh asserts this fixture is REJECTED.
+# EXPECTED-VIOLATION: constraint=sh:NodeKindConstraintComponent path=- sourceShape=ucrsh:UseCaseShape
 
 @prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
 @prefix role:    <https://jeswr.org/ns/lws-ucr/roles#> .

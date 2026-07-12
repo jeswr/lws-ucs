@@ -102,12 +102,15 @@ ODRL (subject matter of LWS use cases, not the meta-model).
   *except* the one constraint it targets: empty / bare-literal / improperly-terminated
   (non-cyclic) / cyclic step list; a wrong-scheme actor; a wrong-scheme feature; a dangling
   requirement; a bad identifier; a bad-enum status; a missing `primaryActor`; and a blank-node
-  entity. The gate asserts each is reported non-conforming, so a shape regression that let a
-  fixture conform is caught. (A cyclic `rdf:List` is malformed RDF that rdflib refuses to
-  enumerate, so it can never conform; the `nil`-terminator SHACL constraint itself is proven
-  with clean renderable evidence by the non-cyclic improperly-terminated fixture.)
+  entity. Each fixture declares its expected constraint component plus result path or stable
+  source shape; the gate parses the SHACL report graph and asserts that exact violation, so an
+  unrelated non-conformance cannot hide a regression. (A cyclic `rdf:List` is malformed RDF that
+  rdflib refuses to enumerate, so it can never conform; the `nil`-terminator SHACL constraint
+  itself is proven with clean renderable evidence by the non-cyclic improperly-terminated fixture.)
 - `scripts/validate-ucr.sh` — parses the vocabulary and runs the positive/negative SHACL gate
   with [pySHACL](https://github.com/RDFLib/pySHACL) (`pip install pyshacl`).
+- `scripts/assert-shacl-result.py` — checks each negative fixture's expected-violation metadata
+  against pySHACL's machine-readable Turtle report.
 
 ## Validating
 
@@ -120,4 +123,4 @@ Each example is validated over a data graph merged with the vocabulary and schem
 `sh:class`/`sh:node` constraints see the referenced concepts' types and scheme memberships).
 Violation-severity results fail the gate; advisory warnings are reported but non-blocking
 (the script passes `--allow-warnings`). The positive examples conform (with no warnings) and
-every negative fixture is reported non-conforming.
+every negative fixture is rejected by its declared constraint.

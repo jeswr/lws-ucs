@@ -6,6 +6,7 @@
 # fires: rdflib can enumerate the finite chain, so pyshacl emits a real
 # "Conforms: False" report (unlike the genuinely cyclic case).
 # scripts/validate-ucr.sh asserts this fixture is REJECTED.
+# EXPECTED-VIOLATION: constraint=sh:HasValueConstraintComponent sourceShape=ucrsh:StepListTerminatorPropertyShape
 
 @prefix :        <https://jeswr.org/lws/ucr#> .
 @prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .

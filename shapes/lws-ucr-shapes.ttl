@@ -119,10 +119,14 @@ ucrsh:ScenarioShape a sh:NodeShape ;
 # that signal as a rejection. Turtle's () collection syntax cannot create a cycle.
 ucrsh:StepListShape a sh:NodeShape ;
     sh:not [ sh:hasValue rdf:nil ] ;
-    sh:property [ sh:path [ sh:zeroOrMorePath rdf:rest ] ; sh:hasValue rdf:nil ;
-        sh:message "steps must be a properly terminated (acyclic) rdf:List ending in rdf:nil." ] ;
+    sh:property ucrsh:StepListTerminatorPropertyShape ;
     sh:property [ sh:path [ sh:zeroOrMorePath rdf:rest ] ;
         sh:node ucrsh:StepListMemberShape ] .
+
+ucrsh:StepListTerminatorPropertyShape a sh:PropertyShape ;
+    sh:path [ sh:zeroOrMorePath rdf:rest ] ;
+    sh:hasValue rdf:nil ;
+    sh:message "steps must be a properly terminated (acyclic) rdf:List ending in rdf:nil." .
 
 ucrsh:StepListMemberShape a sh:NodeShape ;
     sh:xone (

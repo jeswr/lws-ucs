@@ -3,6 +3,7 @@
 # ("42", a GitHub issue number) instead of a UC-<slug> stable identifier.
 # Expected sole Violation: the dcterms:identifier sh:pattern constraint.
 # scripts/validate-ucr.sh asserts this fixture is REJECTED.
+# EXPECTED-VIOLATION: constraint=sh:PatternConstraintComponent path=dcterms:identifier
 
 @prefix :        <https://jeswr.org/lws/ucr#> .
 @prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .

@@ -3,6 +3,7 @@
 # a plain actor). Expected sole Violation: primaryActor sh:minCount 1. This also
 # guards the finding that primaryActor (not actor) is the mandatory 'As a ...'
 # slot. scripts/validate-ucr.sh asserts this fixture is REJECTED.
+# EXPECTED-VIOLATION: constraint=sh:MinCountConstraintComponent path=lws-ucr:primaryActor
 
 @prefix :        <https://jeswr.org/lws/ucr#> .
 @prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .

@@ -4,6 +4,7 @@
 # but in the CategoryScheme, not the FeatureScheme). Expected sole Violation:
 # the relatedFeature skos:inScheme sh:hasValue constraint.
 # scripts/validate-ucr.sh asserts this fixture is REJECTED.
+# EXPECTED-VIOLATION: constraint=sh:HasValueConstraintComponent path=skos:inScheme
 
 @prefix :        <https://jeswr.org/lws/ucr#> .
 @prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .

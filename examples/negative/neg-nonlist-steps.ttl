@@ -5,6 +5,7 @@
 # StepListMemberShape: the value is validated over rdf:rest* and fails the
 # xone(nil-terminator | literal-first cons cell) member shape — a clean SHACL
 # Violation with no tooling crash. scripts/validate-ucr.sh asserts it is REJECTED.
+# EXPECTED-VIOLATION: constraint=sh:XoneConstraintComponent path=- sourceShape=ucrsh:StepListMemberShape
 
 @prefix :        <https://jeswr.org/lws/ucr#> .
 @prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .

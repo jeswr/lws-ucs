@@ -3,6 +3,7 @@
 # flagship failure the model exists to prevent (the current doc's dangling
 # by-name story references). Expected Violation: RequirementShape's
 # motivatedBy sh:minCount 1. scripts/validate-ucr.sh asserts this is REJECTED.
+# EXPECTED-VIOLATION: constraint=sh:MinCountConstraintComponent path=lws-ucr:motivatedBy
 
 @prefix :        <https://jeswr.org/lws/ucr#> .
 @prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .

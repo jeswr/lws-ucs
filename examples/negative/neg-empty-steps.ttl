@@ -3,6 +3,7 @@
 # EMPTY list (rdf:nil). Expected sole Violation: StepListShape's
 # sh:not [ sh:hasValue rdf:nil ] on the list head.
 # scripts/validate-ucr.sh asserts this fixture is REJECTED.
+# EXPECTED-VIOLATION: constraint=sh:NotConstraintComponent path=- sourceShape=ucrsh:StepListShape
 
 @prefix :        <https://jeswr.org/lws/ucr#> .
 @prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
