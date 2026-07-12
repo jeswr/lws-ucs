@@ -1,12 +1,14 @@
 # AUTHORED-BY Claude Fable
-# NEGATIVE fixture (isolated): valid EXCEPT the status is a made-up concept
-# outside the StatusScheme enum. Expected sole Violation: the lws-ucr:status
-# sh:in constraint. scripts/validate-ucr.sh asserts this fixture is REJECTED.
+# NEGATIVE fixture (isolated): a valid use case and a requirement that is valid
+# EXCEPT its status is a made-up concept outside the StatusScheme enum. Expected
+# sole Violation: RequirementShape's lws-ucr:status sh:in constraint.
+# scripts/validate-ucr.sh asserts this fixture is REJECTED.
 
 @prefix :        <https://jeswr.org/lws/ucr#> .
 @prefix lws-ucr: <https://jeswr.org/ns/lws-ucr#> .
 @prefix role:    <https://jeswr.org/ns/lws-ucr/roles#> .
 @prefix cat:     <https://jeswr.org/ns/lws-ucr/categories#> .
+@prefix feat:    <https://jeswr.org/ns/lws-ucr/features#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 
 :UC-bad-enum a lws-ucr:UseCase ;
@@ -14,5 +16,15 @@
     dcterms:description "ctx"@en ;
     lws-ucr:primaryActor role:User ; lws-ucr:actor role:User ;
     lws-ucr:goal "g"@en ; lws-ucr:benefit "b"@en ;
-    lws-ucr:category cat:DataManagement ; lws-ucr:status :NotAStatus ;
+    lws-ucr:category cat:DataManagement ; lws-ucr:status lws-ucr:Accepted ;
+    lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/1> ;
+    lws-ucr:motivates :REQ-bad-enum .
+
+:REQ-bad-enum a lws-ucr:Requirement ;
+    dcterms:identifier "REQ-bad-enum" ; dcterms:title "Bad enum status"@en ;
+    dcterms:description "The protocol MUST do the thing."@en ;
+    lws-ucr:requirementType lws-ucr:Functional ; lws-ucr:priority lws-ucr:Must ;
+    lws-ucr:status :NotAStatus ;
+    lws-ucr:rationale "r"@en ; lws-ucr:motivatedBy :UC-bad-enum ;
+    lws-ucr:relatedFeature feat:ResourceManagement ;
     lws-ucr:sourceIssue <https://github.com/w3c/lws-ucs/issues/1> .

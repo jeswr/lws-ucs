@@ -68,6 +68,8 @@ ucrsh:RequirementShape a sh:NodeShape ;
         sh:in ( lws-ucr:Functional lws-ucr:NonFunctional lws-ucr:Security lws-ucr:Privacy lws-ucr:Interop ) ] ;
     sh:property [ sh:path lws-ucr:priority ; sh:minCount 1 ; sh:maxCount 1 ;
         sh:in ( lws-ucr:Must lws-ucr:Should lws-ucr:Could lws-ucr:Wont ) ] ;
+    sh:property [ sh:path lws-ucr:status ;
+        sh:in ( lws-ucr:Proposed lws-ucr:Accepted lws-ucr:Deferred lws-ucr:OutOfScope lws-ucr:Superseded ) ] ;
     # NB: sh:class forces each motivatedBy target to carry rdf:type lws-ucr:UseCase,
     # and ucrsh:UseCaseShape sh:targetClass then validates every such node in full —
     # so an otherwise-empty type stub already fails validation; no sh:node needed here
