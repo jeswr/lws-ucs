@@ -27,8 +27,9 @@
 
     **Stories:** Delegation of Control
 
-1.  <dfn>Notifications</dfn> — The protocol shall allow authorized Entities to subscribe to changes to Resources, including creation, update, deletion, and movement, and to receive notifications of those changes through one or more delivery channels. Notifications shall be sent only for Resources the subscriber is authorized to read.
+1.  <dfn id="req-notifications">Notifications</dfn> — The protocol shall allow authorized Entities to subscribe to changes to Resources, including creation, update, deletion, and movement, and to receive notifications of those changes through one or more delivery channels. Notifications shall be sent only for Resources the subscriber is authorized to read.
 
+    **Status:** Supported. Not addressed by LWS 1.0: notifications of changes to access permissions, and queued delivery channels such as email.  
     **Issues:** [#32](https://github.com/w3c/lws-ucs/issues/32), [#100](https://github.com/w3c/lws-ucs/issues/100), [#101](https://github.com/w3c/lws-ucs/issues/101)  
     **Stories:** Notifications for Permission Changes, Real-Time Notifications, Application Notifications
 
