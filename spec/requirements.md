@@ -3,8 +3,9 @@
     **Issues:** [#117](https://github.com/w3c/lws-ucs/issues/117), [#124](https://github.com/w3c/lws-ucs/issues/124)  
     **Stories:** Generic Storage
 
-1.  <dfn>Authorization</dfn> — The protocol shall allow Storage Controllers to make a Resource public, private, or accessible only to specific Entities, and to permit each of the create, read, update, and delete operations independently. The protocol shall allow conditions to be attached to such permissions, including a time window, the Application in use, the purpose of access, and the type or media type of the Resource, and shall allow permissions to be revoked at any time.
+1.  <dfn id="req-authorization">Authorization</dfn> — The protocol shall allow Storage Controllers to make a Resource public, private, or accessible only to specific Entities, and to permit each of the create, read, update, and delete operations independently. The protocol shall allow conditions to be attached to such permissions, including a time window, the Application in use, the purpose of access, and the type or media type of the Resource, and shall allow permissions to be revoked at any time.
 
+    **Status:** Supported.  
     **Issues:** [#27](https://github.com/w3c/lws-ucs/issues/27), [#118](https://github.com/w3c/lws-ucs/issues/118), [#17](https://github.com/w3c/lws-ucs/issues/17), [#65](https://github.com/w3c/lws-ucs/issues/65), [#179](https://github.com/w3c/lws-ucs/issues/179), [#31](https://github.com/w3c/lws-ucs/issues/31)  
     **Stories:** Sharing Access, Profile Sharing, Group Sharing, Health Record Access, Context-Aware Access Policies, Website Creation
 
