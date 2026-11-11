@@ -251,7 +251,8 @@
     **Issues:** [#47](https://github.com/w3c/lws-ucs/issues/47), [#48](https://github.com/w3c/lws-ucs/issues/48)  
     **Stories:** WebID Profile Interaction
 
-1.  <dfn>Resource Metadata</dfn> — The protocol shall allow any Entity that can read a Resource to also read its metadata, and shall allow authorized Entities to manage that metadata separately from the Resource's content. The protocol shall distinguish metadata maintained by the Storage from metadata provided by Entities, and shall prevent Entities from overwriting the former.
+1.  <dfn id="req-resource-metadata">Resource Metadata</dfn> — The protocol shall allow any Entity that can read a Resource to also read its metadata, and shall allow authorized Entities to manage that metadata separately from the Resource's content. The protocol shall distinguish metadata maintained by the Storage from metadata provided by Entities, and shall prevent Entities from overwriting the former.
 
+    **Status:** Supported.  
     **Issues:** [#94](https://github.com/w3c/lws-ucs/issues/94), [#87](https://github.com/w3c/lws-ucs/issues/87)  
     **Stories:** Resource Annotation, Generic Storage
