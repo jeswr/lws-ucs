@@ -41,8 +41,9 @@
 
     **Stories:** Data Integration, Personal Information Management
 
-1.  <dfn>Storage Control</dfn> — The protocol shall allow an Entity to control one or more Storages across one or more Storage Providers. Each Storage shall have a Storage Controller, which may be an organization or other non-human Entity.
+1.  <dfn id="req-storage-control">Storage Control</dfn> — The protocol shall allow an Entity to control one or more Storages across one or more Storage Providers. Each Storage shall have a Storage Controller, which may be an organization or other non-human Entity.
 
+    **Status:** Supported.  
     **Issues:** [#130](https://github.com/w3c/lws-ucs/issues/130)  
     **Stories:** Storage Ownership
 
