@@ -13,8 +13,9 @@
     **Issues:** [#25](https://github.com/w3c/lws-ucs/issues/25), [#90](https://github.com/w3c/lws-ucs/issues/90), [#115](https://github.com/w3c/lws-ucs/issues/115), [#128](https://github.com/w3c/lws-ucs/issues/128), [#39](https://github.com/w3c/lws-ucs/issues/39), [#49](https://github.com/w3c/lws-ucs/issues/49)  
     **Stories:** Identity & Credentials Management, Authentication Mechanisms
 
-1.  <dfn>Identification</dfn> — The protocol shall identify every Resource, Entity, and Storage by a globally unique Identifier, so that it can be referenced from anywhere on the Web. No two distinct Resources shall share an Identifier.
+1.  <dfn id="req-identification">Identification</dfn> — The protocol shall identify every Resource, Entity, and Storage by a globally unique Identifier, so that it can be referenced from anywhere on the Web. No two distinct Resources shall share an Identifier.
 
+    **Status:** Supported. Not addressed by LWS 1.0: "collective" Resources made up of other Resources, and multiple distinct Identifiers for one Resource.  
     **Issues:** [#136](https://github.com/w3c/lws-ucs/issues/136), [#108](https://github.com/w3c/lws-ucs/issues/108)  
     **Stories:** Globally Unique Identifiers
 
