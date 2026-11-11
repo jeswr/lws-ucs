@@ -1,5 +1,6 @@
-1.  <dfn>Create, Read, Update, Delete</dfn> — The protocol shall allow authorized Entities to create, read, update, and delete Resources of any media type within a Storage, and to organize Resources into Containers. The protocol shall afford optional capabilities beyond these core operations, such as moving a Resource between Containers as a single atomic operation, preserving its Identifier where possible. Storage Providers may limit the types and sizes of Resources they accept, and may choose which optional capabilities they support.
+1.  <dfn id="req-crud">Create, Read, Update, Delete</dfn> — The protocol shall allow authorized Entities to create, read, update, and delete Resources of any media type within a Storage, and to organize Resources into Containers. The protocol shall afford optional capabilities beyond these core operations, such as moving a Resource between Containers as a single atomic operation, preserving its Identifier where possible. Storage Providers may limit the types and sizes of Resources they accept, and may choose which optional capabilities they support.
 
+    **Status:** Supported. Moving a Resource is an optional capability.  
     **Issues:** [#117](https://github.com/w3c/lws-ucs/issues/117), [#124](https://github.com/w3c/lws-ucs/issues/124), [#171](https://github.com/w3c/lws-ucs/issues/171), [#97](https://github.com/w3c/lws-ucs/issues/97), [#232](https://github.com/w3c/lws-ucs/issues/232)  
     **Stories:** Generic Storage, Reorganizing Resources
 
