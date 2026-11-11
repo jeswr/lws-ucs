@@ -51,8 +51,9 @@
     **Issues:** [#12](https://github.com/w3c/lws-ucs/issues/12), [#21](https://github.com/w3c/lws-ucs/issues/21), [#70](https://github.com/w3c/lws-ucs/issues/70), [#120](https://github.com/w3c/lws-ucs/issues/120)  
     **Stories:** Storage Description and Discovery, Bring-Your-Own-Data Apps
 
-1.  <dfn>Service Independence and Trust</dfn> — The protocol shall allow Entities to use independent Service Providers for identity, authorization, and storage, including self-hosted ones. The protocol shall afford Storage Providers the choice of which Identity Providers they trust, and trust shall not be transitive between Service Providers.
+1.  <dfn id="req-service-independence-and-trust">Service Independence and Trust</dfn> — The protocol shall allow Entities to use independent Service Providers for identity, authorization, and storage, including self-hosted ones. The protocol shall afford Storage Providers the choice of which Identity Providers they trust, and trust shall not be transitive between Service Providers.
 
+    **Status:** Supported.  
     **Issues:** [#127](https://github.com/w3c/lws-ucs/issues/127), [#129](https://github.com/w3c/lws-ucs/issues/129)  
     **Stories:** Trust Mechanism for Storage Providers
 
