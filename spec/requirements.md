@@ -66,8 +66,9 @@
     **Issues:** [#10 [UC] Administrative assistant working for department head](https://github.com/w3c/lws-ucs/issues/10), [#104 [UC] Access delegation by autonomous groups/organizations](https://github.com/w3c/lws-ucs/issues/104) <br>
     **Stories:** Administrative Assistant, Health Record Access
 
-1.  <dfn>Resource Discovery by Type and Pagination</dfn> — The protocol shall afford finding Resources in a Storage by their declared types (the RDF types a Resource advertises in its metadata, such as an application-defined class, not its media type) without traversing every Container. The protocol shall afford incremental retrieval of large Container listings and result sets. Results shall include only Resources the requester is authorized to read.
+1.  <dfn id="req-resource-discovery-by-type-and-pagination">Resource Discovery by Type and Pagination</dfn> — The protocol shall afford finding Resources in a Storage by their declared types (the RDF types a Resource advertises in its metadata, such as an application-defined class, not its media type) without traversing every Container, in a way that scales well to large Storages. The protocol shall afford incremental retrieval of large Container listings and result sets. Results shall include only Resources the requester is authorized to read.
 
+    **Status:** Supported, as optional capabilities: finding Resources by type (LWS 1.0 Index) and paged Container listings. Afforded: scaling to large Storages. Not addressed by LWS 1.0: SPARQL and other query languages, filtering and sorting of results, and queries or joins across Storages (see Federated Data Queries).  
     **Issues:** [#45](https://github.com/w3c/lws-ucs/issues/45), [#103](https://github.com/w3c/lws-ucs/issues/103), [#152](https://github.com/w3c/lws-ucs/issues/152)  
     **Stories:** Search Functionality, Pagination & Filtering
 
