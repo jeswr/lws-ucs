@@ -188,8 +188,9 @@
     **Issues:** [#4](https://github.com/w3c/lws-ucs/issues/4), [#44](https://github.com/w3c/lws-ucs/issues/44)  
     **Stories:** End-to-End Encryption
 
-1.  <dfn>Performance and Scalability</dfn> — The protocol shall support partial retrieval of large Resources, so that interrupted downloads can be resumed, and shall afford caching and conditional requests. It shall not preclude distributed or clustered deployments.
+1.  <dfn id="req-performance-and-scalability">Performance and Scalability</dfn> — The protocol shall support partial retrieval of large Resources, so that interrupted downloads can be resumed, and shall afford caching and conditional requests. It shall not preclude distributed or clustered deployments.
 
+    **Status:** Supported: partial retrieval and conditional requests. Afforded: caching and distributed deployments. Not addressed by LWS 1.0: resumable uploads.  
     **Issues:** [#18](https://github.com/w3c/lws-ucs/issues/18), [#72](https://github.com/w3c/lws-ucs/issues/72)  
     **Stories:** Large File Uploads, Performant Access Control
 
