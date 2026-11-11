@@ -222,8 +222,9 @@
     **Issues:** [#84](https://github.com/w3c/lws-ucs/issues/84), [#85](https://github.com/w3c/lws-ucs/issues/85)
     **Stories:** Administrative Assistant, Legal Reporting, Health Record Access, Digital Goods Delivery
 
-1.  <dfn>Concurrency and Offline Use</dfn> — The protocol shall support detecting concurrent changes, so that updates do not silently overwrite one another, and partial updates to Resources. Together with Notifications, this shall afford Applications that work offline and synchronize safely on reconnection.
+1.  <dfn id="req-concurrency-and-offline-use">Concurrency and Offline Use</dfn> — The protocol shall support detecting concurrent changes, so that updates do not silently overwrite one another, and partial updates to Resources. Together with Notifications, this shall afford Applications that work offline and synchronize safely on reconnection.
 
+    **Status:** Supported: detecting concurrent changes and partial updates. Afforded: offline use and synchronization. Not addressed by LWS 1.0: locking and automatic merging of concurrent edits.  
     **Issues:** [#146](https://github.com/w3c/lws-ucs/issues/146)  
     **Stories:** Semantic Collaboration, Offline Data Access, Storage Listening
 
