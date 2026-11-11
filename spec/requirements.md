@@ -56,8 +56,9 @@
     **Issues:** [#127](https://github.com/w3c/lws-ucs/issues/127)  
     **Stories:** Trust Mechanism for Storage Providers
 
-1.  <dfn>Storage Portability</dfn> — The protocol shall allow the Storage Controller to copy the entire contents of a Storage, including Resource metadata and Container structure, to another Storage Provider using standard protocol operations.
+1.  <dfn id="req-storage-portability">Storage Portability</dfn> — The protocol shall allow the Storage Controller to copy the entire contents of a Storage, including Resource metadata and Container structure, to another Storage Provider using standard protocol operations.
 
+    **Status:** Afforded. Not addressed by LWS 1.0: moving or transferring a Storage so that the original Storage Provider is released from responsibility for it. The WG expects to cover portability in a separate Note.  
     **Issues:** [#140](https://github.com/w3c/lws-ucs/issues/140)  
     **Stories:** Portable Storage
 
