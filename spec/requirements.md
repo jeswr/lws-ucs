@@ -46,8 +46,9 @@
     **Issues:** [#130](https://github.com/w3c/lws-ucs/issues/130)  
     **Stories:** Storage Ownership
 
-1.  <dfn>Discovery</dfn> — The protocol shall allow Applications to discover a Storage's capabilities and services and to navigate its Resources without prior knowledge of the server, so that Applications work with any conforming Storage Provider.
+1.  <dfn id="req-discovery">Discovery</dfn> — The protocol shall allow Applications to discover a Storage's capabilities and services and to navigate its Resources without prior knowledge of the server, so that Applications work with any conforming Storage Provider. Servers should provide a discoverable description of their supported protocol versions, extensions, and features.
 
+    **Status:** Supported. Not addressed by LWS 1.0: a description of supported protocol versions, extensions and features (under discussion in [w3c/lws-protocol#291](https://github.com/w3c/lws-protocol/issues/291)).  
     **Issues:** [#12](https://github.com/w3c/lws-ucs/issues/12), [#21](https://github.com/w3c/lws-ucs/issues/21), [#70](https://github.com/w3c/lws-ucs/issues/70), [#120](https://github.com/w3c/lws-ucs/issues/120)  
     **Stories:** Storage Description and Discovery, Bring-Your-Own-Data Apps
 
