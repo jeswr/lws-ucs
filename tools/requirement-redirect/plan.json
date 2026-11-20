@@ -1,0 +1,245 @@
+{
+ "233": {
+  "branch": "req/crud-modify",
+  "title": "[Class 3] Requirement Create, Read, Update, Delete: modify",
+  "kind": "modify",
+  "status": "Supported. Moving a Resource is an optional capability.",
+  "note": "Updated after the 9 November WG meeting: adds a status line and a stable identifier (`#req-crud`) to this requirement, so the document records what the LWS 1.0 specifications do and do not cover."
+ },
+ "234": {
+  "branch": "req/authorization-modify",
+  "title": "[Class 3] Requirement Authorization: modify",
+  "kind": "modify",
+  "status": "Supported.",
+  "note": "Updated after the 9 November WG meeting: adds a status line and a stable identifier (`#req-authorization`) to this requirement, so the document records what the LWS 1.0 specifications do and do not cover."
+ },
+ "235": {
+  "branch": "req/access-requests-modify",
+  "title": "[Class 4] Requirement Access Requests and Grants: modify",
+  "kind": "modify",
+  "status": "Supported: requesting access, notifying those who manage access, and the record of each grant. Afforded: the means to approve or deny a request.",
+  "note": "Updated after the 9 November WG meeting: adds a status line and a stable identifier (`#req-access-requests-and-grants`) to this requirement, so the document records what the LWS 1.0 specifications do and do not cover."
+ },
+ "236": {
+  "branch": "req/authentication-modify",
+  "title": "[Class 3] Requirement Authentication Mechanisms: modify",
+  "kind": "modify",
+  "status": "Supported.",
+  "note": "Updated after the 9 November WG meeting: adds a status line and a stable identifier (`#req-authentication-mechanisms`) to this requirement, so the document records what the LWS 1.0 specifications do and do not cover."
+ },
+ "237": {
+  "branch": "req/identification-modify",
+  "title": "[Class 3] Requirement Identification: modify",
+  "kind": "modify",
+  "status": "Supported. Not addressed by LWS 1.0: \"collective\" Resources made up of other Resources, and multiple distinct Identifiers for one Resource.",
+  "note": "Updated after the 9 November WG meeting: adds a status line and a stable identifier (`#req-identification`) to this requirement, so the document records what the LWS 1.0 specifications do and do not cover."
+ },
+ "238": {
+  "branch": "req/notifications-modify",
+  "title": "[Class 3] Requirement Notifications: modify",
+  "kind": "modify",
+  "status": "Supported. Not addressed by LWS 1.0: notifications of changes to access permissions, and queued delivery channels such as email.",
+  "note": "Updated after the 9 November WG meeting: adds a status line and a stable identifier (`#req-notifications`) to this requirement, so the document records what the LWS 1.0 specifications do and do not cover."
+ },
+ "239": {
+  "branch": "req/storage-control-modify",
+  "title": "[Class 3] Requirement Storage Control: modify",
+  "kind": "modify",
+  "status": "Supported.",
+  "note": "Updated after the 9 November WG meeting: adds a status line and a stable identifier (`#req-storage-control`) to this requirement, so the document records what the LWS 1.0 specifications do and do not cover."
+ },
+ "240": {
+  "branch": "req/discovery-modify",
+  "title": "[Class 3] Requirement Discovery: modify",
+  "kind": "modify",
+  "status": "Supported. Not addressed by LWS 1.0: a description of supported protocol versions, extensions and features (under discussion in [w3c/lws-protocol#291](https://github.com/w3c/lws-protocol/issues/291)).",
+  "note": "Updated after the 9 November WG meeting: adds a status line and a stable identifier (`#req-discovery`) to this requirement, so the document records what the LWS 1.0 specifications do and do not cover. It also restores the sentence on describing supported protocol versions, since version discovery is an open WG action (w3c/lws-protocol#291).",
+  "replace": [
+   [
+    "; drops the protocol-version sentence.",
+    "."
+   ]
+  ]
+ },
+ "241": {
+  "branch": "req/service-independence-modify",
+  "title": "[Class 3] Requirement Service Independence and Trust: modify",
+  "kind": "modify",
+  "status": "Supported.",
+  "note": "Updated after the 9 November WG meeting: adds a status line and a stable identifier (`#req-service-independence-and-trust`) to this requirement, so the document records what the LWS 1.0 specifications do and do not cover."
+ },
+ "242": {
+  "branch": "req/storage-portability-modify",
+  "title": "[Class 4] Requirement Storage Portability: modify",
+  "kind": "modify",
+  "status": "Afforded. Not addressed by LWS 1.0: moving or transferring a Storage so that the original Storage Provider is released from responsibility for it. The WG expects to cover portability in a separate Note.",
+  "note": "Updated after the 9 November WG meeting: adds a status line and a stable identifier (`#req-storage-portability`) to this requirement, so the document records what the LWS 1.0 specifications do and do not cover."
+ },
+ "243": {
+  "branch": "req/search-modify",
+  "title": "[Class 4] Requirement Resource Discovery by Type and Pagination: modify",
+  "kind": "modify",
+  "status": "Afforded. Not addressed by LWS 1.0: SPARQL and other query languages, filtering and sorting of results, and queries or joins across Storages (see Federated Data Queries).",
+  "note": "Updated after the 9 November WG meeting: adds a status line and a stable identifier (`#req-resource-discovery-by-type-and-pagination`) to this requirement, so the document records what the LWS 1.0 specifications do and do not cover. It also restores \"scales well to large Storages\" from use case #45, and records the query features the spec does not address instead of dropping them.",
+  "replace": [
+   [
+    "Removes the broader requirements for SPARQL, federated queries, and joins.",
+    "Records SPARQL, federated queries, and joins as not addressed by LWS 1.0 instead of removing them."
+   ]
+  ]
+ },
+ "244": {
+  "branch": "req/performance-modify",
+  "title": "[Class 3] Requirement Performance and Scalability: modify",
+  "kind": "modify",
+  "status": "Supported: partial retrieval and conditional requests. Afforded: caching and distributed deployments. Not addressed by LWS 1.0: resumable uploads.",
+  "note": "Updated after the 9 November WG meeting: adds a status line and a stable identifier (`#req-performance-and-scalability`) to this requirement, so the document records what the LWS 1.0 specifications do and do not cover."
+ },
+ "245": {
+  "branch": "req/concurrency-offline-modify",
+  "title": "[Class 3] Requirement Concurrency and Offline Use: modify",
+  "kind": "modify",
+  "status": "Supported: detecting concurrent changes and partial updates. Afforded: offline use and synchronization. Not addressed by LWS 1.0: locking and automatic merging of concurrent edits.",
+  "note": "Updated after the 9 November WG meeting: adds a status line and a stable identifier (`#req-concurrency-and-offline-use`) to this requirement, so the document records what the LWS 1.0 specifications do and do not cover."
+ },
+ "246": {
+  "branch": "req/resource-metadata-add",
+  "title": "[Class 4] Requirement Resource Metadata: add",
+  "kind": "modify",
+  "status": "Supported.",
+  "note": "Updated after the 9 November WG meeting: adds a status line and a stable identifier (`#req-resource-metadata`) to this requirement, so the document records what the LWS 1.0 specifications do and do not cover."
+ },
+ "247": {
+  "branch": "req/group-based-access-control-delete",
+  "title": "[Class 4] Requirement Group-Based Access Control: mark afforded",
+  "kind": "status",
+  "status": "Afforded: an access grant can name any Entity, and how a Storage resolves a group is left to implementations. Groups in access grants are under discussion in [w3c/lws-protocol#289](https://github.com/w3c/lws-protocol/issues/289).",
+  "summary": "Keeps requirement 5, Group-Based Access Control, with its text, issues and stories unchanged, and adds its status and a stable identifier (`#req-group-based-access-control`). This replaces the earlier proposal to delete it, following the discussion on the list and at the 9 November WG meeting."
+ },
+ "248": {
+  "branch": "req/delegation-of-control-delete",
+  "title": "[Class 4] Requirement Delegation of Control: mark not addressed",
+  "kind": "status",
+  "status": "Not addressed by LWS 1.0; identified as open work at the 9 November 2026 WG meeting.",
+  "summary": "Keeps requirement 6, Delegation of Control, with its text, issues and stories unchanged, and adds its status and a stable identifier (`#req-delegation-of-control`). This replaces the earlier proposal to delete it, following the discussion on the list and at the 9 November WG meeting."
+ },
+ "249": {
+  "branch": "req/serialization-format-delete",
+  "title": "[Class 4] Requirement Serialization Format: mark supported",
+  "kind": "status",
+  "status": "Supported: the specifications define the serializations they use.",
+  "summary": "Keeps requirement 9, Serialization Format, with its text, issues and stories unchanged, and adds its status and a stable identifier (`#req-serialization-format`). This replaces the earlier proposal to delete it, following the discussion on the list and at the 9 November WG meeting."
+ },
+ "250": {
+  "branch": "req/delegation-of-access-rights-delete",
+  "title": "[Class 4] Requirement Delegation of Access Rights: mark not addressed",
+  "kind": "status",
+  "status": "Not addressed by LWS 1.0; identified as open work at the 9 November 2026 WG meeting.",
+  "summary": "Keeps requirement 14, Delegation of Access Rights, with its text, issues and stories unchanged, and adds its status and a stable identifier (`#req-delegation-of-access-rights`). This replaces the earlier proposal to delete it, following the discussion on the list and at the 9 November WG meeting."
+ },
+ "251": {
+  "branch": "req/profile-management-delete",
+  "title": "[Class 4] Requirement Profile Management: mark not addressed",
+  "kind": "status",
+  "status": "Not addressed by LWS 1.0.",
+  "summary": "Keeps requirement 16, Profile Management, with its text, issues and stories unchanged, and adds its status and a stable identifier (`#req-profile-management`). This replaces the earlier proposal to delete it, following the discussion on the list and at the 9 November WG meeting."
+ },
+ "252": {
+  "branch": "req/data-integrity-verification-delete",
+  "title": "[Class 4] Requirement Data Integrity Verification: mark not addressed",
+  "kind": "status",
+  "status": "Not addressed by LWS 1.0, beyond entity tags and transport security.",
+  "summary": "Keeps requirement 19, Data Integrity Verification, with its text, issues and stories unchanged, and adds its status and a stable identifier (`#req-data-integrity-verification`). This replaces the earlier proposal to delete it, following the discussion on the list and at the 9 November WG meeting."
+ },
+ "253": {
+  "branch": "req/transfer-of-control-delete",
+  "title": "[Class 4] Requirement Transfer of Control: mark not addressed",
+  "kind": "status",
+  "status": "Not addressed by LWS 1.0; identified as open work at the 9 November 2026 WG meeting.",
+  "summary": "Keeps requirement 22, Transfer of Control, with its text, issues and stories unchanged, and adds its status and a stable identifier (`#req-transfer-of-control`). This replaces the earlier proposal to delete it, following the discussion on the list and at the 9 November WG meeting."
+ },
+ "254": {
+  "branch": "req/scalable-storage-management-delete",
+  "title": "[Class 4] Requirement Scalable Storage Management: mark not addressed",
+  "kind": "status",
+  "status": "Not addressed by LWS 1.0.",
+  "summary": "Keeps requirement 24, Scalable Storage Management, with its text, issues and stories unchanged, and adds its status and a stable identifier (`#req-scalable-storage-management`). This replaces the earlier proposal to delete it, following the discussion on the list and at the 9 November WG meeting."
+ },
+ "255": {
+  "branch": "req/view-based-data-sharing-delete",
+  "title": "[Class 4] Requirement View-Based Data Sharing: mark not addressed",
+  "kind": "status",
+  "status": "Not addressed by LWS 1.0.",
+  "summary": "Keeps requirement 25, View-Based Data Sharing, with its text, issues and stories unchanged, and adds its status and a stable identifier (`#req-view-based-data-sharing`). This replaces the earlier proposal to delete it, following the discussion on the list and at the 9 November WG meeting."
+ },
+ "256": {
+  "branch": "req/loose-coupling-of-underlying-protocols-delete",
+  "title": "[Class 4] Requirement Loose Coupling of Underlying Protocols: mark not addressed",
+  "kind": "status",
+  "status": "Not addressed by LWS 1.0: the specifications are bound to HTTP.",
+  "summary": "Keeps requirement 26, Loose Coupling of Underlying Protocols, with its text, issues and stories unchanged, and adds its status and a stable identifier (`#req-loose-coupling-of-underlying-protocols`). This replaces the earlier proposal to delete it, following the discussion on the list and at the 9 November WG meeting."
+ },
+ "257": {
+  "branch": "req/end-to-end-encryption-delete",
+  "title": "[Class 4] Requirement End-to-End Encryption: mark not addressed",
+  "kind": "status",
+  "status": "Not addressed by LWS 1.0, beyond transport security.",
+  "summary": "Keeps requirement 27, End-to-End Encryption, with its text, issues and stories unchanged, and adds its status and a stable identifier (`#req-end-to-end-encryption`). This replaces the earlier proposal to delete it, following the discussion on the list and at the 9 November WG meeting."
+ },
+ "258": {
+  "branch": "req/federated-data-queries-delete",
+  "title": "[Class 4] Requirement Federated Data Queries: mark not addressed",
+  "kind": "status",
+  "status": "Not addressed by LWS 1.0.",
+  "summary": "Keeps requirement 29, Federated Data Queries, with its text, issues and stories unchanged, and adds its status and a stable identifier (`#req-federated-data-queries`). This replaces the earlier proposal to delete it, following the discussion on the list and at the 9 November WG meeting."
+ },
+ "259": {
+  "branch": "req/resource-versioning-delete",
+  "title": "[Class 4] Requirement Resource Versioning: mark not addressed",
+  "kind": "status",
+  "status": "Not addressed by LWS 1.0.",
+  "summary": "Keeps requirement 30, Resource Versioning, with its text, issues and stories unchanged, and adds its status and a stable identifier (`#req-resource-versioning`). This replaces the earlier proposal to delete it, following the discussion on the list and at the 9 November WG meeting."
+ },
+ "260": {
+  "branch": "req/inbox-delete",
+  "title": "[Class 4] Requirement Inbox: mark not addressed",
+  "kind": "status",
+  "status": "Not addressed by LWS 1.0, except inboxes for access requests and grants, covered by Access Requests and Grants.",
+  "summary": "Keeps requirement 31, Inbox (notifications), with its text, issues and stories unchanged, and adds its status and a stable identifier (`#req-inbox`). This replaces the earlier proposal to delete it, following the discussion on the list and at the 9 November WG meeting."
+ },
+ "261": {
+  "branch": "req/personal-data-projection-delete",
+  "title": "[Class 4] Requirement Personal Data Projection: mark not addressed",
+  "kind": "status",
+  "status": "Not addressed by LWS 1.0.",
+  "summary": "Keeps requirement 32, Personal Data Projection, with its text, issues and stories unchanged, and adds its status and a stable identifier (`#req-personal-data-projection`). This replaces the earlier proposal to delete it, following the discussion on the list and at the 9 November WG meeting."
+ },
+ "262": {
+  "branch": "req/auditable-trail-delete",
+  "title": "[Class 4] Requirement Auditable Trail: mark not addressed",
+  "kind": "status",
+  "status": "Not addressed by LWS 1.0.",
+  "summary": "Keeps requirement 33, Auditable Trail, with its text, issues and stories unchanged, and adds its status and a stable identifier (`#req-auditable-trail`). This replaces the earlier proposal to delete it, following the discussion on the list and at the 9 November WG meeting."
+ },
+ "263": {
+  "branch": "req/timeseries-data-support-delete",
+  "title": "[Class 4] Requirement Timeseries Data Support: mark not addressed",
+  "kind": "status",
+  "status": "Not addressed by LWS 1.0.",
+  "summary": "Keeps requirement 37, Timeseries Data Support, with its text, issues and stories unchanged, and adds its status and a stable identifier (`#req-timeseries-data-support`). This replaces the earlier proposal to delete it, following the discussion on the list and at the 9 November WG meeting."
+ },
+ "264": {
+  "branch": "req/legal-basis-enforcement-delete",
+  "title": "[Class 4] Requirement Legal Basis Enforcement: mark afforded",
+  "kind": "status",
+  "status": "Afforded: an access grant can state the purpose of access, and enforcing a legal basis is left to implementations.",
+  "summary": "Keeps requirement 38, Legal Basis Enforcement, with its text, issues and stories unchanged, and adds its status and a stable identifier (`#req-legal-basis-enforcement`). This replaces the earlier proposal to delete it, following the discussion on the list and at the 9 November WG meeting."
+ },
+ "265": {
+  "branch": "req/profile-interaction-ui-delete",
+  "title": "[Class 4] Requirement Profile Interaction UI: mark not addressed",
+  "kind": "status",
+  "status": "Not addressed by LWS 1.0: user interfaces are outside the protocol.",
+  "summary": "Keeps requirement 39, Profile Interaction UI, with its text, issues and stories unchanged, and adds its status and a stable identifier (`#req-profile-interaction-ui`). This replaces the earlier proposal to delete it, following the discussion on the list and at the 9 November WG meeting."
+ }
+}
